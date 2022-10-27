@@ -126,9 +126,14 @@ void gf3d_mesh_reset_pipes()
 
 void gf3d_mesh_submit_pipe_commands()
 {
-    gf3d_pipeline_submit_commands(gf3d_mesh.sky_pipe);
-    gf3d_pipeline_submit_commands(gf3d_mesh.pipe);
-    gf3d_pipeline_submit_commands(gf3d_mesh.highlight_pipe);
+    
+    gf3d_pipeline_submit_commands(gf3d_mesh.sky_pipe); //~35 ticks
+    
+    gf3d_pipeline_submit_commands(gf3d_mesh.pipe); //~35 ticks
+    //unsigned int lastTime = SDL_GetTicks(), currentTime;
+    gf3d_pipeline_submit_commands(gf3d_mesh.highlight_pipe); //~35 ticks
+    // currentTime = SDL_GetTicks();
+    // slog("Time Elapsed: %u", currentTime-lastTime);
 }
 
 VkCommandBuffer gf3d_mesh_get_model_command_buffer()

@@ -3,10 +3,16 @@
 
 #include "gf3d_camera.h"
 #include "player.h"
+#include "monster1.h"
+
+#include <stdbool.h>
+#include <time.h>
 
 static int thirdPersonMode = 0;
+int points = 0;
 void player_think(Entity *self);
 void player_update(Entity *self);
+bool jump(Entity *self, clock_t startTime, bool isJumping, bool midJump);
 
 Entity *player_new(Vector3D position)
 {
@@ -48,23 +54,58 @@ void player_think(Entity *self)
     w = vector2d_from_angle(self->rotation.z - GFC_HALF_PI);
     right.x = w.x;
     right.y = w.y;
+
+    clock_t startTime = clock();
+    bool isJumping = false;
+    bool midJump = false;
+
     if (keys[SDL_SCANCODE_W])
     {   
         vector3d_add(self->position,self->position,forward);
+    }
+    if (keys[SDL_SCANCODE_W] && keys[SDL_SCANCODE_LCTRL]){ //sets velocity
+        vector3d_add(self->velocity, self->velocity, forward);
     }
     if (keys[SDL_SCANCODE_S])
     {
         vector3d_add(self->position,self->position,-forward);        
     }
+    if (keys[SDL_SCANCODE_S] && keys[SDL_SCANCODE_LCTRL]){
+        vector3d_add(self->velocity, self->velocity, -forward);
+    }
     if (keys[SDL_SCANCODE_D])
     {
         vector3d_add(self->position,self->position,right);
+    }
+    if (keys[SDL_SCANCODE_D] && keys[SDL_SCANCODE_LCTRL]){
+        vector3d_add(self->velocity, self->velocity, right);
     }
     if (keys[SDL_SCANCODE_A])    
     {
         vector3d_add(self->position,self->position,-right);
     }
-    if (keys[SDL_SCANCODE_SPACE])self->position.z += 1;
+    if (keys[SDL_SCANCODE_A] && keys[SDL_SCANCODE_LCTRL]){
+        vector3d_add(self->velocity, self->velocity, -right);
+    }
+    /*
+    if (keys[SDL_SCANCODE_SPACE]){
+        isJumping = true;
+        midJump = false;
+        clock_t startTime = clock();
+        bool startJump = jump(self, startTime, isJumping, midJump);
+        
+        //starts the jump
+
+        
+
+    }
+    if(isJumping){
+        isJumping = jump(self, startTime, isJumping, midJump);
+    }
+    */
+
+    //if (keys[SDL_SCANCODE_SPACE])self->position.z += 1;
+    if (keys[SDL_SCANCODE_X])self->position.z += 1;
     if (keys[SDL_SCANCODE_Z])self->position.z -= 1;
     
     if (keys[SDL_SCANCODE_UP])self->rotation.x -= 0.0050;
@@ -79,6 +120,17 @@ void player_think(Entity *self)
     {
         thirdPersonMode = !thirdPersonMode;
         self->hidden = !self->hidden;
+    }
+
+    if (keys[SDL_SCANCODE_1]){
+        printf("%f, %f, %f\n", self->position.x, self->position.y, self->position.z);
+        //printf("\n");
+        monster1_new(vector3d(self->position.x, self->position.y, self->position.z));
+    }
+    if (keys[SDL_SCANCODE_2]){
+        
+        printf("points: %i", self->points);
+        printf("\n");
     }
 }
 
@@ -104,6 +156,27 @@ void player_update(Entity *self)
     }
     gf3d_camera_set_position(position);
     gf3d_camera_set_rotation(rotation);
+
+    clock_t currentTime = clock();
+    self->currentTime=currentTime;
+    self->points+=1;
+    points = self->points;
 }
 
+bool jump(Entity *self, clock_t startTime, bool isJumping, bool midJump){
+    do{
+        printf("elapsed time: %ld, currentTime: %d, startTime: %ld\n", self->currentTime - startTime, self->currentTime, startTime);
+        if(startTime - self->currentTime >= .50 && midJump == false){//go up
+            self->position.z += 5;
+            return midJump = true;
+        }
+        else{//go down
+            self->position.z -= 5;
+            isJumping = false;
+            return isJumping;
+        }
+       
+    }
+    while(isJumping);
+}
 /*eol@eof*/

@@ -191,6 +191,7 @@ Sprite *gf2d_sprite_new()
 Sprite * gf2d_sprite_from_surface(SDL_Surface *surface,int frame_width,int frame_height, Uint32 frames_per_line)
 {
     Sprite *sprite = NULL;
+    //unsigned int lastTime = SDL_GetTicks(), currentTime;
     if (!surface)
     {
         slog("no surface provided to convert to a sprite");
@@ -201,7 +202,10 @@ Sprite * gf2d_sprite_from_surface(SDL_Surface *surface,int frame_width,int frame
     {
         return NULL;
     }
+    //this is slow
     sprite->texture = gf3d_texture_convert_surface(surface);
+    //currentTime = SDL_GetTicks();
+    //slog("Time Elapsed: %u", currentTime-lastTime);
     if (!sprite->texture)
     {
         gf2d_sprite_free(sprite);
@@ -211,6 +215,7 @@ Sprite * gf2d_sprite_from_surface(SDL_Surface *surface,int frame_width,int frame
     if (frame_height <= 0)frame_height = sprite->texture->height;
     sprite->frameWidth = frame_width;
     sprite->frameHeight = frame_height;
+    
     if (frames_per_line)sprite->framesPerLine = frames_per_line;
     else sprite->framesPerLine = 1;
     gf2d_sprite_create_vertex_buffer(sprite);
@@ -268,12 +273,12 @@ void gf2d_sprite_delete(Sprite *sprite)
     if (sprite->buffer != VK_NULL_HANDLE)
     {
         vkDestroyBuffer(gf2d_sprite.device, sprite->buffer, NULL);
-        slog("sprite %s vert buffer freed",sprite->filename);
+        //slog("sprite %s vert buffer freed",sprite->filename);
     }
     if (sprite->bufferMemory != VK_NULL_HANDLE)
     {
         vkFreeMemory(gf2d_sprite.device, sprite->bufferMemory, NULL);
-        slog("sprite %s vert buffer memory freed",sprite->filename);
+        //slog("sprite %s vert buffer memory freed",sprite->filename);
     }
 
     gf3d_texture_free(sprite->texture);

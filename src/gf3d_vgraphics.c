@@ -493,18 +493,24 @@ Uint32  gf3d_vgraphics_get_current_buffer_frame()
 }
 
 void gf3d_vgraphics_render_end()
-{
+{   
+    
     VkPresentInfoKHR presentInfo = {0};
     VkSubmitInfo submitInfo = {0};
     VkSwapchainKHR swapChains[1] = {0};
     VkSemaphore waitSemaphores[] = {gf3d_vgraphics.imageAvailableSemaphore};
     VkSemaphore signalSemaphores[] = {gf3d_vgraphics.renderFinishedSemaphore};
     VkPipelineStageFlags waitStages[] = {VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT};
-    
-    gf3d_mesh_submit_pipe_commands();
-    gf3d_particle_submit_pipe_commands();
-    gf3d_sprite_submit_pipe_commands();
-    
+
+    //unsigned int lastTime = SDL_GetTicks(), currentTime;
+
+    gf3d_mesh_submit_pipe_commands(); //~100 ticks
+    gf3d_particle_submit_pipe_commands(); //~30 ticks
+    gf3d_sprite_submit_pipe_commands(); //~30 ticks
+    //~160-180 total
+    //currentTime = SDL_GetTicks();
+    //slog("Time Elapsed: %u", currentTime-lastTime);
+
     swapChains[0] = gf3d_swapchain_get();
 
     submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;

@@ -19,6 +19,7 @@
 
 #include "entity.h"
 #include "agumon.h"
+#include "monster1.h"
 #include "player.h"
 #include "world.h"
 
@@ -35,7 +36,8 @@ int main(int argc,char *argv[])
     float mouseFrame = 0;
     World *w;
     Entity *agu;
-    Particle particle[100];
+    Entity *charmander;
+    //Particle particle[100];
     Matrix4 skyMat;
     Model *sky;
 
@@ -61,15 +63,20 @@ int main(int argc,char *argv[])
     mouse = gf2d_sprite_load("images/pointer.png",32,32, 16);
     
     
-    agu = agumon_new(vector3d(0 ,0,0));
+    agu = agumon_new(vector3d(0,0,0));
     if (agu)agu->selected = 1;
-    w = world_load("config/testworld.json");
+    charmander = monster1_new(vector3d(15,0,0));
+    if (charmander)charmander->selected = 1;
+
+    w = world_load("config/world.json");
     
     SDL_SetRelativeMouseMode(SDL_TRUE);
     slog_sync();
     gf3d_camera_set_scale(vector3d(1,1,1));
+    //Entity* self = player_new(vector3d(-50,0,0));
     player_new(vector3d(-50,0,0));
     
+    /*
     for (a = 0; a < 100; a++)
     {
         particle[a].position = vector3d(gfc_crandom() * 100,gfc_crandom() * 100,gfc_crandom() * 100);
@@ -78,17 +85,23 @@ int main(int argc,char *argv[])
         particle[a].size = 100 * gfc_random();
     }
     a = 0;
+    */
     sky = gf3d_model_load("models/sky.model");
     gfc_matrix_identity(skyMat);
     gfc_matrix_scale(skyMat,vector3d(100,100,100));
     
     // main game loop
     slog("gf3d main loop begin");
+    //char* point = 100+'0';
+    //char point[32] = "Points: ";
+    
     while(!done)
     {
+        
         gfc_input_update();
         gf2d_font_update();
         SDL_GetMouseState(&mousex,&mousey);
+        
         
         mouseFrame += 0.01;
         if (mouseFrame >= 16)mouseFrame = 0;
@@ -105,19 +118,31 @@ int main(int argc,char *argv[])
                 world_draw(w);
                 entity_draw_all();
                 
+                /*
                 for (a = 0; a < 100; a++)
                 {
                     gf3d_particle_draw(&particle[a]);
                 }
+                */
             //2D draws
-                gf2d_draw_rect_filled(gfc_rect(10 ,10,1000,32),gfc_color8(128,128,128,255));
-                gf2d_font_draw_line_tag("Press ALT+F4 to exit",FT_H1,gfc_color(1,1,1,1), vector2d(10,10));
-                
-                gf2d_draw_rect(gfc_rect(10 ,10,1000,32),gfc_color8(255,255,255,255));
-                
-                gf2d_sprite_draw(mouse,vector2d(mousex,mousey),vector2d(2,2),vector3d(8,8,0),gfc_color(0.3,.9,1,0.9),(Uint32)mouseFrame);
-        gf3d_vgraphics_render_end();
+                /*char point[32] = "Points: ";
+                int num = self->points;
+                sprintf(point, "%s %d", point, num);
+                */
 
+                //gf2d_draw_rect_filled(gfc_rect(10 ,10,1000,32),gfc_color8(128,128,128,255));
+                
+                //gf2d_font_draw_line_tag("static text",FT_H1,gfc_color(1,1,1,1), vector2d(10,10));
+                
+                //gf2d_draw_rect(gfc_rect(10 ,10,1000,32),gfc_color8(255,255,255,255));
+                
+                //gf2d_sprite_draw(mouse,vector2d(mousex,mousey),vector2d(2,2),vector3d(8,8,0),gfc_color(0.3,.9,1,0.9),(Uint32)mouseFrame);
+                //currentTime = SDL_GetTicks();
+                //slog("Time Elapsed: %u", currentTime-lastTime);
+        //unsigned int lastTime = SDL_GetTicks(), currentTime;
+        gf3d_vgraphics_render_end();
+        //currentTime = SDL_GetTicks();
+        //slog("Time Elapsed: %u", currentTime-lastTime);
         if (gfc_input_command_down("exit"))done = 1; // exit condition
     }    
     

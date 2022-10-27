@@ -186,8 +186,11 @@ VkCommandBuffer gf3d_command_rendering_begin(Uint32 index,Pipeline *pipe)
 
 void gf3d_command_rendering_end(VkCommandBuffer commandBuffer)
 {
+    //unsigned int lastTime = SDL_GetTicks(), currentTime;
     gf3d_command_configure_render_pass_end(commandBuffer);
     gf3d_command_end_single_time(gf3d_vgraphics_get_graphics_command_pool(), commandBuffer);
+    // currentTime = SDL_GetTicks();
+    // slog("Time Elapsed: %u", currentTime-lastTime);
 }
 
 void gf3d_command_configure_render_pass(VkCommandBuffer commandBuffer, VkRenderPass renderPass,VkFramebuffer framebuffer,VkPipeline graphicsPipeline,VkPipelineLayout pipelineLayout)
@@ -239,15 +242,21 @@ VkCommandBuffer gf3d_command_begin_single_time(Command* com)
 
 void gf3d_command_end_single_time(Command *com, VkCommandBuffer commandBuffer)
 {
-    VkSubmitInfo submitInfo = {0};
     
+    VkSubmitInfo submitInfo = {0};
     vkEndCommandBuffer(commandBuffer);
-
+    
     submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
     submitInfo.commandBufferCount = 1;
     submitInfo.pCommandBuffers = &commandBuffer;
 
-    vkQueueSubmit(gf3d_vqueues_get_graphics_queue(), 1, &submitInfo, VK_NULL_HANDLE);
+    unsigned int lastTime = SDL_GetTicks(), currentTime;
+
+    vkQueueSubmit(gf3d_vqueues_get_graphics_queue(), 1, &submitInfo, VK_NULL_HANDLE); //~35 ticks
+    
+    currentTime = SDL_GetTicks();
+    slog("Time Elapsed: %u", currentTime-lastTime);
+    
     vkQueueWaitIdle(gf3d_vqueues_get_graphics_queue());
 
     vkFreeCommandBuffers(gf3d_commands.device, com->commandPool, 1, &commandBuffer);

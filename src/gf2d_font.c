@@ -92,12 +92,25 @@ FontImage *gf2d_font_image_get(
     int i,c;
     c = gfc_list_get_count(font_manager.font_images);
     for (i = 0;i < c;i++)
-    {
+    {   
+        //slog the information in here
         image = gfc_list_get_nth(font_manager.font_images,i);
-        if (!image)continue;
-        if (image->font != font)continue;
-        if (!gfc_color_cmp(image->color, color))continue;
-        if (gfc_block_cmp(image->text,text)!= 0)continue;
+        if (!image){
+            slog("no image");
+            continue;
+        }
+        if (image->font != font){
+            slog("no font");
+            continue;
+        }
+        if (!gfc_color_cmp(image->color, color)){
+            slog("color doesn't match");
+            continue;
+        }
+        if (gfc_block_cmp(image->text,text)!= 0){
+            slog("text doesn't match");
+            continue;
+        }
         return image;
     }
     return NULL;
@@ -112,7 +125,7 @@ void gf2d_font_init(const char *configFile)
     }
     gf2d_fonts_load_json(configFile);
     font_manager.font_images = gfc_list_new();
-    font_manager.ttl = 100;// 100 milliseconds
+    font_manager.ttl = 1000;// 100 milliseconds
     slog("text system initialized");
     atexit(gf2d_font_close);
 }
@@ -366,8 +379,10 @@ void gf2d_font_draw_line(char *text,Font *font,Color color, Vector2D position)
         slog("cannot draw text, no font provided");
         return;
     }
-    
+    //unsigned int lastTime = SDL_GetTicks(), currentTime;
+
     image = gf2d_font_image_get(text,color,font);
+    
     
     if (image != NULL)
     {
@@ -375,20 +390,24 @@ void gf2d_font_draw_line(char *text,Font *font,Color color, Vector2D position)
         gf2d_sprite_draw(image->image,position,vector2d(1,1),vector3d(0,0,0),gfc_color(1,1,1,1),0);
         return;
     }
-
+    
     surface = TTF_RenderUTF8_Blended(font->font, text, gfc_color_to_sdl(color));
     if (!surface)
     {
         return;
     }
-    
+    //this is slow
     sprite = gf2d_sprite_from_surface(surface,0,0,0);
+    
+    //currentTime = SDL_GetTicks();
+    //slog("Time Elapsed: %u", currentTime-lastTime);
     if (!sprite)
     {
         slog("cannot draw text '%s', failed to make overlay sprite",text);
         SDL_FreeSurface(surface);
         return;
     }
+    
     gf2d_sprite_draw(sprite,position,vector2d(1,1),vector3d(0,0,0),gfc_color(1,1,1,1),0);
     gf2d_font_image_new(sprite,text,color,font);
 }

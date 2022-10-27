@@ -199,6 +199,7 @@ void gf3d_texture_create_sampler(Texture *tex)
 
 Texture *gf3d_texture_convert_surface(SDL_Surface * surface)
 {
+    //unsigned int lastTime = SDL_GetTicks(), currentTime;
     void* data;
     Texture *tex;
     VkDeviceSize imageSize;
@@ -268,13 +269,14 @@ Texture *gf3d_texture_convert_surface(SDL_Surface * surface)
         SDL_FreeSurface(surface);
         return NULL;
     }
+    
 
     vkBindImageMemory(gf3d_texture.device, tex->textureImage, tex->textureImageMemory, 0);    
     
     gf3d_swapchain_transition_image_layout(tex->textureImage, VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
 
     gf3d_texture_copy_buffer_to_image(stagingBuffer, tex->textureImage, surface->w, surface->h);
-    
+
     gf3d_swapchain_transition_image_layout(tex->textureImage, VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
     tex->textureImageView = gf3d_vgraphics_create_image_view(tex->textureImage, VK_FORMAT_R8G8B8A8_UNORM);
@@ -283,6 +285,8 @@ Texture *gf3d_texture_convert_surface(SDL_Surface * surface)
     
     vkDestroyBuffer(gf3d_texture.device, stagingBuffer, NULL);
     vkFreeMemory(gf3d_texture.device, stagingBufferMemory, NULL);
+
+   
     return tex;
 }
 
