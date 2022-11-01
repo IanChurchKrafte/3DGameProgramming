@@ -148,4 +148,13 @@ void entity_update_all()
     }
 }
 
+void entity_death(Entity *self){
+    if(!self) return;
+    if(self->onDeath) self->onDeath(self);
+}
+
+void entity_damage(int damage, Entity *self, int heal, Entity *inflictor){
+    if(!self) return;
+    if(self->damage) self->damage(damage, self, heal, inflictor);
+}
 /*eol@eof*/

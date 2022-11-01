@@ -4,6 +4,7 @@
 #include "gfc_types.h"
 #include "gfc_config.h"
 
+
 #include "world.h"
 
 /*
@@ -65,6 +66,8 @@ void world_draw(World *world)
     if (!world->model)return;// no model to draw, do nothing
     gf3d_model_draw(world->model,world->modelMat,gfc_color_to_vector4f(world->color),vector4d(2,2,2,2));
     //gf3d_model_draw_highlight(world->worldModel,world->modelMat,vector4d(1,.5,.1,1));
+
+
 }
 
 void world_delete(World *world)
@@ -76,12 +79,13 @@ void world_delete(World *world)
 
 void world_run_updates(World *self)
 {
-    self->rotation.z += 0.0001;
+    //self->rotation.z += 0.0001;
     gfc_matrix_identity(self->modelMat);
     
     gfc_matrix_scale(self->modelMat,self->scale);
     gfc_matrix_rotate_by_vector(self->modelMat,self->modelMat,self->rotation);
     gfc_matrix_translate(self->modelMat,self->position);
+
 
 }
 

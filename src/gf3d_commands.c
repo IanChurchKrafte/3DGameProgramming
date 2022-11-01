@@ -250,12 +250,12 @@ void gf3d_command_end_single_time(Command *com, VkCommandBuffer commandBuffer)
     submitInfo.commandBufferCount = 1;
     submitInfo.pCommandBuffers = &commandBuffer;
 
-    unsigned int lastTime = SDL_GetTicks(), currentTime;
+    //unsigned int lastTime = SDL_GetTicks(), currentTime;
 
     vkQueueSubmit(gf3d_vqueues_get_graphics_queue(), 1, &submitInfo, VK_NULL_HANDLE); //~35 ticks
     
-    currentTime = SDL_GetTicks();
-    slog("Time Elapsed: %u", currentTime-lastTime);
+    //currentTime = SDL_GetTicks();
+    //slog("Time Elapsed: %u", currentTime-lastTime);
     
     vkQueueWaitIdle(gf3d_vqueues_get_graphics_queue());
 

@@ -312,10 +312,10 @@ Sint32 gf3d_vqueues_get_transfer_queue_family()
 
 VkQueue gf3d_vqueues_get_graphics_queue()
 {
-    unsigned int lastTime = SDL_GetTicks(), currentTime;
+    //unsigned int lastTime = SDL_GetTicks(), currentTime;
     return gf3d_vqueues.queue_list[VQ_Graphics].queue;
-    currentTime = SDL_GetTicks();
-    slog("Time Elapsed: %u", currentTime-lastTime);
+    //currentTime = SDL_GetTicks();
+    //slog("Time Elapsed: %u", currentTime-lastTime);
 }
 
 VkQueue gf3d_vqueues_get_present_queue()

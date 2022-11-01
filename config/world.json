@@ -2,7 +2,7 @@
     "world":
     {
         "model":"models/world.model",
-        "position":[0,0,-50],
+        "position":[0,0,-30],
         "scale":[10,10,10],
         "rotation":[0,0,0]
     }

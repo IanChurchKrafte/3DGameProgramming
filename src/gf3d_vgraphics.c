@@ -28,7 +28,7 @@
 #include "gf3d_commands.h"
 #include "gf3d_texture.h"
 #include "gf2d_sprite.h"
-#include "gf3d_particle.h"
+//#include "gf3d_particle.h"
 
 #include "gf3d_vgraphics.h"
 
@@ -200,7 +200,7 @@ void gf3d_vgraphics_init(const char *config)
 
     gf3d_model_manager_init(1024);
     gf2d_sprite_manager_init(1024);
-    gf3d_particle_manager_init(4096);
+   // gf3d_particle_manager_init(4096);
 
     gf3d_swapchain_create_depth_image();
     gf3d_swapchain_setup_frame_buffers(gf3d_mesh_get_pipeline());
@@ -483,7 +483,7 @@ void gf3d_vgraphics_render_start()
     
     
     gf3d_mesh_reset_pipes();
-    gf3d_particle_reset_pipes();
+    //gf3d_particle_reset_pipes();
     gf3d_sprite_reset_pipes();
 }
 
@@ -505,7 +505,7 @@ void gf3d_vgraphics_render_end()
     //unsigned int lastTime = SDL_GetTicks(), currentTime;
 
     gf3d_mesh_submit_pipe_commands(); //~100 ticks
-    gf3d_particle_submit_pipe_commands(); //~30 ticks
+    //gf3d_particle_submit_pipe_commands(); //~30 ticks
     gf3d_sprite_submit_pipe_commands(); //~30 ticks
     //~160-180 total
     //currentTime = SDL_GetTicks();

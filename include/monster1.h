@@ -10,4 +10,5 @@
  */
 Entity *monster1_new(Vector3D position);
 
+
 #endif

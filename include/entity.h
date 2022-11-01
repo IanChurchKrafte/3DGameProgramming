@@ -33,7 +33,8 @@ typedef struct Entity_S
     void       (*think)(struct Entity_S *self); /**<pointer to the think function*/
     void       (*update)(struct Entity_S *self); /**<pointer to the update function*/
     void       (*draw)(struct Entity_S *self); /**<pointer to an optional extra draw funciton*/
-    void       (*damage)(struct Entity_S *self, float damage, struct Entity_S *inflictor); /**<pointer to the think function*/
+    void       (*damage)(int damage, struct Entity_S *self, int heal, struct Entity_S *inflictor); /**<pointer to the damage function*/
+    //void       (*damage)(struct Entity_S *self, float damage, struct Entity_S *inflictor); /**<pointer to the think function*/
     void       (*onDeath)(struct Entity_S *self); /**<pointer to an funciton to call when the entity dies*/
     
     EntityState state;
@@ -49,6 +50,11 @@ typedef struct Entity_S
     // WHATEVER ELSE WE MIGHT NEED FOR ENTITIES
     Uint32      points;
     Uint32      currentTime;
+
+    //for jumping
+    float       startPosition;
+    Uint32      isJumping;
+    Uint32      isDescending;
     
     struct Entity_S *target;    /**<entity to target for weapons / ai*/
     
@@ -100,5 +106,19 @@ void entity_think_all();
  * @brief run the update functions for ALL active entities
  */
 void entity_update_all();
+
+/**
+ * @brief run damage function in this entity
+ * @param damage int, damage points
+ * @param self the entity in question
+ * @param heal 1 if healing 0 if not
+*/
+void entity_damage(int damage, Entity *self, int heal, Entity *inflictor);
+
+/**
+ * @brief run the onDeath function for this entity
+ * @param self the entity in function
+*/
+void entity_onDeath(Entity *self);
 
 #endif
