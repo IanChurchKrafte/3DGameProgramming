@@ -46,7 +46,7 @@ typedef struct Entity_S
     Vector3D    scale;
     Vector3D    rotation;
     
-    Uint32      health;     /**<entity dies when it reaches zero*/
+    int         health;     /**<entity dies when it reaches zero*/
     // WHATEVER ELSE WE MIGHT NEED FOR ENTITIES
     Uint32      points;
     Uint32      currentTime;

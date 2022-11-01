@@ -148,7 +148,7 @@ void entity_update_all()
     }
 }
 
-void entity_death(Entity *self){
+void entity_onDeath(Entity *self){
     if(!self) return;
     if(self->onDeath) self->onDeath(self);
 }

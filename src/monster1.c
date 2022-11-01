@@ -42,6 +42,7 @@ Entity *monster1_new(Vector3D position){
     ent->bounds.h = ent->scale.z+10;
     ent->bounds.d = ent->scale.y+10;
 
+    ent->health = 100;
 
     return ent;
 }
@@ -70,13 +71,13 @@ void monster1_think(Entity *self){
     }
     int num = (rand() % 6);
     //move in the x
-    if(num == 0){
+    if(num == 10){
         if(collision_box_to_plane_x_pos(self->bounds, gfc_plane3d(40,0,0,40))){
             self->position.x+=10;
             //slog("x: %f, y: %f, z: %f, w: %f, h: %f, d: %f", self->bounds.x, self->bounds.y, self->bounds.z, self->bounds.w, self->bounds.h, self->bounds.d);
         }
     }
-    if(num == 1){
+    if(num == 11){
         if(collision_box_to_plane_x_neg(self->bounds, gfc_plane3d(-40,0,0,40))){
             self->position.x-=10;
             //slog("position: x: %f", self->position.x);
@@ -85,25 +86,25 @@ void monster1_think(Entity *self){
     }
 
     //move in the y
-    if(num == 2){//pos
+    if(num == 12){//pos
         if(collision_box_to_plane_y(self->bounds, gfc_plane3d(0,40,0,40))){
             self->position.y+=10;
         }
     }
-    if(num == 3){//neg
+    if(num == 13){//neg
         if(collision_box_to_plane_y(self->bounds, gfc_plane3d(0,-40,0,40))){
             self->position.y-=10;
         }
     }
 
     //move in the z
-    if(num == 4){
+    if(num == 14){
         //slog("bounds: %f, %f, %f", self->bounds.x, self->bounds.y, self->bounds.z);
         if(collision_box_to_plane_z_up(self->bounds, gfc_plane3d(0,0,10,10))){
             self->position.z+=10;
         }
     }
-    if(num == 5){
+    if(num == 15){
         //if(!gfc_box_overlap(self->bounds, gfc_box(0,0,-30,10,10,10))){
         if(collision_box_to_plane_z_down(self->bounds, gfc_plane3d(0,0,-30,30))){
             self->position.z-=10;
@@ -117,14 +118,24 @@ void monster1_think(Entity *self){
 void monster1_damage(int damage, Entity *self, int heal, Entity *inflictor){
     if(heal == 0){//damage not heal
         int temp = self->health - damage;
+        //slog("temp: %i, health: %i, damage: %i", temp, self->health, damage);
         if(temp<0) temp = 0;
-        self->health = 0;
+        if(temp == 0){
+            monster1_onDeath(self);
+            inflictor->points+=50;
+        }
+        else{
+            inflictor->points += 10;
+            self->health = temp;
+        }
+        
     }
     else{//heal monster1 with number from damage value
         int temp = self->health + damage;
         if(temp>100) temp = 100;
         self->health = temp;
     }
+    
 }
 
 void monster1_onDeath(Entity *self){

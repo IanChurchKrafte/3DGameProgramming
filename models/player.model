@@ -1,0 +1,7 @@
+{
+    "model":
+    {
+        "model":"models/gun/Glock.obj",
+        "texture":"models/dino/dino.png"
+    }
+}

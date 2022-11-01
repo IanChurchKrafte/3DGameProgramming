@@ -11,9 +11,11 @@
 
 #include <stdbool.h>
 #include <time.h>
+#include <inttypes.h>
 
 static int thirdPersonMode = 0;
 int points = 0;
+Entity *monster1;
 void player_think(Entity *self);
 void player_update(Entity *self);
 void player_damage(int damage, Entity *self, int heal, Entity *inflictor);
@@ -31,7 +33,7 @@ Entity *player_new(Vector3D position)
         return NULL;
     }
     
-    ent->model = gf3d_model_load("models/dino.model");
+    ent->model = gf3d_model_load("models/player.model");
     ent->think = player_think;
     ent->update = player_update;
     ent->damage = player_damage;
@@ -85,7 +87,7 @@ void player_think(Entity *self)
     right.x = w.x;
     right.y = w.y;
 
-    Entity *monster1;
+    //Entity *monster1;
 
     // clock_t startTime = clock();
     // bool isJumping = false;
@@ -354,19 +356,35 @@ void player_think(Entity *self)
         printf("x: %f, y: %f, z: %f\n", self->position.x, self->position.y, self->position.z);
         //printf("\n");
         monster1 = monster1_new(vector3d(self->position.x, self->position.y, self->position.z));
+        if(monster1) monster1->selected = 1;
     }
     if (keys[SDL_SCANCODE_2]){
-        
-        printf("points: %i", self->points);
-        printf("\n");
+        if(monster1)slog("%i", monster1->health);
+        else{
+            slog("monster1 pointer not set");
+        }
+        //printf("points: %i", self->points);
+        //printf("\n");
     }
     if (keys[SDL_SCANCODE_3]){
-        slog("player position: x: %f, y: %f, z: %f", self->position.x, self->position.y, self->position.z);
+        //slog("player position: x: %f, y: %f, z: %f", self->position.x, self->position.y, self->position.z);
+        if(monster1)monster1->damage(10, monster1, 0, self);
     }
     if (keys[SDL_SCANCODE_4]){
         self->points+=10;
     }
-    if (keys[SDL_SCANCODE_5])monster1->onDeath(monster1);
+    if (keys[SDL_SCANCODE_5]){
+        //monster1->health -= 10;
+        //monster1_damage(10, monster1, 0, self);
+        //monster1->damage(10, monster1, 0, self);
+        if(monster1){
+            monster1->onDeath(monster1);
+            monster1=NULL;
+        }
+        else{
+            slog("monster1 pointer not set");
+        }
+    } //monster1->onDeath(monster1);
 }
 
 void player_update(Entity *self)
