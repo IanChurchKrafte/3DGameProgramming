@@ -1,0 +1,7 @@
+{
+    "model":
+    {
+        "model":"models/enemies/kong/kong_tri.obj",
+        "texture":"models/enemies/kong/kong.png"
+    }
+}

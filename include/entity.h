@@ -50,6 +50,7 @@ typedef struct Entity_S
     // WHATEVER ELSE WE MIGHT NEED FOR ENTITIES
     Uint32      points;
     Uint32      currentTime;
+    int         isDead;
 
     //for jumping
     float       startPosition;

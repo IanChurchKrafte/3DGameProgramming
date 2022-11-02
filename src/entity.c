@@ -150,7 +150,8 @@ void entity_update_all()
 
 void entity_onDeath(Entity *self){
     if(!self) return;
-    if(self->onDeath) self->onDeath(self);
+    entity_free(self);
+    //if(self->onDeath) self->onDeath(self);
 }
 
 void entity_damage(int damage, Entity *self, int heal, Entity *inflictor){

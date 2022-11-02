@@ -1,0 +1,7 @@
+{
+    "model":
+    {
+        "model":"models/enemies/creeper/creeper.obj",
+        "texture":"models/enemies/creeper/creeper.png"
+    }
+}

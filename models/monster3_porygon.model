@@ -1,0 +1,7 @@
+{
+    "model":
+    {
+        "model":"models/enemies/porygon/porygon.obj",
+        "texture":"models/enemies/porygon/porygon.png"
+    }
+}

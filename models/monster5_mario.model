@@ -1,0 +1,7 @@
+{
+    "model":
+    {
+        "model":"models/enemies/mario/mario.obj",
+        "texture":"models/enemies/mario/mario.png"
+    }
+}

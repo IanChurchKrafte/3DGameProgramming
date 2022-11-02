@@ -1,7 +1,0 @@
-{
-    "model":
-    {
-        "model":"models/charmander/charmander.obj",
-        "texture":"models/charmander/Charmander_texture.png"
-    }
-}

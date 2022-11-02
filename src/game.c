@@ -75,7 +75,7 @@ int main(int argc,char *argv[])
     SDL_SetRelativeMouseMode(SDL_TRUE);
     slog_sync();
     gf3d_camera_set_scale(vector3d(1,1,1));
-    Entity* self = player_new(vector3d(-30,0,0));
+    Entity* self = player_new(vector3d(-30,0,-20));
     //player_new(vector3d(10,10,0));
     
     /*

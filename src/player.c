@@ -4,6 +4,15 @@
 #include "gf3d_camera.h"
 #include "player.h"
 #include "monster1.h"
+#include "monster2_kong.h"
+#include "monster3_porygon.h"
+#include "monster4_skelly.h"
+#include "monster5_mario.h"
+#include "monster6_yoshi.h"
+#include "monster7_creeper.h"
+#include "monster8_finn.h"
+#include "monster9_goomba.h"
+#include "monster10_arlo.h"
 #include "collision.h"
 
 #include "gfc_primitives.h"
@@ -47,7 +56,7 @@ Entity *player_new(Vector3D position)
     ent->bounds.d = 10.0;
     ent->rotation.x = -GFC_PI;
     ent->rotation.z = -GFC_HALF_PI;
-    ent->hidden = 1;
+    //ent->hidden = 1;
 
     ent->isJumping = 0;
     ent->isDescending = 0;
@@ -59,6 +68,12 @@ Entity *player_new(Vector3D position)
 
 void player_think(Entity *self)
 {
+    //check if monster1 is dead, if so set it back to NULL
+    if(monster1){
+        if(monster1->isDead == 1){
+            monster1 = NULL;
+        }
+    }
     //set planes and boxes to test collision
     Plane3D bottomPlane = gfc_plane3d(0,0,-25,25);
     Plane3D topPlane = gfc_plane3d(0,0,10,10);
@@ -355,7 +370,7 @@ void player_think(Entity *self)
     if (keys[SDL_SCANCODE_1]){
         printf("x: %f, y: %f, z: %f\n", self->position.x, self->position.y, self->position.z);
         //printf("\n");
-        monster1 = monster1_new(vector3d(self->position.x, self->position.y, self->position.z));
+        monster1 = monster10_arlo_new(vector3d(self->position.x, self->position.y, self->position.z));
         if(monster1) monster1->selected = 1;
     }
     if (keys[SDL_SCANCODE_2]){
@@ -368,7 +383,12 @@ void player_think(Entity *self)
     }
     if (keys[SDL_SCANCODE_3]){
         //slog("player position: x: %f, y: %f, z: %f", self->position.x, self->position.y, self->position.z);
-        if(monster1)monster1->damage(10, monster1, 0, self);
+        if(monster1){
+            monster1->damage(10, monster1, 0, self);
+            if(monster1->health == 0){
+                monster1->isDead = 1;
+            }
+        }
     }
     if (keys[SDL_SCANCODE_4]){
         self->points+=10;
@@ -385,6 +405,9 @@ void player_think(Entity *self)
             slog("monster1 pointer not set");
         }
     } //monster1->onDeath(monster1);
+    if(keys[SDL_SCANCODE_6]){
+        monster2_kong_new(vector3d(self->position.x, self->position.y, self->position.z));
+    }
 }
 
 void player_update(Entity *self)
@@ -421,7 +444,7 @@ void player_update(Entity *self)
     if(self->isJumping){
         //slog("in jumping");
         if(self->position.z - self->startPosition <= 7.5){//jump height
-            self->position.z += 1.0/2.0;
+            self->position.z += 1.5;
         }
         else{
             self->isJumping = 0;
@@ -434,7 +457,7 @@ void player_update(Entity *self)
         if(self->position.z - self->startPosition >= 0){
             //slog("descending");
             if(!gfc_box_overlap(self->bounds, centerBox)){
-                self->position.z -= 1.0/2.0;
+                self->position.z -= 1.5;
             }
             else{
                 self->isDescending = 0;
@@ -473,7 +496,7 @@ void player_damage(int damage, Entity *self, int heal, Entity *inflictor){
 void player_death(Entity *self){
     //remove player entity
     //show you died text like dark souls
-    //repspawn player
+    //repspawn player or send to main menu
 }
 
 // bool jump(Entity *self, clock_t startTime, bool isJumping, bool midJump){

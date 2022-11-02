@@ -1,3 +1,9 @@
+/*
+charmander model
+called monster1
+this is the first enemy
+*/
+
 #include "simple_logger.h"
 #include "monster1.h"
 #include "gfc_vector.h"
@@ -26,13 +32,13 @@ Entity *monster1_new(Vector3D position){
     }
     //ent->selectedColor = gfc_color(0.1,1,0.1,1);
     //ent->color = gfc_color(1,1,1,1);
-    ent->model=gf3d_model_load("models/charmander.model");
+    ent->model=gf3d_model_load("models/monster1_charmander.model");
     //Vector3D scale = (5.0,5.0,5.0);
     ent->scale = vector3d(2.5,2.5,2.5);
     ent->think = monster1_think;
     ent->update = monster1_update;
     ent->damage = monster1_damage;
-    ent->onDeath = monster1_onDeath;
+    ent->onDeath = entity_onDeath;//monster1_onDeath;
     //ent->rotation.x+=1.5;
     vector3d_copy(ent->position,position);
     ent->bounds.x = position.x;
@@ -121,11 +127,12 @@ void monster1_damage(int damage, Entity *self, int heal, Entity *inflictor){
         //slog("temp: %i, health: %i, damage: %i", temp, self->health, damage);
         if(temp<0) temp = 0;
         if(temp == 0){
-            monster1_onDeath(self);
+            self->onDeath(self);
             inflictor->points+=50;
         }
         else{
             inflictor->points += 10;
+            slog("temp: %i",temp);
             self->health = temp;
         }
         

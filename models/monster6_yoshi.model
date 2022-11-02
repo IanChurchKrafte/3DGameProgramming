@@ -1,0 +1,7 @@
+{
+    "model":
+    {
+        "model":"models/enemies/yoshi/yoshi.obj",
+        "texture":"models/enemies/yoshi/yoshi.png"
+    }
+}

@@ -1,0 +1,7 @@
+{
+    "model":
+    {
+        "model":"models/enemies/arlo/arlo.obj",
+        "texture":"models/enemies/arlo/arlo.jpg"
+    }
+}

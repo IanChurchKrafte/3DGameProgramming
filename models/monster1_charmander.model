@@ -1,0 +1,7 @@
+{
+    "model":
+    {
+        "model":"models/enemies/charmander/charmander.obj",
+        "texture":"models/enemies/charmander/Charmander_texture.png"
+    }
+}

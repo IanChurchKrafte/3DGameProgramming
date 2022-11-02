@@ -1,0 +1,7 @@
+{
+    "model":
+    {
+        "model":"models/enemies/finn/finn.obj",
+        "texture":"models/enemies/finn/Finn.png"
+    }
+}
