@@ -1,7 +1,7 @@
 {
     "model":
     {
-        "model":"models/gun/Glock.obj",
-        "texture":"models/dino/dino.png"
+        "model":"models/gun/gun/Arms_with_Gun.obj",
+        "texture":"models/gun/gun/arm.png"
     }
 }

@@ -156,6 +156,27 @@ void entity_onDeath(Entity *self){
 
 void entity_damage(int damage, Entity *self, int heal, Entity *inflictor){
     if(!self) return;
-    if(self->damage) self->damage(damage, self, heal, inflictor);
+    if(!inflictor) return;
+    if(heal == 0){//damage not heal
+        int temp = self->health - damage;
+        //slog("temp: %i, health: %i, damage: %i", temp, self->health, damage);
+        if(temp<0) temp = 0;
+        if(temp == 0){
+            self->onDeath(self);
+            inflictor->points+=50;
+        }
+        else{
+            inflictor->points += 10;
+            slog("temp: %i",temp);
+            self->health = temp;
+        }
+        
+    }
+    else{//heal monster1 with number from damage value
+        int temp = self->health + damage;
+        if(temp>100) temp = 100;
+        self->health = temp;
+    }
+    
 }
 /*eol@eof*/

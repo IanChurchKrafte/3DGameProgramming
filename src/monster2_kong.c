@@ -22,7 +22,19 @@ Entity *monster2_kong_new(Vector3D position)
     ent->model = gf3d_model_load("models/monster2_kong.model");
     ent->think = monster2_kong_think;
     ent->update = monster2_kong_update;
+    ent->damage = entity_damage;
+    ent->onDeath = entity_onDeath;
+
     vector3d_copy(ent->position,position);
+
+    ent->bounds.x = position.x;
+    ent->bounds.y = position.y;
+    ent->bounds.z = position.z;
+    ent->bounds.w = ent->scale.x+10;
+    ent->bounds.h = ent->scale.z+10;
+    ent->bounds.d = ent->scale.y+10;
+
+    ent->health = 100;
     return ent;
 }
 

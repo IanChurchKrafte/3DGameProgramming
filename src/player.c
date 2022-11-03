@@ -24,7 +24,7 @@
 
 static int thirdPersonMode = 0;
 int points = 0;
-Entity *monster1;
+Entity *monster1, *monster2, *monster3, *monster4, *monster5, *monster6, *monster7, *monster8, *monster9, *monster10;
 void player_think(Entity *self);
 void player_update(Entity *self);
 void player_damage(int damage, Entity *self, int heal, Entity *inflictor);
@@ -104,10 +104,12 @@ void player_think(Entity *self)
 
     //Entity *monster1;
 
+    //for checking for lag
     // clock_t startTime = clock();
     // bool isJumping = false;
     // bool midJump = false;
 
+    //movement
     if (keys[SDL_SCANCODE_W])
     {   
         Vector3D p = self->position;
@@ -367,46 +369,144 @@ void player_think(Entity *self)
         self->hidden = !self->hidden;
     }
 
-    if (keys[SDL_SCANCODE_1]){
-        printf("x: %f, y: %f, z: %f\n", self->position.x, self->position.y, self->position.z);
+    //keys for spawning
+    if (keys[SDL_SCANCODE_1] && !keys[SDL_SCANCODE_LSHIFT]){
+        //printf("x: %f, y: %f, z: %f\n", self->position.x, self->position.y, self->position.z);
         //printf("\n");
-        monster1 = monster10_arlo_new(vector3d(self->position.x, self->position.y, self->position.z));
-        if(monster1) monster1->selected = 1;
+        monster1 = monster1_new(vector3d(self->position.x, self->position.y, self->position.z));
+        //if(monster1) monster1->selected = 1;
     }
-    if (keys[SDL_SCANCODE_2]){
-        if(monster1)slog("%i", monster1->health);
-        else{
-            slog("monster1 pointer not set");
-        }
-        //printf("points: %i", self->points);
-        //printf("\n");
-    }
-    if (keys[SDL_SCANCODE_3]){
-        //slog("player position: x: %f, y: %f, z: %f", self->position.x, self->position.y, self->position.z);
+    //when pressing LSHIFT and the number it will make that entity take damage
+    if(keys[SDL_SCANCODE_1] && keys[SDL_SCANCODE_LSHIFT]){
         if(monster1){
-            monster1->damage(10, monster1, 0, self);
+            monster1->damage(40, monster1, 0, self);
             if(monster1->health == 0){
                 monster1->isDead = 1;
             }
         }
     }
-    if (keys[SDL_SCANCODE_4]){
-        self->points+=10;
+    if (keys[SDL_SCANCODE_2] && !keys[SDL_SCANCODE_LSHIFT]){
+        monster2 = monster2_kong_new(vector3d(self->position.x, self->position.y, self->position.z));
+        // if(monster1)slog("%i", monster1->health);
+        // else{
+        //     slog("monster1 pointer not set");
+        // }
+        //printf("points: %i", self->points);
+        //printf("\n");
     }
-    if (keys[SDL_SCANCODE_5]){
+    if(keys[SDL_SCANCODE_2] && keys[SDL_SCANCODE_LSHIFT]){
+        if(monster2){
+            monster2->damage(40, monster2, 0, self);
+            if(monster2->health == 0){
+                monster2->isDead = 1;
+            }
+        }
+    }
+    if (keys[SDL_SCANCODE_3] && !keys[SDL_SCANCODE_LSHIFT]){
+        monster3 = monster3_porygon_new(vector3d(self->position.x, self->position.y, self->position.z));
+        //slog("player position: x: %f, y: %f, z: %f", self->position.x, self->position.y, self->position.z);
+        // if(monster1){
+        //     monster1->damage(10, monster1, 0, self);
+        //     if(monster1->health == 0){
+        //         monster1->isDead = 1;
+        //     }
+        // }
+    }
+    if(keys[SDL_SCANCODE_3] && keys[SDL_SCANCODE_LSHIFT]){
+        if(monster3){
+            monster3->damage(40, monster3, 0, self);
+            if(monster3->health == 0){
+                monster3->isDead = 1;
+            }
+        }
+    }
+    if (keys[SDL_SCANCODE_4] && !keys[SDL_SCANCODE_LSHIFT]){
+        monster4 = monster4_skelly_new(vector3d(self->position.x, self->position.y, self->position.z));
+        //self->points+=10;
+    }
+    if(keys[SDL_SCANCODE_4] && keys[SDL_SCANCODE_LSHIFT]){
+        if(monster4){
+            monster4->damage(40, monster4, 0, self);
+            if(monster4->health == 0){
+                monster4->isDead = 1;
+            }
+        }
+    }
+    if (keys[SDL_SCANCODE_5] && !keys[SDL_SCANCODE_LSHIFT]){
+        monster5 = monster5_mario_new(vector3d(self->position.x, self->position.y, self->position.z));
         //monster1->health -= 10;
         //monster1_damage(10, monster1, 0, self);
         //monster1->damage(10, monster1, 0, self);
-        if(monster1){
-            monster1->onDeath(monster1);
-            monster1=NULL;
-        }
-        else{
-            slog("monster1 pointer not set");
-        }
+        // if(monster1){
+        //     monster1->onDeath(monster1);
+        //     monster1=NULL;
+        // }
+        // else{
+        //     slog("monster1 pointer not set");
+        // }
     } //monster1->onDeath(monster1);
-    if(keys[SDL_SCANCODE_6]){
-        monster2_kong_new(vector3d(self->position.x, self->position.y, self->position.z));
+    if(keys[SDL_SCANCODE_5] && keys[SDL_SCANCODE_LSHIFT]){
+        if(monster5){
+            monster5->damage(40, monster5, 0, self);
+            if(monster5->health == 0){
+                monster5->isDead = 1;
+            }
+        }
+    }
+    if(keys[SDL_SCANCODE_6] && !keys[SDL_SCANCODE_LSHIFT]){
+        monster6 = monster6_yoshi_new(vector3d(self->position.x, self->position.y, self->position.z));
+    }
+    if(keys[SDL_SCANCODE_6] && keys[SDL_SCANCODE_LSHIFT]){
+        if(monster6){
+            monster6->damage(40, monster6, 0, self);
+            if(monster6->health == 0){
+                monster6->isDead = 1;
+            }
+        }
+    }
+    if(keys[SDL_SCANCODE_7] && !keys[SDL_SCANCODE_LSHIFT]){
+        monster7 = monster7_creeper_new(vector3d(self->position.x, self->position.y, self->position.z));
+    }
+    if(keys[SDL_SCANCODE_7] && keys[SDL_SCANCODE_LSHIFT]){
+        if(monster7){
+            monster7->damage(40, monster7, 0, self);
+            if(monster7->health == 0){
+                monster7->isDead = 1;
+            }
+        }
+    }
+    if(keys[SDL_SCANCODE_8] && !keys[SDL_SCANCODE_LSHIFT]){
+        monster8 = monster8_finn_new(vector3d(self->position.x, self->position.y, self->position.z));
+    }
+    if(keys[SDL_SCANCODE_8] && keys[SDL_SCANCODE_LSHIFT]){
+        if(monster8){
+            monster8->damage(40, monster8, 0, self);
+            if(monster8->health == 0){
+                monster8->isDead = 1;
+            }
+        }
+    }
+    if(keys[SDL_SCANCODE_9] && !keys[SDL_SCANCODE_LSHIFT]){
+        monster9 = monster9_goomba_new(vector3d(self->position.x, self->position.y, self->position.z));
+    }
+    if(keys[SDL_SCANCODE_9] && keys[SDL_SCANCODE_LSHIFT]){
+        if(monster9){
+            monster9->damage(40, monster9, 0, self);
+            if(monster9->health == 0){
+                monster9->isDead = 1;
+            }
+        }
+    }
+    if(keys[SDL_SCANCODE_0] && !keys[SDL_SCANCODE_LSHIFT]){
+        monster10 = monster10_arlo_new(vector3d(self->position.x, self->position.y, self->position.z));
+    }
+    if(keys[SDL_SCANCODE_0] && keys[SDL_SCANCODE_LSHIFT]){
+        if(monster10){
+            monster10->damage(40, monster10, 0, self);
+            if(monster10->health == 0){
+                monster10->isDead = 1;
+            }
+        }
     }
 }
 
@@ -462,6 +562,7 @@ void player_update(Entity *self)
             else{
                 self->isDescending = 0;
                 slog("collision with center box");
+                self->position.z += 1;
             }
         }
         else{

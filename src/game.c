@@ -60,6 +60,7 @@ int main(int argc,char *argv[])
     
     slog_sync();
     
+    //1024 max entites
     entity_system_init(1024);
     
     //mouse = gf2d_sprite_load("images/pointer.png",32,32, 16);

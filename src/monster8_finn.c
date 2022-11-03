@@ -23,7 +23,19 @@ Entity *monster8_finn_new(Vector3D position)
     ent->think = monster8_finn_think;
     ent->update = monster8_finn_update;
     ent->scale = vector3d(0.1,0.1,0.1);
+    ent->damage = entity_damage;
+    ent->onDeath = entity_onDeath;
+
     vector3d_copy(ent->position,position);
+
+    ent->bounds.x = position.x;
+    ent->bounds.y = position.y;
+    ent->bounds.z = position.z;
+    ent->bounds.w = ent->scale.x+10;
+    ent->bounds.h = ent->scale.z+10;
+    ent->bounds.d = ent->scale.y+10;
+
+    ent->health = 100;
     return ent;
 }
 
