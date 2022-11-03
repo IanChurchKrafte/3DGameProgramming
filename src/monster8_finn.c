@@ -36,6 +36,9 @@ Entity *monster8_finn_new(Vector3D position)
     ent->bounds.d = ent->scale.y+10;
 
     ent->health = 100;
+
+    ent->resistance = 4; //resistant to ice damage
+    ent->selectedColor = gfc_color(0,0,1,0.9);//blue 
     return ent;
 }
 

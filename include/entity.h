@@ -15,6 +15,14 @@ typedef enum
     ES_attack
 }EntityState;
 
+typedef enum
+{
+    R_bullet = 0,
+    R_fire = 1,
+    R_melee = 2,
+    R_magic = 3,
+    R_ice = 4
+}EntityResistance;
 
 typedef struct Entity_S
 {
@@ -33,7 +41,7 @@ typedef struct Entity_S
     void       (*think)(struct Entity_S *self); /**<pointer to the think function*/
     void       (*update)(struct Entity_S *self); /**<pointer to the update function*/
     void       (*draw)(struct Entity_S *self); /**<pointer to an optional extra draw funciton*/
-    void       (*damage)(int damage, struct Entity_S *self, int heal, struct Entity_S *inflictor); /**<pointer to the damage function*/
+    void       (*damage)(struct Entity_S *inflictor, struct Entity_S *self, int damage, int heal); /**<pointer to the damage function*/
     //void       (*damage)(struct Entity_S *self, float damage, struct Entity_S *inflictor); /**<pointer to the think function*/
     void       (*onDeath)(struct Entity_S *self); /**<pointer to an funciton to call when the entity dies*/
     
@@ -48,10 +56,11 @@ typedef struct Entity_S
     
     int         health;     /**<entity dies when it reaches zero*/
     // WHATEVER ELSE WE MIGHT NEED FOR ENTITIES
-    Uint32      points;
-    Uint32      currentTime;
-    int         isDead;
-
+    Uint32              points;
+    Uint32              currentTime;
+    int                 isDead;
+    EntityResistance    resistance;
+    EntityResistance    attackType;
     //for jumping
     float       startPosition;
     Uint32      isJumping;
@@ -110,14 +119,15 @@ void entity_update_all();
 
 /**
  * @brief run damage function in this entity
+ * @param inflictor the entity doing the damage
+ * @param self the entity receiving the damage
  * @param damage int, damage points
- * @param self the entity in question
  * @param heal 1 if healing 0 if not
 */
-void entity_damage(int damage, Entity *self, int heal, Entity *inflictor);
+void entity_damage(Entity *inflictor, Entity *self, int damage, int heal);
 
 /**
- * @brief run the onDeath function for this entity
+ * @brief run the onDeath function for this entity, freeing it from the system
  * @param self the entity in function
 */
 void entity_onDeath(Entity *self);

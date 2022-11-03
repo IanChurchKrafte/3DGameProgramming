@@ -11,3 +11,11 @@
 LSHIFT + num: that enemy takes damage (3 hits and they are dead)
 
 Receive 10 points on a hit and 50 on a kill
+
+ENEMY RESISTANCES (1/2 damage applied)
+yoshi: 	 fire damage (red highlight)
+creeper: melee damage (pink highlight)
+finn:    ice damage (blue highlight)
+goomba:  magic damage (purple highlight)
+arlo:    bullet damage (orange highlight)
+

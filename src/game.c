@@ -131,10 +131,11 @@ int main(int argc,char *argv[])
                 }
                 */
             //2D draws
-                
-                char point[32] = "Points: ";
-                int num = self->points;
-                sprintf(point, "%s %d", point, num);
+                //setting up ui to be drawn
+                char ui[32];
+                unsigned short points = self->points;
+                unsigned short health = self->health;
+                sprintf(ui, "Points: %hi     Health: %hi", points, health);
                 
 
                 gf2d_draw_rect_filled(gfc_rect(10 ,10,1000,32),gfc_color8(128,128,128,255));
@@ -144,7 +145,7 @@ int main(int argc,char *argv[])
 
                 or doing atomic variables with multi-threading so its a seperate thread doing the points
                 */
-                gf2d_font_draw_line_tag(point,FT_H1,gfc_color(1,1,1,1), vector2d(10,10));
+                gf2d_font_draw_line_tag(ui,FT_H1,gfc_color(1,1,1,1), vector2d(10,10));
                 //free(point);
                 gf2d_draw_rect(gfc_rect(10 ,10,1000,32),gfc_color8(255,255,255,255));
                 

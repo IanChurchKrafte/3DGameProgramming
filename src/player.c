@@ -45,7 +45,7 @@ Entity *player_new(Vector3D position)
     ent->model = gf3d_model_load("models/player.model");
     ent->think = player_think;
     ent->update = player_update;
-    ent->damage = player_damage;
+    ent->damage = entity_damage;
     ent->onDeath = player_death;
     vector3d_copy(ent->position,position);
     ent->bounds.x = position.x;
@@ -379,7 +379,7 @@ void player_think(Entity *self)
     //when pressing LSHIFT and the number it will make that entity take damage
     if(keys[SDL_SCANCODE_1] && keys[SDL_SCANCODE_LSHIFT]){
         if(monster1){
-            monster1->damage(40, monster1, 0, self);
+            monster1->damage(self, monster1, 40, 0);
             if(monster1->health == 0){
                 monster1->isDead = 1;
             }
@@ -396,7 +396,7 @@ void player_think(Entity *self)
     }
     if(keys[SDL_SCANCODE_2] && keys[SDL_SCANCODE_LSHIFT]){
         if(monster2){
-            monster2->damage(40, monster2, 0, self);
+            monster2->damage(self, monster2, 40, 0);
             if(monster2->health == 0){
                 monster2->isDead = 1;
             }
@@ -414,7 +414,7 @@ void player_think(Entity *self)
     }
     if(keys[SDL_SCANCODE_3] && keys[SDL_SCANCODE_LSHIFT]){
         if(monster3){
-            monster3->damage(40, monster3, 0, self);
+            monster3->damage(self, monster3, 40, 0);
             if(monster3->health == 0){
                 monster3->isDead = 1;
             }
@@ -426,7 +426,7 @@ void player_think(Entity *self)
     }
     if(keys[SDL_SCANCODE_4] && keys[SDL_SCANCODE_LSHIFT]){
         if(monster4){
-            monster4->damage(40, monster4, 0, self);
+            monster4->damage(self, monster4, 40, 0);
             if(monster4->health == 0){
                 monster4->isDead = 1;
             }
@@ -447,7 +447,7 @@ void player_think(Entity *self)
     } //monster1->onDeath(monster1);
     if(keys[SDL_SCANCODE_5] && keys[SDL_SCANCODE_LSHIFT]){
         if(monster5){
-            monster5->damage(40, monster5, 0, self);
+            monster5->damage(self, monster5, 40, 0);
             if(monster5->health == 0){
                 monster5->isDead = 1;
             }
@@ -455,10 +455,12 @@ void player_think(Entity *self)
     }
     if(keys[SDL_SCANCODE_6] && !keys[SDL_SCANCODE_LSHIFT]){
         monster6 = monster6_yoshi_new(vector3d(self->position.x, self->position.y, self->position.z));
+        monster6->selected = 1;
     }
     if(keys[SDL_SCANCODE_6] && keys[SDL_SCANCODE_LSHIFT]){
         if(monster6){
-            monster6->damage(40, monster6, 0, self);
+            self->attackType = 1;
+            monster6->damage(self, monster6, 40, 0);
             if(monster6->health == 0){
                 monster6->isDead = 1;
             }
@@ -466,10 +468,12 @@ void player_think(Entity *self)
     }
     if(keys[SDL_SCANCODE_7] && !keys[SDL_SCANCODE_LSHIFT]){
         monster7 = monster7_creeper_new(vector3d(self->position.x, self->position.y, self->position.z));
+        monster7->selected = 1;
     }
     if(keys[SDL_SCANCODE_7] && keys[SDL_SCANCODE_LSHIFT]){
         if(monster7){
-            monster7->damage(40, monster7, 0, self);
+            self->attackType = 2;
+            monster7->damage(self, monster7, 40, 0);
             if(monster7->health == 0){
                 monster7->isDead = 1;
             }
@@ -477,10 +481,12 @@ void player_think(Entity *self)
     }
     if(keys[SDL_SCANCODE_8] && !keys[SDL_SCANCODE_LSHIFT]){
         monster8 = monster8_finn_new(vector3d(self->position.x, self->position.y, self->position.z));
+        monster8->selected = 1;
     }
     if(keys[SDL_SCANCODE_8] && keys[SDL_SCANCODE_LSHIFT]){
         if(monster8){
-            monster8->damage(40, monster8, 0, self);
+            self->attackType = 4;
+            monster8->damage(self, monster8, 40, 0);
             if(monster8->health == 0){
                 monster8->isDead = 1;
             }
@@ -488,10 +494,12 @@ void player_think(Entity *self)
     }
     if(keys[SDL_SCANCODE_9] && !keys[SDL_SCANCODE_LSHIFT]){
         monster9 = monster9_goomba_new(vector3d(self->position.x, self->position.y, self->position.z));
+        monster9->selected = 1;
     }
     if(keys[SDL_SCANCODE_9] && keys[SDL_SCANCODE_LSHIFT]){
         if(monster9){
-            monster9->damage(40, monster9, 0, self);
+            self->attackType = 3;
+            monster9->damage(self, monster9, 40, 0);
             if(monster9->health == 0){
                 monster9->isDead = 1;
             }
@@ -499,10 +507,12 @@ void player_think(Entity *self)
     }
     if(keys[SDL_SCANCODE_0] && !keys[SDL_SCANCODE_LSHIFT]){
         monster10 = monster10_arlo_new(vector3d(self->position.x, self->position.y, self->position.z));
+        monster10->selected = 1;
     }
     if(keys[SDL_SCANCODE_0] && keys[SDL_SCANCODE_LSHIFT]){
         if(monster10){
-            monster10->damage(40, monster10, 0, self);
+            self->attackType = 0;
+            monster10->damage(self, monster10, 40, 0);
             if(monster10->health == 0){
                 monster10->isDead = 1;
             }

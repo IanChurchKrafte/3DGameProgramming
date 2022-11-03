@@ -36,6 +36,9 @@ Entity *monster7_creeper_new(Vector3D position)
     ent->bounds.d = ent->scale.y+10;
 
     ent->health = 100;
+
+    ent->resistance = 2; //resistant to melee damage;
+    ent->selectedColor = gfc_color(0.96, 0.16, 0.57, 0.8); //pink
     return ent;
 }
 

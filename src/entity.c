@@ -154,25 +154,29 @@ void entity_onDeath(Entity *self){
     //if(self->onDeath) self->onDeath(self);
 }
 
-void entity_damage(int damage, Entity *self, int heal, Entity *inflictor){
+void entity_damage(Entity *inflictor, Entity *self, int damage, int heal){
     if(!self) return;
     if(!inflictor) return;
-    if(heal == 0){//damage not heal
+    if(heal == 0){//damage entity not heal
+        if(self->resistance == inflictor->attackType){ //check if entity resistance is the same as the attack, if so lower the damage by half
+            damage = damage/2;
+            slog("half damage");
+        }
         int temp = self->health - damage;
         //slog("temp: %i, health: %i, damage: %i", temp, self->health, damage);
         if(temp<0) temp = 0;
         if(temp == 0){
             self->onDeath(self);
-            inflictor->points+=50;
+            inflictor->points+=60; //50 for a kill +10 for the hit that had to happend to get the kill
         }
         else{
             inflictor->points += 10;
-            slog("temp: %i",temp);
+            slog("Damaged Entity's Health: %i",temp);
             self->health = temp;
         }
         
     }
-    else{//heal monster1 with number from damage value
+    else{//heal entity with number from damage value
         int temp = self->health + damage;
         if(temp>100) temp = 100;
         self->health = temp;

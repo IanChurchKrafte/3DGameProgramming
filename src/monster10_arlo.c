@@ -36,6 +36,10 @@ Entity *monster10_arlo_new(Vector3D position)
     ent->bounds.d = ent->scale.y+10;
 
     ent->health = 100;
+
+    
+    ent->resistance = 0; //resistant to bullet damage
+    ent->selectedColor = gfc_color(0.98, 0.35, 0, 0.93); //orange
     return ent;
 }
 
