@@ -19,6 +19,7 @@ Entity *monster2_kong_new(Vector3D position)
     }
     ent->selectedColor = gfc_color(0.1,1,0.1,1);
     ent->color = gfc_color(1,1,1,1);
+    ent->scale = vector3d(5,5,5);
     ent->model = gf3d_model_load("models/monster2_kong.model");
     ent->think = monster2_kong_think;
     ent->update = monster2_kong_update;

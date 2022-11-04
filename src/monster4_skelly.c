@@ -22,7 +22,7 @@ Entity *monster4_skelly_new(Vector3D position)
     ent->model = gf3d_model_load("models/monster4_skelleton.model");
     ent->think = monster4_skelly_think;
     ent->update = monster4_skelly_update;
-    ent->scale = vector3d(2,2,2);
+    ent->scale = vector3d(3,3,3);
     ent->damage = entity_damage;
     ent->onDeath = entity_onDeath;
 

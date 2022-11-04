@@ -22,7 +22,7 @@ Entity *monster3_porygon_new(Vector3D position)
     ent->model = gf3d_model_load("models/monster3_porygon.model");
     ent->think = monster3_porygon_think;
     ent->update = monster3_porygon_update;
-    ent->scale = vector3d(0.1,0.1,0.1);
+    ent->scale = vector3d(0.075,0.075,0.075);
     ent->damage = entity_damage;
     ent->onDeath = entity_onDeath;
 

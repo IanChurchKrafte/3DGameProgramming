@@ -62,6 +62,7 @@ Entity *player_new(Vector3D position)
     ent->isDescending = 0;
 
     ent->health = 100;
+    ent->attackType = 0;
     return ent;
 }
 
@@ -109,6 +110,18 @@ void player_think(Entity *self)
     // bool isJumping = false;
     // bool midJump = false;
 
+    //switch attacks
+    if(keys[SDL_SCANCODE_TAB]){
+        //slog("tab pressed");
+        int attack = self->attackType;
+        //slog("attack: %i", attack);
+        if(attack + 1 >= 5){
+            self->attackType = 0;
+        }
+        else{
+            self->attackType += 1;
+        }
+    }
     //movement
     if (keys[SDL_SCANCODE_W])
     {   
@@ -371,9 +384,9 @@ void player_think(Entity *self)
 
     //keys for spawning
     if (keys[SDL_SCANCODE_1] && !keys[SDL_SCANCODE_LSHIFT]){
-        //printf("x: %f, y: %f, z: %f\n", self->position.x, self->position.y, self->position.z);
+        printf("x: %f, y: %f, z: %f\n", self->position.x, self->position.y, self->position.z);
         //printf("\n");
-        monster1 = monster1_new(vector3d(self->position.x, self->position.y, self->position.z));
+        //monster1 = monster1_new(vector3d(self->position.x, self->position.y, self->position.z));
         //if(monster1) monster1->selected = 1;
     }
     //when pressing LSHIFT and the number it will make that entity take damage
@@ -455,16 +468,20 @@ void player_think(Entity *self)
     }
     if(keys[SDL_SCANCODE_6] && !keys[SDL_SCANCODE_LSHIFT]){
         monster6 = monster6_yoshi_new(vector3d(self->position.x, self->position.y, self->position.z));
-        monster6->selected = 1;
+        if(monster6){
+            monster6->selected = 1;
+        }
     }
     if(keys[SDL_SCANCODE_6] && keys[SDL_SCANCODE_LSHIFT]){
         if(monster6){
-            self->attackType = 1;
+            //self->attackType = 1;
             monster6->damage(self, monster6, 40, 0);
             if(monster6->health == 0){
                 monster6->isDead = 1;
             }
         }
+        else
+            return;
     }
     if(keys[SDL_SCANCODE_7] && !keys[SDL_SCANCODE_LSHIFT]){
         monster7 = monster7_creeper_new(vector3d(self->position.x, self->position.y, self->position.z));
@@ -472,7 +489,7 @@ void player_think(Entity *self)
     }
     if(keys[SDL_SCANCODE_7] && keys[SDL_SCANCODE_LSHIFT]){
         if(monster7){
-            self->attackType = 2;
+            //self->attackType = 2;
             monster7->damage(self, monster7, 40, 0);
             if(monster7->health == 0){
                 monster7->isDead = 1;
@@ -485,7 +502,7 @@ void player_think(Entity *self)
     }
     if(keys[SDL_SCANCODE_8] && keys[SDL_SCANCODE_LSHIFT]){
         if(monster8){
-            self->attackType = 4;
+            //self->attackType = 4;
             monster8->damage(self, monster8, 40, 0);
             if(monster8->health == 0){
                 monster8->isDead = 1;
@@ -498,7 +515,7 @@ void player_think(Entity *self)
     }
     if(keys[SDL_SCANCODE_9] && keys[SDL_SCANCODE_LSHIFT]){
         if(monster9){
-            self->attackType = 3;
+            //self->attackType = 3;
             monster9->damage(self, monster9, 40, 0);
             if(monster9->health == 0){
                 monster9->isDead = 1;
@@ -511,7 +528,7 @@ void player_think(Entity *self)
     }
     if(keys[SDL_SCANCODE_0] && keys[SDL_SCANCODE_LSHIFT]){
         if(monster10){
-            self->attackType = 0;
+            //self->attackType = 0;
             monster10->damage(self, monster10, 40, 0);
             if(monster10->health == 0){
                 monster10->isDead = 1;

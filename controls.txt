@@ -1,3 +1,6 @@
+Choose player attack type
+tab: cycle through attack type, shown on the hud
+
 1: spawns in a charmander enemy
 2: spawns in a kong enemy
 3: spawns in a porygon enemy
@@ -18,4 +21,5 @@ creeper: melee damage (pink highlight)
 finn:    ice damage (blue highlight)
 goomba:  magic damage (purple highlight)
 arlo:    bullet damage (orange highlight)
+
 

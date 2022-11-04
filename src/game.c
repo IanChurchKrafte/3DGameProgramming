@@ -21,6 +21,15 @@
 #include "entity.h"
 #include "agumon.h"
 #include "monster1.h"
+#include "monster2_kong.h"
+#include "monster3_porygon.h"
+#include "monster4_skelly.h"
+#include "monster5_mario.h"
+#include "monster6_yoshi.h"
+#include "monster7_creeper.h"
+#include "monster8_finn.h"
+#include "monster9_goomba.h"
+#include "monster10_arlo.h"
 #include "player.h"
 #include "world.h"
 
@@ -38,11 +47,11 @@ int main(int argc,char *argv[])
     float mouseFrame = 0;
     World *w;
     //Entity *agu;
-    //Entity *charmander;
+    Entity *charmander, *kong, *porygon, *skelly, *mario, *yoshi, *creeper, *finn, *goomba, *arlo;
     //Particle particle[100];
     Matrix4 skyMat;
     Model *sky;
-
+    
     for (a = 1; a < argc;a++)
     {
         if (strcmp(argv[a],"--debug") == 0)
@@ -70,6 +79,20 @@ int main(int argc,char *argv[])
     //if (agu)agu->selected = 1;
     //charmander = monster1_new(vector3d(15,0,-20));
     //if (charmander)charmander->selected = 1;
+    
+    //spawn in sample characters
+    charmander = monster1_new(vector3d(-40, -35, -20));
+    kong = monster2_kong_new(vector3d(-40, -27, -20));
+    porygon = monster3_porygon_new(vector3d(-40, -20, -20));
+    skelly = monster4_skelly_new(vector3d(-40, -13, -20));
+    mario = monster5_mario_new(vector3d(-40, -6, -20));
+    yoshi = monster6_yoshi_new(vector3d(-40, 1, -20));
+    creeper = monster7_creeper_new(vector3d(-40, 8, -20));
+    finn = monster8_finn_new(vector3d(-40, 15, -20));
+    goomba = monster9_goomba_new(vector3d(-40, 22, -20));
+    arlo = monster10_arlo_new(vector3d(-40, 30, -20));
+    Entity *entList[10] = {charmander, kong, porygon, skelly, mario, yoshi, creeper, finn, goomba, arlo};
+
 
     w = world_load("config/world.json");
     
@@ -132,10 +155,30 @@ int main(int argc,char *argv[])
                 */
             //2D draws
                 //setting up ui to be drawn
-                char ui[32];
+                char ui[64];
+                char attack[7];
                 unsigned short points = self->points;
                 unsigned short health = self->health;
-                sprintf(ui, "Points: %hi     Health: %hi", points, health);
+                int attackType = self->attackType;
+                //slog("attack: %i", attackType);
+                switch(attackType){
+                    case 0:
+                        strncpy(attack, "bullet", 7);
+                        break;
+                    case 1:
+                        strncpy(attack, "fire", 7);
+                        break;
+                    case 2:
+                        strncpy(attack, "melee", 7);
+                        break;
+                    case 3:
+                        strncpy(attack, "magic", 7);
+                        break;
+                    case 4:
+                        strncpy(attack, "ice", 7);
+                        break;
+                }
+                sprintf(ui, "Points: %hi     Health: %hi     Attack: %s", points, health, attack);
                 
 
                 gf2d_draw_rect_filled(gfc_rect(10 ,10,1000,32),gfc_color8(128,128,128,255));
@@ -162,7 +205,10 @@ int main(int argc,char *argv[])
         //currentTime = SDL_GetTicks();
         //slog("Time Elapsed: %u", currentTime-lastTime);
     }    
-    
+    //free sample entities
+    for(int i=0; i<10; i++){
+        entity_free(entList[i]);
+    }
     world_delete(w);
     
     vkDeviceWaitIdle(gf3d_vgraphics_get_default_logical_device());    

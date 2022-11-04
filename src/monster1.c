@@ -34,10 +34,10 @@ Entity *monster1_new(Vector3D position){
     //ent->color = gfc_color(1,1,1,1);
     ent->model=gf3d_model_load("models/monster1_charmander.model");
     //Vector3D scale = (5.0,5.0,5.0);
-    ent->scale = vector3d(2.5,2.5,2.5);
+    ent->scale = vector3d(2,2,2);
     ent->think = monster1_think;
     ent->update = monster1_update;
-    ent->damage = monster1_damage;
+    ent->damage = entity_damage;
     ent->onDeath = entity_onDeath;//monster1_onDeath;
     //ent->rotation.x+=1.5;
     vector3d_copy(ent->position,position);
