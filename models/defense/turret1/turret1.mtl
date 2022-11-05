@@ -1,0 +1,13 @@
+# Blender 3.3.1 MTL File: 'None'
+# www.blender.org
+
+newmtl blinn1SG
+Ns 0.000000
+Ka 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 1
+map_Kd Sci Fi AA Turret-Obj/Turret_Color.jpg
+map_Ks Sci Fi AA Turret-Obj/Turret_Reflection.jpg
+map_Bump Sci Fi AA Turret-Obj/Turret_Normal.jpg -bm 1

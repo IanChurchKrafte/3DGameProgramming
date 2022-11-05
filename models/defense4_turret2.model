@@ -1,0 +1,7 @@
+{
+    "model":
+    {
+        "model":"models/defense/turret2/turret2.obj",
+        "texture":"models/defense/turret2/turret2.jpg"
+    }
+}

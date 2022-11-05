@@ -97,7 +97,7 @@ Uint8 collision_box_to_plane_z_down(Box b, Plane3D plane){
         //slog("distance: %f", distance);
     }
     if(abs(distance) <= 1.0){
-        slog("hit collision in z_down! distance: %f", distance);
+        //slog("hit collision in z_down! distance: %f", distance);
         return 0;
     }
     return 1;

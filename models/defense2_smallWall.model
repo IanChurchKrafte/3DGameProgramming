@@ -1,0 +1,7 @@
+{
+    "model":
+    {
+        "model":"models/defense/wall/smallWall.obj",
+        "texture":"models/defense/wall/smallWall.png"
+    }
+}

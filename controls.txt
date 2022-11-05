@@ -1,5 +1,14 @@
 Choose player attack type
 tab: cycle through attack type, shown on the hud
+bullets: 15 damage
+fire: 25 damage
+ice: 25 damage
+magic: 35 damage
+melee: 10 damage
+
+controls:
+wasd to move
+LSHIFT to sprint
 
 1: spawns in a charmander enemy
 2: spawns in a kong enemy
@@ -13,6 +22,7 @@ tab: cycle through attack type, shown on the hud
 0: spawns in a arlo dino enemy
 LSHIFT + num: that enemy takes damage (3 hits and they are dead)
 
+
 Receive 10 points on a hit and 50 on a kill
 
 ENEMY RESISTANCES (1/2 damage applied)
@@ -21,5 +31,4 @@ creeper: melee damage (pink highlight)
 finn:    ice damage (blue highlight)
 goomba:  magic damage (purple highlight)
 arlo:    bullet damage (orange highlight)
-
 

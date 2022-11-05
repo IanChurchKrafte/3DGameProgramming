@@ -1,9 +1,10 @@
 
 #include "simple_logger.h"
 #include "monster7_creeper.h"
+#include "collision.h"
 
 
-void monster7_creeper_update(Entity *self);
+void monster7_creeper_update(Entity *self, Vector3D playerPos);
 
 void monster7_creeper_think(Entity *self);
 
@@ -42,7 +43,7 @@ Entity *monster7_creeper_new(Vector3D position)
     return ent;
 }
 
-void monster7_creeper_update(Entity *self)
+void monster7_creeper_update(Entity *self, Vector3D playerPos)
 {
     if (!self)
     {
@@ -50,7 +51,20 @@ void monster7_creeper_update(Entity *self)
         return;
     }
     vector3d_add(self->position,self->position,self->velocity);
+    
+    self->bounds.x = self->position.x;
+    self->bounds.y = self->position.y;
+    self->bounds.z = self->position.z;
+    self->bounds.w = 10;
+    self->bounds.h = 10;
+    self->bounds.d = 10;
+    
     self->rotation.z += 0.01;
+    Box centerBox = gfc_box(0,0,-25, 10,10,10);
+    Plane3D bottomPlane = gfc_plane3d(0,0,-25,25);
+    if(collision_box_to_plane_z_down(self->bounds, bottomPlane) && !gfc_box_overlap(self->bounds, centerBox)){ //check for collison on gound and center box
+        self->position.z -=1;
+    }
 }
 
 void monster7_creeper_think(Entity *self)

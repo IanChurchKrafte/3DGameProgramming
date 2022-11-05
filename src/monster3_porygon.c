@@ -48,6 +48,14 @@ void monster3_porygon_update(Entity *self)
         return;
     }
     vector3d_add(self->position,self->position,self->velocity);
+    
+    self->bounds.x = self->position.x;
+    self->bounds.y = self->position.y;
+    self->bounds.z = self->position.z;
+    self->bounds.w = 10;
+    self->bounds.h = 10;
+    self->bounds.d = 10;
+    
     self->rotation.z += 0.01;
 }
 

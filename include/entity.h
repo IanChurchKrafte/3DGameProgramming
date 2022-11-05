@@ -10,9 +10,9 @@
 typedef enum
 {
     ES_idle = 0,
-    ES_hunt,
-    ES_dead,
-    ES_attack
+    ES_hunt = 1,
+    ES_dead = 2,
+    ES_attack = 3
 }EntityState;
 
 typedef enum
@@ -39,7 +39,7 @@ typedef struct Entity_S
     int         clips;  // if false, skip collisions
 
     void       (*think)(struct Entity_S *self); /**<pointer to the think function*/
-    void       (*update)(struct Entity_S *self); /**<pointer to the update function*/
+    void       (*update)(struct Entity_S *self, Vector3D playerPos); /**<pointer to the update function*/
     void       (*draw)(struct Entity_S *self); /**<pointer to an optional extra draw funciton*/
     void       (*damage)(struct Entity_S *inflictor, struct Entity_S *self, int damage, int heal); /**<pointer to the damage function*/
     //void       (*damage)(struct Entity_S *self, float damage, struct Entity_S *inflictor); /**<pointer to the think function*/
@@ -61,6 +61,9 @@ typedef struct Entity_S
     int                 isDead;
     EntityResistance    resistance;
     EntityResistance    attackType;
+    int                 attackDamage;
+    Vector3D            playerPosition; //for the enemies to be able to face the player
+
     //for jumping
     float       startPosition;
     Uint32      isJumping;
@@ -114,8 +117,9 @@ void entity_think_all();
 
 /**
  * @brief run the update functions for ALL active entities
+ * @param playerPos the position of the player
  */
-void entity_update_all();
+void entity_update_all(Vector3D playerPos);
 
 /**
  * @brief run damage function in this entity

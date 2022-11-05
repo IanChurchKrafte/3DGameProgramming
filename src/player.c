@@ -13,7 +13,15 @@
 #include "monster8_finn.h"
 #include "monster9_goomba.h"
 #include "monster10_arlo.h"
+#include "slowGoo.h"
+#include "defense1_smallFence.h"
+#include "defense2_smallWall.h"
+#include "defense3_turret1.h"
+#include "defense4_turret2.h"
+#include "defense5_turret3.h"
 #include "collision.h"
+#include "gf2d_sprite.h"
+#include "gf2d_draw.h"
 
 #include "gfc_primitives.h"
 //#include "gfc_vector.h"
@@ -24,9 +32,10 @@
 
 static int thirdPersonMode = 0;
 int points = 0;
+Entity *slowGoo;
 Entity *monster1, *monster2, *monster3, *monster4, *monster5, *monster6, *monster7, *monster8, *monster9, *monster10;
 void player_think(Entity *self);
-void player_update(Entity *self);
+void player_update(Entity *self, Vector3D playerPos);
 void player_damage(int damage, Entity *self, int heal, Entity *inflictor);
 void player_death(Entity *self);
 bool jump(Entity *self, clock_t startTime, bool isJumping, bool midJump);
@@ -392,7 +401,7 @@ void player_think(Entity *self)
     //when pressing LSHIFT and the number it will make that entity take damage
     if(keys[SDL_SCANCODE_1] && keys[SDL_SCANCODE_LSHIFT]){
         if(monster1){
-            monster1->damage(self, monster1, 40, 0);
+            monster1->damage(self, monster1, self->attackDamage, 0);
             if(monster1->health == 0){
                 monster1->isDead = 1;
             }
@@ -409,7 +418,7 @@ void player_think(Entity *self)
     }
     if(keys[SDL_SCANCODE_2] && keys[SDL_SCANCODE_LSHIFT]){
         if(monster2){
-            monster2->damage(self, monster2, 40, 0);
+            monster2->damage(self, monster2, self->attackDamage, 0);
             if(monster2->health == 0){
                 monster2->isDead = 1;
             }
@@ -427,7 +436,7 @@ void player_think(Entity *self)
     }
     if(keys[SDL_SCANCODE_3] && keys[SDL_SCANCODE_LSHIFT]){
         if(monster3){
-            monster3->damage(self, monster3, 40, 0);
+            monster3->damage(self, monster3, self->attackDamage, 0);
             if(monster3->health == 0){
                 monster3->isDead = 1;
             }
@@ -439,7 +448,7 @@ void player_think(Entity *self)
     }
     if(keys[SDL_SCANCODE_4] && keys[SDL_SCANCODE_LSHIFT]){
         if(monster4){
-            monster4->damage(self, monster4, 40, 0);
+            monster4->damage(self, monster4, self->attackDamage, 0);
             if(monster4->health == 0){
                 monster4->isDead = 1;
             }
@@ -460,7 +469,7 @@ void player_think(Entity *self)
     } //monster1->onDeath(monster1);
     if(keys[SDL_SCANCODE_5] && keys[SDL_SCANCODE_LSHIFT]){
         if(monster5){
-            monster5->damage(self, monster5, 40, 0);
+            monster5->damage(self, monster5, self->attackDamage, 0);
             if(monster5->health == 0){
                 monster5->isDead = 1;
             }
@@ -475,7 +484,7 @@ void player_think(Entity *self)
     if(keys[SDL_SCANCODE_6] && keys[SDL_SCANCODE_LSHIFT]){
         if(monster6){
             //self->attackType = 1;
-            monster6->damage(self, monster6, 40, 0);
+            monster6->damage(self, monster6, self->attackDamage, 0);
             if(monster6->health == 0){
                 monster6->isDead = 1;
             }
@@ -490,7 +499,7 @@ void player_think(Entity *self)
     if(keys[SDL_SCANCODE_7] && keys[SDL_SCANCODE_LSHIFT]){
         if(monster7){
             //self->attackType = 2;
-            monster7->damage(self, monster7, 40, 0);
+            monster7->damage(self, monster7, self->attackDamage, 0);
             if(monster7->health == 0){
                 monster7->isDead = 1;
             }
@@ -503,7 +512,7 @@ void player_think(Entity *self)
     if(keys[SDL_SCANCODE_8] && keys[SDL_SCANCODE_LSHIFT]){
         if(monster8){
             //self->attackType = 4;
-            monster8->damage(self, monster8, 40, 0);
+            monster8->damage(self, monster8, self->attackDamage, 0);
             if(monster8->health == 0){
                 monster8->isDead = 1;
             }
@@ -516,7 +525,7 @@ void player_think(Entity *self)
     if(keys[SDL_SCANCODE_9] && keys[SDL_SCANCODE_LSHIFT]){
         if(monster9){
             //self->attackType = 3;
-            monster9->damage(self, monster9, 40, 0);
+            monster9->damage(self, monster9, self->attackDamage, 0);
             if(monster9->health == 0){
                 monster9->isDead = 1;
             }
@@ -529,15 +538,37 @@ void player_think(Entity *self)
     if(keys[SDL_SCANCODE_0] && keys[SDL_SCANCODE_LSHIFT]){
         if(monster10){
             //self->attackType = 0;
-            monster10->damage(self, monster10, 40, 0);
+            monster10->damage(self, monster10, self->attackDamage, 0);
             if(monster10->health == 0){
                 monster10->isDead = 1;
             }
         }
     }
+
+    if(keys[SDL_SCANCODE_Q]){
+        slowGoo = slowGoo_new(self->position);
+        //slowGoo = gf2d_sprite_load("images/splatter/bg_flat.png",32,32,1);
+        //gf2d_sprite_draw(slowGoo, vector2d(self->position.x, self->position.y), vector2d(1,1), vector3d(0,0,0), gfc_color(0.1, 0.8, 0.1, 0.8), 1);
+    }
+
+    if(keys[SDL_SCANCODE_E]){
+        defense1_smallFence_new(vector3d(self->position.x, self->position.y, self->position.z - 5), self->rotation);
+    }
+    if(keys[SDL_SCANCODE_R]){
+        defense2_smallWall_new(vector3d(self->position.x, self->position.y, self->position.z - 5), self->rotation);
+    }
+    if(keys[SDL_SCANCODE_T]){
+        defense3_turret1_new(vector3d(self->position.x, self->position.y, self->position.z - 5), self->rotation);
+    }
+    if(keys[SDL_SCANCODE_Y]){
+        defense4_turret2_new(vector3d(self->position.x, self->position.y, self->position.z - 5), self->rotation);
+    }
+    if(keys[SDL_SCANCODE_U]){
+        defense5_turret3_new(vector3d(self->position.x, self->position.y, self->position.z - 5), self->rotation);
+    }
 }
 
-void player_update(Entity *self)
+void player_update(Entity *self, Vector3D playerPos)
 {
     //update bounds
     self->bounds.x = self->position.x;
@@ -549,8 +580,9 @@ void player_update(Entity *self)
     Vector3D rotation;
     Vector2D w;
 
-    //set bounding for center box
+    //set bounding for center box and ground
     Box centerBox = gfc_box(0,0,-25, 10,10,10);
+    Plane3D bottomPlane = gfc_plane3d(0,0,-25,25);
     
     if (!self)return;
     
@@ -606,6 +638,41 @@ void player_update(Entity *self)
     if(self->health == 0){
         self->onDeath(self);
     }
+
+    /*
+    update damage based on attack
+    R_bullet = 15 damage
+    R_fire = 30 damage
+    R_ice = 25 damage
+    R_magic = 35 damage
+    R_melee = 10 damage
+    */
+   switch(self->attackType){
+        case R_bullet:
+            self->attackDamage = 15;
+            break;
+        case R_fire:
+            self->attackDamage = 25;
+            break;
+        case R_ice:
+            self->attackDamage = 25;
+            break;
+        case R_magic:
+            self->attackDamage = 30;
+            break;
+        case R_melee:
+            self->attackDamage = 10;
+            break;
+   }
+    
+    if(collision_box_to_plane_z_down(self->bounds, bottomPlane)){
+        if(!gfc_box_overlap(self->bounds, centerBox)){
+            if(!(self->isJumping || self->isDescending)){
+                self->position.z -= 1;
+            }
+        }
+        
+    }
 }
 
 void player_damage(int damage, Entity *self, int heal, Entity *inflictor){
@@ -624,8 +691,10 @@ void player_damage(int damage, Entity *self, int heal, Entity *inflictor){
 void player_death(Entity *self){
     //remove player entity
     //show you died text like dark souls
-    //repspawn player or send to main menu
+    //respawn player or send to main menu
 }
+
+
 
 // bool jump(Entity *self, clock_t startTime, bool isJumping, bool midJump){
 //     do{

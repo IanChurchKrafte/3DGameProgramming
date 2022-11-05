@@ -81,16 +81,16 @@ int main(int argc,char *argv[])
     //if (charmander)charmander->selected = 1;
     
     //spawn in sample characters
-    charmander = monster1_new(vector3d(-40, -35, -20));
-    kong = monster2_kong_new(vector3d(-40, -27, -20));
-    porygon = monster3_porygon_new(vector3d(-40, -20, -20));
-    skelly = monster4_skelly_new(vector3d(-40, -13, -20));
-    mario = monster5_mario_new(vector3d(-40, -6, -20));
-    yoshi = monster6_yoshi_new(vector3d(-40, 1, -20));
+    // charmander = monster1_new(vector3d(-40, -35, -20));
+    // kong = monster2_kong_new(vector3d(-40, -27, -20));
+    // porygon = monster3_porygon_new(vector3d(-40, -20, -20));
+    // skelly = monster4_skelly_new(vector3d(-40, -13, -20));
+    // mario = monster5_mario_new(vector3d(-40, -6, -20));
+    // yoshi = monster6_yoshi_new(vector3d(-40, 1, -20));
     creeper = monster7_creeper_new(vector3d(-40, 8, -20));
-    finn = monster8_finn_new(vector3d(-40, 15, -20));
-    goomba = monster9_goomba_new(vector3d(-40, 22, -20));
-    arlo = monster10_arlo_new(vector3d(-40, 30, -20));
+    // finn = monster8_finn_new(vector3d(-40, 15, -20));
+    // goomba = monster9_goomba_new(vector3d(-40, 22, -20));
+    // arlo = monster10_arlo_new(vector3d(-40, 30, -20));
     Entity *entList[10] = {charmander, kong, porygon, skelly, mario, yoshi, creeper, finn, goomba, arlo};
 
 
@@ -99,7 +99,7 @@ int main(int argc,char *argv[])
     SDL_SetRelativeMouseMode(SDL_TRUE);
     slog_sync();
     gf3d_camera_set_scale(vector3d(1,1,1));
-    Entity* self = player_new(vector3d(-30,0,-20));
+    Entity* player = player_new(vector3d(-30,0,-20));
     //player_new(vector3d(10,10,0));
     
     /*
@@ -136,7 +136,7 @@ int main(int argc,char *argv[])
         if (mouseFrame >= 16)mouseFrame = 0;
         world_run_updates(w);
         entity_think_all();
-        entity_update_all();
+        entity_update_all(player->position);
         gf3d_camera_update_view();
         gf3d_camera_get_view_mat4(gf3d_vgraphics_get_view_matrix());
 
@@ -157,9 +157,10 @@ int main(int argc,char *argv[])
                 //setting up ui to be drawn
                 char ui[64];
                 char attack[7];
-                unsigned short points = self->points;
-                unsigned short health = self->health;
-                int attackType = self->attackType;
+                unsigned short points = player->points;
+                unsigned short health = player->health;
+                unsigned short damage = player->attackDamage;
+                int attackType = player->attackType;
                 //slog("attack: %i", attackType);
                 switch(attackType){
                     case 0:
@@ -178,7 +179,7 @@ int main(int argc,char *argv[])
                         strncpy(attack, "ice", 7);
                         break;
                 }
-                sprintf(ui, "Points: %hi     Health: %hi     Attack: %s", points, health, attack);
+                sprintf(ui, "Points: %hi     Health: %hi     Attack: %s    Damage: %hi", points, health, attack, damage);
                 
 
                 gf2d_draw_rect_filled(gfc_rect(10 ,10,1000,32),gfc_color8(128,128,128,255));
@@ -206,9 +207,11 @@ int main(int argc,char *argv[])
         //slog("Time Elapsed: %u", currentTime-lastTime);
     }    
     //free sample entities
-    for(int i=0; i<10; i++){
-        entity_free(entList[i]);
-    }
+    // for(int i=0; i<10; i++){
+    //     if(entList[i])
+    //         entity_free(entList[i]);
+    // }
+    entity_free(creeper);
     world_delete(w);
     
     vkDeviceWaitIdle(gf3d_vgraphics_get_default_logical_device());    

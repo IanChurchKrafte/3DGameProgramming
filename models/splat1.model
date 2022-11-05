@@ -1,0 +1,7 @@
+{
+    "model":
+    {
+        "model":"models/splatter/splat/splat1.obj",
+        "texture":"models/splatter/splat/Splat_01.png"
+    }
+}

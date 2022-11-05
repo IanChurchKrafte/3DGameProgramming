@@ -1,0 +1,7 @@
+{
+    "model":
+    {
+        "model":"models/defense/fence/smallFence.obj",
+        "texture":"models/defense/fence/smallFence.jpg"
+    }
+}
