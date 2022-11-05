@@ -10,6 +10,7 @@ controls:
 wasd to move
 LSHIFT to sprint
 
+Spawn enemies:
 1: spawns in a charmander enemy
 2: spawns in a kong enemy
 3: spawns in a porygon enemy
@@ -22,6 +23,15 @@ LSHIFT to sprint
 0: spawns in a arlo dino enemy
 LSHIFT + num: that enemy takes damage (3 hits and they are dead)
 
+Spawn Defenses:
+E: spawns a fence
+R: spawns a wall
+T: spawns turret1
+Y: spawns turret2
+U: spawns turret3
+LALT + "E,R,T,Y,U" changes the upgrade level
+(Eventually will cost points)
+
 
 Receive 10 points on a hit and 50 on a kill
 
@@ -31,4 +41,19 @@ creeper: melee damage (pink highlight)
 finn:    ice damage (blue highlight)
 goomba:  magic damage (purple highlight)
 arlo:    bullet damage (orange highlight)
+
+Upgrades for the defensive structures (BASE, T1, T2, T3):
+Colors:
+	BASE: White
+	T1:   Green
+	T2:   Blue
+	T3:   Red
+For walls:
+	T1: original health is doubled
+	T2: T1 health is doubled
+	T3: T2 health is tripled (will be very expensive though)
+For turrets:
+	T1: original health is doubled and damage will be 1.5x original damage
+	T2: original health is tripled and damage will be T1 damage 1.5x
+	T3: original health is quadrupled and damage will be T2 damage 2x
 

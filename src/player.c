@@ -33,9 +33,12 @@
 static int thirdPersonMode = 0;
 int points = 0;
 Entity *slowGoo;
+Entity *fence, *wall, *turret1, *turret2, *turret3;
+//Entity *defenseList;
+int defenseCount = 0; //to keep track of how many defense has spawned for collision
 Entity *monster1, *monster2, *monster3, *monster4, *monster5, *monster6, *monster7, *monster8, *monster9, *monster10;
 void player_think(Entity *self);
-void player_update(Entity *self, Vector3D playerPos);
+void player_update(Entity *self, Entity *player);
 void player_damage(int damage, Entity *self, int heal, Entity *inflictor);
 void player_death(Entity *self);
 bool jump(Entity *self, clock_t startTime, bool isJumping, bool midJump);
@@ -61,8 +64,8 @@ Entity *player_new(Vector3D position)
     ent->bounds.y = position.y;
     ent->bounds.z = position.z;
     ent->bounds.h = 10.0;
-    ent->bounds.w = 10.0;
-    ent->bounds.d = 10.0;
+    ent->bounds.w = 5.0;
+    ent->bounds.d = 5.0;
     ent->rotation.x = -GFC_PI;
     ent->rotation.z = -GFC_HALF_PI;
     //ent->hidden = 1;
@@ -404,6 +407,7 @@ void player_think(Entity *self)
             monster1->damage(self, monster1, self->attackDamage, 0);
             if(monster1->health == 0){
                 monster1->isDead = 1;
+                monster1 = NULL;
             }
         }
     }
@@ -421,6 +425,7 @@ void player_think(Entity *self)
             monster2->damage(self, monster2, self->attackDamage, 0);
             if(monster2->health == 0){
                 monster2->isDead = 1;
+                monster2 = NULL;
             }
         }
     }
@@ -439,6 +444,7 @@ void player_think(Entity *self)
             monster3->damage(self, monster3, self->attackDamage, 0);
             if(monster3->health == 0){
                 monster3->isDead = 1;
+                monster3 = NULL;
             }
         }
     }
@@ -451,6 +457,7 @@ void player_think(Entity *self)
             monster4->damage(self, monster4, self->attackDamage, 0);
             if(monster4->health == 0){
                 monster4->isDead = 1;
+                monster4 = NULL;
             }
         }
     }
@@ -472,6 +479,7 @@ void player_think(Entity *self)
             monster5->damage(self, monster5, self->attackDamage, 0);
             if(monster5->health == 0){
                 monster5->isDead = 1;
+                monster5 = NULL;
             }
         }
     }
@@ -487,6 +495,7 @@ void player_think(Entity *self)
             monster6->damage(self, monster6, self->attackDamage, 0);
             if(monster6->health == 0){
                 monster6->isDead = 1;
+                monster6 = NULL;
             }
         }
         else
@@ -502,6 +511,7 @@ void player_think(Entity *self)
             monster7->damage(self, monster7, self->attackDamage, 0);
             if(monster7->health == 0){
                 monster7->isDead = 1;
+                monster7 = NULL;
             }
         }
     }
@@ -515,6 +525,7 @@ void player_think(Entity *self)
             monster8->damage(self, monster8, self->attackDamage, 0);
             if(monster8->health == 0){
                 monster8->isDead = 1;
+                monster8 = NULL;
             }
         }
     }
@@ -528,6 +539,7 @@ void player_think(Entity *self)
             monster9->damage(self, monster9, self->attackDamage, 0);
             if(monster9->health == 0){
                 monster9->isDead = 1;
+                monster9 = NULL;
             }
         }
     }
@@ -541,6 +553,7 @@ void player_think(Entity *self)
             monster10->damage(self, monster10, self->attackDamage, 0);
             if(monster10->health == 0){
                 monster10->isDead = 1;
+                monster10 = NULL;
             }
         }
     }
@@ -551,25 +564,100 @@ void player_think(Entity *self)
         //gf2d_sprite_draw(slowGoo, vector2d(self->position.x, self->position.y), vector2d(1,1), vector3d(0,0,0), gfc_color(0.1, 0.8, 0.1, 0.8), 1);
     }
 
-    if(keys[SDL_SCANCODE_E]){
-        defense1_smallFence_new(vector3d(self->position.x, self->position.y, self->position.z - 5), self->rotation);
+    if(keys[SDL_SCANCODE_E] && !keys[SDL_SCANCODE_LALT]){
+        fence = defense1_smallFence_new(vector3d(self->position.x, self->position.y, self->position.z - 5), self->rotation);
+        fence->state = ES_BASE;
+        //defenseList[defenseCount] = *fence;
+        //self->defenseBounds[0] = gfc_box(1,1,1,1,1,1);
+        //slog("%d", self->defenseBounds[0]);
+        self->defenseBounds[defenseCount] = fence->bounds;
+        defenseCount++;
+        self->defenseCount = defenseCount;
+        
+        //self->defenseList = defenseList;
     }
-    if(keys[SDL_SCANCODE_R]){
-        defense2_smallWall_new(vector3d(self->position.x, self->position.y, self->position.z - 5), self->rotation);
+    if(keys[SDL_SCANCODE_E] && keys[SDL_SCANCODE_LALT]){
+        if(fence){
+            fence->state += 1;
+            if(fence->state >= 8){
+                fence->state = 4;
+            }
+            fence->stateSwitched = 1;
+        }
     }
-    if(keys[SDL_SCANCODE_T]){
-        defense3_turret1_new(vector3d(self->position.x, self->position.y, self->position.z - 5), self->rotation);
+    if(keys[SDL_SCANCODE_R] && !keys[SDL_SCANCODE_LALT]){
+        wall = defense2_smallWall_new(vector3d(self->position.x, self->position.y, self->position.z - 5), self->rotation);
+        //defenseList[defenseCount] = *wall;
+        self->defenseBounds[defenseCount] = wall->bounds;
+        self->defenseCount = defenseCount;
+        defenseCount++;
+        //self->defenseList = defenseList;
     }
-    if(keys[SDL_SCANCODE_Y]){
-        defense4_turret2_new(vector3d(self->position.x, self->position.y, self->position.z - 5), self->rotation);
+    if(keys[SDL_SCANCODE_R] && keys[SDL_SCANCODE_LALT]){
+        if(wall){
+            wall->state += 1;
+            if(wall->state >= 8){
+                wall->state = 4;
+            }
+            wall->stateSwitched = 1;
+        }
     }
-    if(keys[SDL_SCANCODE_U]){
-        defense5_turret3_new(vector3d(self->position.x, self->position.y, self->position.z - 5), self->rotation);
+    if(keys[SDL_SCANCODE_T] && !keys[SDL_SCANCODE_LALT]){
+        turret1 = defense3_turret1_new(vector3d(self->position.x, self->position.y, self->position.z - 5), self->rotation);
+        //defenseList[defenseCount] = *turret1;
+        self->defenseBounds[defenseCount] = turret1->bounds;
+        self->defenseCount = defenseCount;
+        defenseCount++;
+        //self->defenseList = defenseList;
+    }
+    if(keys[SDL_SCANCODE_T] && keys[SDL_SCANCODE_LALT]){
+        if(turret1){
+            turret1->state += 1;
+            if(turret1->state >= 8){
+                turret1->state = 4;
+            }
+            turret1->stateSwitched = 1;
+        }
+    }
+    if(keys[SDL_SCANCODE_Y] && !keys[SDL_SCANCODE_LALT]){
+        turret2 =defense4_turret2_new(vector3d(self->position.x, self->position.y, self->position.z - 5), self->rotation);
+        //defenseList[defenseCount] = *turret2;
+        self->defenseBounds[defenseCount] = turret2->bounds;
+        self->defenseCount = defenseCount;
+        defenseCount++;
+        //self->defenseList = defenseList;
+    }
+    if(keys[SDL_SCANCODE_E] && keys[SDL_SCANCODE_LALT]){
+        if(turret2){
+            turret2->state += 1;
+            if(turret2->state >= 8){
+                turret2->state = 4;
+            }
+            turret2->stateSwitched = 1;
+        }
+    }
+    if(keys[SDL_SCANCODE_U] && !keys[SDL_SCANCODE_LALT]){
+        turret3 = defense5_turret3_new(vector3d(self->position.x, self->position.y, self->position.z - 5), self->rotation);
+        //defenseList[defenseCount] = *turret3;
+        self->defenseBounds[defenseCount] = turret3->bounds;
+        self->defenseCount = defenseCount;
+        defenseCount++;
+    }
+    if(keys[SDL_SCANCODE_E] && keys[SDL_SCANCODE_LALT]){
+        if(turret3){
+            turret3->state += 1;
+            if(turret3->state >= 8){
+                turret3->state = 4;
+            }
+            turret3->stateSwitched = 1;
+        }
     }
 }
 
-void player_update(Entity *self, Vector3D playerPos)
+void player_update(Entity *self, Entity *player)//needed player twice to stop a warning
 {
+    //updating all entites here instead of game.c so I can pass the defenseList to the enemies for collision
+    //entity_update_all(player, defenseList, defenseCount);
     //update bounds
     self->bounds.x = self->position.x;
     self->bounds.y = self->position.y;

@@ -4,9 +4,14 @@
 #include "gfc_types.h"
 
 
-void defense5_turret3_update(Entity *self, Vector3D playerPos);
+void defense5_turret3_update(Entity *self, Entity *player);
 
 void defense5_turret3_think(Entity *self);
+
+void defense5_turret3_BASE_upgrade(Entity *self);
+void defense5_turret3_T1_upgrade(Entity *self);
+void defense5_turret3_T2_upgrade(Entity *self);
+void defense5_turret3_T3_upgrade(Entity *self);
 
 Entity *defense5_turret3_new(Vector3D position, Vector3D rotation)
 {
@@ -36,15 +41,16 @@ Entity *defense5_turret3_new(Vector3D position, Vector3D rotation)
     ent->bounds.h = 10;
     ent->bounds.d = 5;
 
-    ent->health = 100;
+    defense5_turret3_BASE_upgrade(ent);
+    //ent->health = 100;
     //slog("%f", rotation.z);
-    ent->rotation.z = rotation.z + 1.57; //rotate 90 degrees so it spawns perpendicular to where the player is looking
+    ent->rotation.z = rotation.z + (M_PI); //rotate 90 degrees so it spawns perpendicular to where the player is looking
     //ent->rotation.y = rotation.y;
     return ent;
     ent->selectedColor = gfc_color(1, 0.5, 0, 0.9);
 }
 
-void defense5_turret3_update(Entity *self, Vector3D playerPos)
+void defense5_turret3_update(Entity *self, Entity *player)
 {
     if (!self)
     {
@@ -62,21 +68,68 @@ void defense5_turret3_update(Entity *self, Vector3D playerPos)
 void defense5_turret3_think(Entity *self)
 {
     if (!self)return;
-    switch(self->state)
-    {
-        case ES_idle:
-            //look for player
-            break;
-        case ES_hunt:
-            // set move towards player
-            break;
-        case ES_dead:
-            // remove myself from the system
-            break;
-        case ES_attack:
-            // run through attack animation / deal damage
-            break;
+    if(self->stateSwitched){
+        switch(self->state)
+        {
+            case ES_idle:
+                break;
+            case ES_hunt:
+                break;
+            case ES_dead:
+                break;
+            case ES_attack:
+                break;
+
+            case ES_BASE:
+                defense5_turret3_BASE_upgrade(self);
+                self->stateSwitched = 0;
+                break;
+            case ES_T1:
+                defense5_turret3_T1_upgrade(self);
+                self->stateSwitched = 0; //so it can fail next check unless player wants to upgrade it
+                break;
+            case ES_T2:
+                defense5_turret3_T2_upgrade(self);
+                self->stateSwitched = 0;
+                break;
+            case ES_T3:
+                defense5_turret3_T3_upgrade(self);
+                self->stateSwitched = 0;
+                break;
+        }
     }
+}
+
+//for the fence and wall upgrading will only give more health for the enemies to break through
+void defense5_turret3_BASE_upgrade(Entity *self){
+    self->health = 100;
+    self->attackDamage = 10;
+    self->attackType = R_bullet;
+    self->selectedColor = gfc_color(1,1,1,1);
+    self->selected = 1;
+}
+void defense5_turret3_T1_upgrade(Entity *self){
+    self->health = 100*2;
+    self->attackDamage = 10 * 1.5;
+    self->selectedColor = gfc_color(0, 1, 0, 0.8);
+    self->selected = 1;
+    slog("T1 upgrade");
+}
+
+void defense5_turret3_T2_upgrade(Entity *self){
+    self->health = 100*3;
+    self->attackDamage = self->attackDamage * 1.5;
+    self->selectedColor = gfc_color(0, 0.5, 1, 0.8);
+    self->selected = 1;
+    slog("T2 upgrade");
+}
+
+void defense5_turret3_T3_upgrade(Entity *self){
+    self->health = 100*4;
+    self->attackDamage = self->attackDamage * 2;
+    self->selectedColor = gfc_color(1, 0, 0, 0.8);
+    self->selected = 1;
+    slog("T3 upgrade");
 }
 
 /*eol@eof*/

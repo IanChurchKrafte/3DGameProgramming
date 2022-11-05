@@ -118,7 +118,7 @@ void entity_think_all()
 }
 
 
-void entity_update(Entity *self, Vector3D playerPos)
+void entity_update(Entity *self, Entity *player)
 {
     if (!self)return;
     // HANDLE ALL COMMON UPDATE STUFF
@@ -132,10 +132,10 @@ void entity_update(Entity *self, Vector3D playerPos)
     gfc_matrix_rotate_by_vector(self->modelMat,self->modelMat,self->rotation);
     gfc_matrix_translate(self->modelMat,self->position);
     
-    if (self->update)self->update(self, playerPos);
+    if (self->update)self->update(self, player);
 }
 
-void entity_update_all(Vector3D playerPos)
+void entity_update_all(Entity *player)
 {
     int i;
     for (i = 0; i < entity_manager.entity_count; i++)
@@ -144,7 +144,7 @@ void entity_update_all(Vector3D playerPos)
         {
             continue;// skip this iteration of the loop
         }
-        entity_update(&entity_manager.entity_list[i], playerPos);
+        entity_update(&entity_manager.entity_list[i], player);
     }
 }
 

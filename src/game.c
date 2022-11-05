@@ -123,7 +123,7 @@ int main(int argc,char *argv[])
     slog("gf3d main loop begin");
     //char* point = 100+'0';
     //char point[32] = "Points: ";
-    
+    //Entity *defenseList;
     while(!done)
     {
         
@@ -136,7 +136,8 @@ int main(int argc,char *argv[])
         if (mouseFrame >= 16)mouseFrame = 0;
         world_run_updates(w);
         entity_think_all();
-        entity_update_all(player->position);
+        //player_update(player, player);
+        entity_update_all(player);
         gf3d_camera_update_view();
         gf3d_camera_get_view_mat4(gf3d_vgraphics_get_view_matrix());
 
