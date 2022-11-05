@@ -1,9 +1,10 @@
 
 #include "simple_logger.h"
 #include "monster5_mario.h"
+#include "collision.h"
 
 
-void monster5_mario_update(Entity *self);
+void monster5_mario_update(Entity *self, Entity *player);
 
 void monster5_mario_think(Entity *self);
 
@@ -32,15 +33,15 @@ Entity *monster5_mario_new(Vector3D position)
     ent->bounds.x = position.x;
     ent->bounds.y = position.y;
     ent->bounds.z = position.z;
-    ent->bounds.w = ent->scale.x+10;
-    ent->bounds.h = ent->scale.z+10;
-    ent->bounds.d = ent->scale.y+10;
+    ent->bounds.w = 10;
+    ent->bounds.h = 10;
+    ent->bounds.d = 10;
 
     ent->health = 100;
     return ent;
 }
 
-void monster5_mario_update(Entity *self)
+void monster5_mario_update(Entity *self, Entity *player)
 {
     if (!self)
     {
@@ -52,11 +53,14 @@ void monster5_mario_update(Entity *self)
     self->bounds.x = self->position.x;
     self->bounds.y = self->position.y;
     self->bounds.z = self->position.z;
-    self->bounds.w = 10;
-    self->bounds.h = 10;
-    self->bounds.d = 10;
+
+    Box centerBox = gfc_box(0,0,-25, 10,10,10);
+    Plane3D bottomPlane = gfc_plane3d(0,0,-25,25);
+    if(collision_box_to_plane_z_down(self->bounds, bottomPlane) && !gfc_box_overlap(self->bounds, centerBox)){ //check for collison on gound and center box
+        //self->position.z -=1;
+    }
     
-    self->rotation.z += 0.01;
+    //self->rotation.z += 0.01;
 }
 
 void monster5_mario_think(Entity *self)
@@ -75,6 +79,14 @@ void monster5_mario_think(Entity *self)
             break;
         case ES_attack:
             // run through attack animation / deal damage
+            break;
+        case ES_T1:
+            break;
+        case ES_T2:
+            break;
+        case ES_T3:
+            break;
+        case ES_BASE:
             break;
     }
 }

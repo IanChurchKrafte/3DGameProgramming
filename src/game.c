@@ -30,6 +30,11 @@
 #include "monster8_finn.h"
 #include "monster9_goomba.h"
 #include "monster10_arlo.h"
+#include "defense1_smallFence.h"
+#include "defense2_smallWall.h"
+#include "defense3_turret1.h"
+#include "defense4_turret2.h"
+#include "defense5_turret3.h"
 #include "player.h"
 #include "world.h"
 
@@ -48,6 +53,7 @@ int main(int argc,char *argv[])
     World *w;
     //Entity *agu;
     Entity *charmander, *kong, *porygon, *skelly, *mario, *yoshi, *creeper, *finn, *goomba, *arlo;
+    Entity *fence, *wall, *turret1, *turret2, *turret3;
     //Particle particle[100];
     Matrix4 skyMat;
     Model *sky;
@@ -79,19 +85,30 @@ int main(int argc,char *argv[])
     //if (agu)agu->selected = 1;
     //charmander = monster1_new(vector3d(15,0,-20));
     //if (charmander)charmander->selected = 1;
-    
+    //Vector3D default = vector3d(-3.0, 0, 0);
     //spawn in sample characters
-    // charmander = monster1_new(vector3d(-40, -35, -20));
-    // kong = monster2_kong_new(vector3d(-40, -27, -20));
-    // porygon = monster3_porygon_new(vector3d(-40, -20, -20));
-    // skelly = monster4_skelly_new(vector3d(-40, -13, -20));
-    // mario = monster5_mario_new(vector3d(-40, -6, -20));
-    // yoshi = monster6_yoshi_new(vector3d(-40, 1, -20));
-    creeper = monster7_creeper_new(vector3d(-40, 8, -20));
-    // finn = monster8_finn_new(vector3d(-40, 15, -20));
-    // goomba = monster9_goomba_new(vector3d(-40, 22, -20));
-    // arlo = monster10_arlo_new(vector3d(-40, 30, -20));
-    Entity *entList[10] = {charmander, kong, porygon, skelly, mario, yoshi, creeper, finn, goomba, arlo};
+    charmander = monster1_new(vector3d(-40, -35, -25));
+    kong = monster2_kong_new(vector3d(-40, -27, -26));
+    porygon = monster3_porygon_new(vector3d(-40, -20, -25));
+    skelly = monster4_skelly_new(vector3d(-40, -13, -25));
+    mario = monster5_mario_new(vector3d(-40, -6, -27));
+    yoshi = monster6_yoshi_new(vector3d(-40, 1, -27));
+    creeper = monster7_creeper_new(vector3d(-40, 8, -25));
+    finn = monster8_finn_new(vector3d(-40, 15, -24));
+    goomba = monster9_goomba_new(vector3d(-40, 22, -27));
+    arlo = monster10_arlo_new(vector3d(-40, 30, -25));
+    fence = defense1_smallFence_new(vector3d(-30, -40, -28), vector3d(-3.0, 0, 0));
+    fence->selected = 0;
+    wall = defense2_smallWall_new(vector3d(-15, -40, -28), vector3d(-3.0, 0, 0));
+    wall->selected = 0;
+    turret1 = defense3_turret1_new(vector3d(0, -40, -28), vector3d(-3.0, 0, 0));
+    turret1->selected = 0;
+    turret2 = defense4_turret2_new(vector3d(15, -40, -28), vector3d(-3.0, 0, 0));
+    turret2->selected = 0;
+    turret3 = defense5_turret3_new(vector3d(30, -40, -28), vector3d(-3.0, 0, 0));
+    turret3->selected = 0;
+    //list for easier freeing later
+    Entity *entList[15] = {charmander, kong, porygon, skelly, mario, yoshi, creeper, finn, goomba, arlo, fence, wall, turret1, turret2, turret3};
 
 
     w = world_load("config/world.json");
@@ -208,11 +225,11 @@ int main(int argc,char *argv[])
         //slog("Time Elapsed: %u", currentTime-lastTime);
     }    
     //free sample entities
-    // for(int i=0; i<10; i++){
-    //     if(entList[i])
-    //         entity_free(entList[i]);
-    // }
-    entity_free(creeper);
+    for(int i=0; i<10; i++){
+        if(entList[i])
+            entity_free(entList[i]);
+    }
+    //entity_free(creeper);
     world_delete(w);
     
     vkDeviceWaitIdle(gf3d_vgraphics_get_default_logical_device());    

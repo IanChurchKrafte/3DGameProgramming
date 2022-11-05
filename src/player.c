@@ -393,13 +393,15 @@ void player_think(Entity *self)
         thirdPersonMode = !thirdPersonMode;
         self->hidden = !self->hidden;
     }
-
+    if(keys[SDL_SCANCODE_V]){
+        slog("x: %f, y: %f, z: %f\n", self->rotation.x, self->rotation.y, self->rotation.z);
+    }
     //keys for spawning
     if (keys[SDL_SCANCODE_1] && !keys[SDL_SCANCODE_LSHIFT]){
-        printf("x: %f, y: %f, z: %f\n", self->position.x, self->position.y, self->position.z);
+        //printf("x: %f, y: %f, z: %f\n", self->position.x, self->position.y, self->position.z);
         //printf("\n");
-        //monster1 = monster1_new(vector3d(self->position.x, self->position.y, self->position.z));
-        //if(monster1) monster1->selected = 1;
+        monster1 = monster1_new(vector3d(self->position.x, self->position.y, self->position.z));
+        if(monster1) monster1->selected = 1;
     }
     //when pressing LSHIFT and the number it will make that entity take damage
     if(keys[SDL_SCANCODE_1] && keys[SDL_SCANCODE_LSHIFT]){
@@ -627,7 +629,7 @@ void player_think(Entity *self)
         defenseCount++;
         //self->defenseList = defenseList;
     }
-    if(keys[SDL_SCANCODE_E] && keys[SDL_SCANCODE_LALT]){
+    if(keys[SDL_SCANCODE_Y] && keys[SDL_SCANCODE_LALT]){
         if(turret2){
             turret2->state += 1;
             if(turret2->state >= 8){
@@ -643,7 +645,7 @@ void player_think(Entity *self)
         self->defenseCount = defenseCount;
         defenseCount++;
     }
-    if(keys[SDL_SCANCODE_E] && keys[SDL_SCANCODE_LALT]){
+    if(keys[SDL_SCANCODE_U] && keys[SDL_SCANCODE_LALT]){
         if(turret3){
             turret3->state += 1;
             if(turret3->state >= 8){
@@ -690,7 +692,7 @@ void player_update(Entity *self, Entity *player)//needed player twice to stop a 
 
     if(self->isJumping){
         //slog("in jumping");
-        if(self->position.z - self->startPosition <= 7.5){//jump height
+        if(self->position.z - self->startPosition <= 10){//jump height
             self->position.z += 1.5;
         }
         else{
@@ -703,7 +705,7 @@ void player_update(Entity *self, Entity *player)//needed player twice to stop a 
         //slog("%f", self->startPosition - self->position.z);
         if(self->position.z - self->startPosition >= 0){
             //slog("descending");
-            if(!gfc_box_overlap(self->bounds, centerBox)){
+            if(!gfc_box_overlap(self->bounds, centerBox) && collision_box_to_plane_z_down(self->bounds, bottomPlane)){
                 self->position.z -= 1.5;
             }
             else{

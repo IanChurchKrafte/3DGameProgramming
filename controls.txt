@@ -1,3 +1,54 @@
+DELIVERABLES
+Common Deliverables:
+	UI Elements reflecting in game information ✅
+		- points, health, attack type, and damage on the UI
+	Functioning Entity System ✅
+		- Entities can be spawned, damaged, and die (freed)
+	Basic Collision Detection ** ✅
+		- collision with all 4 walls and ceiling and floor
+		- some collision on center box but still pretty glitchy
+	Basic User Controls ✅
+		- player can move with WASD like a normal game
+		- player can sprint when going forward
+		- player can jump
+	A contained game world ✅
+		- can't leave the starting box
+Personal Deliverables:
+	variety of 10 enemy types ✅
+		- 10 different monster types, mostly models I found that were funny or had the right files online
+		- 5 don't move yet
+		- 5 move towards wherever the player is and stop at collision with both bounding boxes
+		- charmander, kong, porygon, skelleton, mario, yoshi, creeper, finn, goomba, arlo
+	5 player mechanics to defend against the waves ✅
+		- the player has 5 different attacks they can use which do different damage
+		- can only attack the entities that were manually spawned in
+		- still have to figure out how to raycast from the player to select an entity to damage
+		- attacks: fire, ice, bullet, magic, melee
+	5 defensive structures that can be built ✅
+		- 2 walls and 3 turrets can be built
+		- small wood fence and brick wall
+		- big bullet turret
+		- big fire turret
+		- small bullet turret
+		- monsters will get stuck behind the walls and stop chasing the players
+		- I want to implement that they can do damage and destroy the walls but I have to figure out how to pass the wall entity to the one doing damage.
+		- Bug: If another wall gets placed they will ignore the first wall and only act as if the second one exists
+	3 levels of upgrade for the structures ✅
+		- 3 Levels of upgrade (T1, T2, T3, and Base)
+		- upgrading the walls gives them more health
+		- upgrading the turrets gives more health and more damage
+		- T1: green highlight
+		- T2: blue highlight
+		- T3: red highlight
+		- Base: white highlight (default starting state)
+	5 strengths for the monsters (ex: one has armor and takes less bullet damage) ✅
+		- 5 of the monsters are resistent to 1 type of attack
+		- Yoshi: fire
+		- Creeper: melee
+		- Finn: ice
+		- Goomba: magic
+		- Arlo: bullet
+
 Choose player attack type
 tab: cycle through attack type, shown on the hud
 bullets: 15 damage
@@ -56,4 +107,7 @@ For turrets:
 	T1: original health is doubled and damage will be 1.5x original damage
 	T2: original health is tripled and damage will be T1 damage 1.5x
 	T3: original health is quadrupled and damage will be T2 damage 2x
+
+
+
 
