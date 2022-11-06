@@ -12,7 +12,7 @@ this is the first enemy
 
 #include "collision.h"
 
-void monster1_update(Entity *self);
+void monster1_update(Entity *self, Entity* player);
 void monster1_think(Entity *self);
 void monster1_damage(int damage, Entity *self, int heal, Entity *inflictor);
 void monster1_onDeath(Entity *self);
@@ -53,7 +53,7 @@ Entity *monster1_new(Vector3D position){
     return ent;
 }
 
-void monster1_update(Entity *self){
+void monster1_update(Entity *self, Entity *player){
     if (!self)
     {
         slog("self pointer not provided");
@@ -64,6 +64,11 @@ void monster1_update(Entity *self){
     self->bounds.x = self->position.x;
     self->bounds.y = self->position.y;
     self->bounds.z = self->position.z;
+
+    Vector2D facingVec;
+    vector2d_sub(facingVec, player->position, self->position);
+    float rotate = atan2(facingVec.y, facingVec.x);
+    self->rotation.z = rotate + M_PI;
 
     Box centerBox = gfc_box(0,0,-25, 10,10,10);
     Plane3D bottomPlane = gfc_plane3d(0,0,-25,25);

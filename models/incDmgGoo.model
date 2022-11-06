@@ -1,0 +1,7 @@
+{
+    "model":
+    {
+        "model":"models/splatter/incDmgGoo/incDmgGoo.obj",
+        "texture":"models/splatter/incDmgGoo/incDmgGoo.png"
+    }
+}

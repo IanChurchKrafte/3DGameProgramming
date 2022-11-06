@@ -64,6 +64,11 @@ void monster10_arlo_update(Entity *self, Entity *player)
         self->position.z -=1;
     }
 
+    Vector2D facingVec;
+    vector2d_sub(facingVec, player->position, self->position);
+    float rotate = atan2(facingVec.y, facingVec.x);
+    self->rotation.z = rotate + M_PI;
+
     Vector2D *selfPos = NULL;
     Vector2D vect = vector2d(self->position.x, self->position.y);
     selfPos = &vect;
@@ -72,7 +77,7 @@ void monster10_arlo_update(Entity *self, Entity *player)
         //slog("not colliding with player");
         //add entity list for entities spawn in by the player
         if(player->defenseCount == 0){
-            slog("no defenses found");
+            //slog("no defenses found");
             vector2d_move_towards(selfPos, vector2d(self->position.x, self->position.y), playerPos, 0.5);
             self->position.x = selfPos->x;
             self->position.y = selfPos->y;

@@ -62,6 +62,7 @@ typedef struct Entity_S
     
     int         health;     /**<entity dies when it reaches zero*/
     // WHATEVER ELSE WE MIGHT NEED FOR ENTITIES
+    int                 isPlayer;
     Uint32              points;
     Uint32              currentTime;
     int                 isDead;

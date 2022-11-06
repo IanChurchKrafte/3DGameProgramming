@@ -1,19 +1,19 @@
 #include "simple_logger.h"
-#include "slowGoo.h"
+#include "dmgGoo.h"
 
-void slowGoo_update(Entity *self, Entity *player);
+void dmgGoo_update(Entity *self, Entity *player);
 
-Entity *slowGoo_new(Vector3D position){
+Entity *dmgGoo_new(Vector3D position){
     Entity *ent = NULL;
 
     ent = entity_new();
     if(!ent){
-        slog("cant spawn slowGoo");
+        slog("cant spawn dmgGoo");
         return NULL;
     }
 
-    ent->model = gf3d_model_load("models/slowGoo.model");
-    ent->update = slowGoo_update;
+    ent->model = gf3d_model_load("models/dmgGoo.model");
+    ent->update = dmgGoo_update;
     ent->scale = vector3d(1,1,1);
     ent->onDeath = entity_onDeath;
     position.z -= 5;
@@ -28,6 +28,6 @@ Entity *slowGoo_new(Vector3D position){
     return ent;
 }
 
-void slowGoo_update(Entity *self, Entity *player){
+void dmgGoo_update(Entity *self, Entity *player){
     return;
 }

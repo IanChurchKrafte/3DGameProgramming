@@ -158,7 +158,7 @@ void entity_damage(Entity *inflictor, Entity *self, int damage, int heal){
     if(!self) return;
     if(!inflictor) return;
     if(heal == 0){//damage entity not heal
-        if(self->resistance == inflictor->attackType){ //check if entity resistance is the same as the attack, if so lower the damage by half
+        if(self->resistance == inflictor->attackType && inflictor->isPlayer == 1){ //check if entity resistance is the same as the attack, if so lower the damage by half
             damage = damage/2;
             slog("half damage");
         }

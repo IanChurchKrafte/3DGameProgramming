@@ -1,0 +1,7 @@
+{
+    "model":
+    {
+        "model":"models/splatter/slowGoo/slowGoo.obj",
+        "texture":"models/splatter/slowGoo/slowGoo.png"
+    }
+}

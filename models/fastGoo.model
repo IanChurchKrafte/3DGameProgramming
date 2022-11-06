@@ -1,0 +1,7 @@
+{
+    "model":
+    {
+        "model":"models/splatter/fastGoo/fastGoo.obj",
+        "texture":"models/splatter/fastGoo/fastGoo.png"
+    }
+}

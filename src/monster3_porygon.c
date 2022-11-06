@@ -53,7 +53,12 @@ void monster3_porygon_update(Entity *self, Entity *player)
     self->bounds.x = self->position.x;
     self->bounds.y = self->position.y;
     self->bounds.z = self->position.z;
-    
+
+    Vector2D facingVec;
+    vector2d_sub(facingVec, player->position, self->position);
+    float rotate = atan2(facingVec.y, facingVec.x);
+    self->rotation.z = rotate + M_PI;
+
     Box centerBox = gfc_box(0,0,-25, 10,10,10);
     Plane3D bottomPlane = gfc_plane3d(0,0,-25,25);
     if(collision_box_to_plane_z_down(self->bounds, bottomPlane) && !gfc_box_overlap(self->bounds, centerBox)){ //check for collison on gound and center box

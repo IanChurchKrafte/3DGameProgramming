@@ -24,6 +24,8 @@ Personal Deliverables:
 		- can only attack the entities that were manually spawned in
 		- still have to figure out how to raycast from the player to select an entity to damage
 		- attacks: fire, ice, bullet, magic, melee
+		- player can also spawn a goo entity on the ground that has different effects
+		- slow, fast, deal damage, heal, increase damage
 	5 defensive structures that can be built ✅
 		- 2 walls and 3 turrets can be built
 		- small wood fence and brick wall
@@ -56,6 +58,13 @@ fire: 25 damage
 ice: 25 damage
 magic: 35 damage
 melee: 10 damage
+
+Player can spawn a goo on the ground to help
+V: slow goo - slows down entities inside
+B: fast goo - speeds up entities inside
+N: damage goo - entities inside will take damage
+M: heal goo - player will heal inside
+,: increase damage goo - player will have increased damage while inside
 
 controls:
 wasd to move

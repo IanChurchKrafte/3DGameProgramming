@@ -1,0 +1,7 @@
+{
+    "model":
+    {
+        "model":"models/splatter/healGoo/healGoo.obj",
+        "texture":"models/splatter/healGoo/healGoo.png"
+    }
+}

@@ -69,18 +69,11 @@ void monster7_creeper_update(Entity *self, Entity *player)
         //self->position.z -=1;
     }
     //trying to get it to rotate towards the player since im already moving in that direction
-    Vector3D monsterRotation = self->rotation;
-    Vector3D playerRotation = player->position;
     Vector2D facingVec;
     vector2d_sub(facingVec, player->position, self->position);
     float rotate = atan2(facingVec.y, facingVec.x);
     self->rotation.z = rotate + M_PI;
-    // float monsterMag = vector3d_magnitude(monsterRotation);
-    // float playerMag = vector3d_magnitude(playerRotation);
-    // float cos = vector3d_dot_product(monsterRotation, playerRotation) / (monsterMag * playerMag);
-    // float angle = acos(cos);
-    // slog("%f, %f", monsterMag, angle);
-    // self->rotation.z += angle;
+
     Vector2D *selfPos = NULL;
     Vector2D vect = vector2d(self->position.x, self->position.y);
     selfPos = &vect;
@@ -89,7 +82,7 @@ void monster7_creeper_update(Entity *self, Entity *player)
         //slog("not colliding with player");
         //add entity list for entities spawn in by the player
         if(player->defenseCount == 0){
-            slog("no defenses found");
+            //slog("no defenses found");
             vector2d_move_towards(selfPos, vector2d(self->position.x, self->position.y), playerPos, 0.5);
             self->position.x = selfPos->x;
             self->position.y = selfPos->y;
