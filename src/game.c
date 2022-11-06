@@ -92,11 +92,11 @@ int main(int argc,char *argv[])
     porygon = monster3_porygon_new(vector3d(-40, -20, -25));
     skelly = monster4_skelly_new(vector3d(-40, -13, -25));
     mario = monster5_mario_new(vector3d(-40, -6, -27));
-    yoshi = monster6_yoshi_new(vector3d(-40, 1, -27));
+    // yoshi = monster6_yoshi_new(vector3d(-40, 1, -27));
     creeper = monster7_creeper_new(vector3d(-40, 8, -25));
-    finn = monster8_finn_new(vector3d(-40, 15, -24));
-    goomba = monster9_goomba_new(vector3d(-40, 22, -27));
-    arlo = monster10_arlo_new(vector3d(-40, 30, -25));
+    // finn = monster8_finn_new(vector3d(-40, 15, -24));
+    // goomba = monster9_goomba_new(vector3d(-40, 22, -27));
+    // arlo = monster10_arlo_new(vector3d(-40, 30, -25));
     fence = defense1_smallFence_new(vector3d(-30, -40, -28), vector3d(-3.0, 0, 0));
     fence->selected = 0;
     wall = defense2_smallWall_new(vector3d(-15, -40, -28), vector3d(-3.0, 0, 0));

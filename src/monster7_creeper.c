@@ -3,6 +3,7 @@
 #include "monster7_creeper.h"
 #include "collision.h"
 #include "gfc_vector.h"
+#include "math.h"
 
 
 void monster7_creeper_update(Entity *self, Entity *player);
@@ -28,6 +29,8 @@ Entity *monster7_creeper_new(Vector3D position)
     ent->damage = entity_damage;
     ent->onDeath = entity_onDeath;
     position.z -= 2;
+    ent->rotation.z = 0.1;
+    //ent->rotation.x = 1.5;
     vector3d_copy(ent->position,position);
 
     ent->bounds.x = position.x;
@@ -65,7 +68,19 @@ void monster7_creeper_update(Entity *self, Entity *player)
     if(collision_box_to_plane_z_down(self->bounds, bottomPlane) && !gfc_box_overlap(self->bounds, centerBox)){ //check for collison on gound and center box
         //self->position.z -=1;
     }
-
+    //trying to get it to rotate towards the player since im already moving in that direction
+    Vector3D monsterRotation = self->rotation;
+    Vector3D playerRotation = player->position;
+    Vector2D facingVec;
+    vector2d_sub(facingVec, player->position, self->position);
+    float rotate = atan2(facingVec.y, facingVec.x);
+    self->rotation.z = rotate + M_PI;
+    // float monsterMag = vector3d_magnitude(monsterRotation);
+    // float playerMag = vector3d_magnitude(playerRotation);
+    // float cos = vector3d_dot_product(monsterRotation, playerRotation) / (monsterMag * playerMag);
+    // float angle = acos(cos);
+    // slog("%f, %f", monsterMag, angle);
+    // self->rotation.z += angle;
     Vector2D *selfPos = NULL;
     Vector2D vect = vector2d(self->position.x, self->position.y);
     selfPos = &vect;
