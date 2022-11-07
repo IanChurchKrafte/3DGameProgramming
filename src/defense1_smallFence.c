@@ -44,7 +44,7 @@ Entity *defense1_smallFence_new(Vector3D position, Vector3D rotation)
 
     defense1_smallFence_BASE_upgrade(ent);
     //ent->health = 150;
-
+    ent->type = ET_wall;
     ent->rotation.z = rotation.z + (M_PI/2.0); //rotate 90 degrees so it spawns perpendicular to where the player is looking
 
     ent->stateSwitched = 0;

@@ -25,6 +25,8 @@ Entity *fastGoo_new(Vector3D position){
     ent->bounds.w = 10;
     ent->bounds.d = 10;
 
+    ent->type = ET_goo;
+
     return ent;
 }
 

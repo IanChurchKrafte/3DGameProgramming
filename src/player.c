@@ -42,24 +42,18 @@ do dmg check for dmg reduction
 #include <time.h>
 #include <inttypes.h>
 
-typedef struct
-{
-    Entity *entity_list;
-    Uint32  entity_count;
-    
-}EntityManager;
 
-static EntityManager entity_manager = {0};
-//entity_manager.entity_count = 0;
 int i=0;
 
+Entity *entityList[100];
 static int thirdPersonMode = 0;
 int points = 0;
 Entity *slowGoo = NULL, *fastGoo = NULL, *healGoo = NULL, *dmgGoo = NULL, *incDmgGoo = NULL;
 Entity *fence, *wall, *turret1, *turret2, *turret3;
 //Entity *defenseList;
 int defenseCount = 0; //to keep track of how many defense has spawned for collision
-Entity *monster1, *monster2, *monster3, *monster4, *monster5, *monster6, *monster7, *monster8, *monster9, *monster10;
+Entity *monster1 = NULL, *monster2 = NULL, *monster3 = NULL, *monster4 = NULL, *monster5 = NULL, 
+       *monster6 = NULL, *monster7 = NULL, *monster8 = NULL, *monster9 = NULL, *monster10 = NULL;
 void player_think(Entity *self);
 void player_update(Entity *self, Entity *player);
 void player_damage(int damage, Entity *self, int heal, Entity *inflictor);
@@ -99,14 +93,16 @@ Entity *player_new(Vector3D position)
 
     ent->health = 100;
     ent->attackType = 0;
+    i=0;
     return ent;
 
-    entity_manager.entity_list = gfc_allocate_array(sizeof(Entity), 512);
+    //entity_manager.entity_list = gfc_allocate_array(sizeof(Entity), 512);
 }
 
 
 void player_think(Entity *self)
 {
+    int temp = i;
     //check if monster1 is dead, if so set it back to NULL
     if(monster1){
         if(monster1->isDead == 1){
@@ -123,10 +119,12 @@ void player_think(Entity *self)
     Box centerBox = gfc_box(0,0,-25, 10,10,10);
 
     Vector3D forward = {0};
+    Vector3D mForward = {0};
     Vector3D right = {0};
+    Vector3D mRight = {0};
     Vector3D sprintForward = {0};
     //Vector3D sprintRight = {0};
-    Vector2D w,mouse;
+    Vector2D w,mouse, mW;
     int mx,my;
     SDL_GetRelativeMouseState(&mx,&my);
     const Uint8 * keys;
@@ -141,47 +139,124 @@ void player_think(Entity *self)
     right.x = w.x;
     right.y = w.y;
 
-    if(fastGoo){
-        if(gfc_box_overlap(self->bounds, fastGoo->bounds)){
-            //increase speed
-            Vector3D temp = {0};
-            temp.x = 3;
-            temp.y = 3;
+    //check for goo effects, eventually make them work on entities
+    if(fastGoo != NULL || slowGoo != NULL){
+        for(int j=0; j<i; j++){
+            if(fastGoo && gfc_box_overlap(entityList[j]->bounds, fastGoo->bounds)){
+                Vector3D temp = {0};
+                temp.x = 3;
+                temp.y = 3;
 
-            forward = vector3d_multiply(forward, temp);    
-            right = vector3d_multiply(right, temp);    
-        }
-        else{
-            w = vector2d_from_angle(self->rotation.z);
-            forward.x = w.x;
-            forward.y = w.y;
+                mW = vector2d_from_angle(entityList[j]->rotation.z);
+                mForward.x = mW.x;
+                mForward.y = mW.y;
+                mForward = vector3d_multiply(mForward, temp); 
+                mW = vector2d_from_angle(entityList[j]->rotation.z - GFC_HALF_PI);
+                mRight.x = mW.x;
+                mRight.y = mW.y;
+                mRight = vector3d_multiply(mRight, temp);    
+            }
+            else if(slowGoo && gfc_box_overlap(entityList[j]->bounds, slowGoo->bounds)){
+                Vector3D temp = {0};
+                temp.x = 0.5;
+                temp.y = 0.5;
 
-            w = vector2d_from_angle(self->rotation.z - GFC_HALF_PI);
-            right.x = w.x;
-            right.y = w.y;
+                mW = vector2d_from_angle(entityList[j]->rotation.z);
+                mForward.x = mW.x;
+                mForward.y = mW.y;
+                mForward = vector3d_multiply(mForward, temp); 
+                mW = vector2d_from_angle(entityList[j]->rotation.z - GFC_HALF_PI);
+                mRight.x = mW.x;
+                mRight.y = mW.y;
+                mRight = vector3d_multiply(mRight, temp); 
+            }
+            if(fastGoo && gfc_box_overlap(self->bounds, fastGoo->bounds)){
+                Vector3D temp = {0};
+                temp.x = 3;
+                temp.y = 3;
+
+                w = vector2d_from_angle(self->rotation.z);
+                forward.x = w.x;
+                forward.y = w.y;
+                forward = vector3d_multiply(forward, temp); 
+                w = vector2d_from_angle(self->rotation.z - GFC_HALF_PI);
+                right.x = w.x;
+                right.y = w.y;
+                right = vector3d_multiply(right, temp);  
+            }
+            else if(slowGoo && gfc_box_overlap(self->bounds, slowGoo->bounds)){
+                Vector3D temp = {0};
+                temp.x = 0.5;
+                temp.y = 0.5;
+
+                w = vector2d_from_angle(self->rotation.z);
+                forward.x = w.x;
+                forward.y = w.y;
+                forward = vector3d_multiply(forward, temp); 
+                w = vector2d_from_angle(self->rotation.z - GFC_HALF_PI);
+                right.x = w.x;
+                right.y = w.y;
+                right = vector3d_multiply(right, temp);
+            }
+            else{
+                mW = vector2d_from_angle(entityList[j]->rotation.z);
+                mForward.x = mW.x;
+                mForward.y = mW.y;
+
+                w = vector2d_from_angle(entityList[j]->rotation.z - GFC_HALF_PI);
+                mRight.x = mW.x;
+                mRight.y = mW.y;
+            }
         }
     }
+    
 
-    if(slowGoo){
-        if(gfc_box_overlap(self->bounds, slowGoo->bounds)){
-            //increase speed
-            Vector3D temp = {0};
-            temp.x = 0.5;
-            temp.y = 0.5;
 
-            forward = vector3d_multiply(forward, temp);    
-            right = vector3d_multiply(right, temp);    
-        }
-        else{
-            w = vector2d_from_angle(self->rotation.z);
-            forward.x = w.x;
-            forward.y = w.y;
+    // if(slowGoo){
+    //     for(int j=0; j<i; j++){
+    //         if(gfc_box_overlap(entityList[j]->bounds, fastGoo->bounds)){
+    //             Vector3D temp = {0};
+    //             temp.x = 0.5;
+    //             temp.y = 0.5;
 
-            w = vector2d_from_angle(self->rotation.z - GFC_HALF_PI);
-            right.x = w.x;
-            right.y = w.y;
-        }   
-    }
+    //             mW = vector2d_from_angle(entityList[j]->rotation.z);
+    //             mForward.x = mW.x;
+    //             mForward.y = mW.y;
+    //             mForward = vector3d_multiply(forward, temp); 
+    //             mW = vector2d_from_angle(entityList[j]->rotation.z - GFC_HALF_PI);
+    //             mRight.x = mW.x;
+    //             mRight.y = mW.y;
+    //             mRight = vector3d_multiply(right, temp);    
+    //         }
+    //         else{
+    //             mW = vector2d_from_angle(entityList[j]->rotation.z);
+    //             mForward.x = mW.x;
+    //             forward.y = mW.y;
+
+    //             w = vector2d_from_angle(entityList[j]->rotation.z - GFC_HALF_PI);
+    //             mRight.x = mW.x;
+    //             mRight.y = mW.y;
+    //         }
+    //     }
+    //     if(gfc_box_overlap(self->bounds, slowGoo->bounds)){
+    //         //increase speed
+    //         Vector3D temp = {0};
+    //         temp.x = 0.5;
+    //         temp.y = 0.5;
+
+    //         forward = vector3d_multiply(forward, temp);    
+    //         right = vector3d_multiply(right, temp);    
+    //     }
+    //     else{
+    //         w = vector2d_from_angle(self->rotation.z);
+    //         forward.x = w.x;
+    //         forward.y = w.y;
+
+    //         w = vector2d_from_angle(self->rotation.z - GFC_HALF_PI);
+    //         right.x = w.x;
+    //         right.y = w.y;
+    //     }   
+    // }
 
     //Entity *monster1;
 
@@ -470,8 +545,10 @@ void player_think(Entity *self)
         //printf("\n");
         monster1 = monster1_new(vector3d(self->position.x, self->position.y, self->position.z));
         if(monster1){
-            monster1->selected = 1;
-            entity_manager.entity_list[i] = *monster1;
+            //monster1->selected = 1;
+            //entity_manager.entity_list[i] = monster1;
+            entityList[i] = monster1;
+            //slog("added monster to entity list");
             i++;
         }
     }
@@ -489,7 +566,9 @@ void player_think(Entity *self)
         monster2 = monster2_kong_new(vector3d(self->position.x, self->position.y, self->position.z));
         if(monster2){
             //monster1->selected = 1;
-            entity_manager.entity_list[i] = *monster1;
+            //entity_manager.entity_list[i] = *monster1;
+            entityList[i] = monster2;
+            //slog("added monster to entity list");
             i++;
         }
     }
@@ -505,7 +584,9 @@ void player_think(Entity *self)
     if (keys[SDL_SCANCODE_3] && !keys[SDL_SCANCODE_LSHIFT]){
         monster3 = monster3_porygon_new(vector3d(self->position.x, self->position.y, self->position.z));
         if(monster3){
-            entity_manager.entity_list[i] = *monster1;
+            //entity_manager.entity_list[i] = *monster1;
+            entityList[i] = monster3;
+            //slog("added monster to entity list");
             i++;
         }
     }
@@ -521,7 +602,9 @@ void player_think(Entity *self)
     if (keys[SDL_SCANCODE_4] && !keys[SDL_SCANCODE_LSHIFT]){
         monster4 = monster4_skelly_new(vector3d(self->position.x, self->position.y, self->position.z));
         if(monster4){
-            entity_manager.entity_list[i] = *monster1;
+            //entity_manager.entity_list[i] = *monster1;
+            entityList[i] = monster4;
+            //slog("added monster to entity list");
             i++;
         }
     }
@@ -537,7 +620,9 @@ void player_think(Entity *self)
     if (keys[SDL_SCANCODE_5] && !keys[SDL_SCANCODE_LSHIFT]){
         monster5 = monster5_mario_new(vector3d(self->position.x, self->position.y, self->position.z));
         if(monster5){
-            entity_manager.entity_list[i] = *monster1;
+            //entity_manager.entity_list[i] = *monster1;
+            entityList[i] = monster5;
+            //slog("added monster to entity list");
             i++;
         }
     } //monster1->onDeath(monster1);
@@ -553,7 +638,9 @@ void player_think(Entity *self)
     if(keys[SDL_SCANCODE_6] && !keys[SDL_SCANCODE_LSHIFT]){
         monster6 = monster6_yoshi_new(vector3d(self->position.x, self->position.y, self->position.z));
         if(monster6){
-            entity_manager.entity_list[i] = *monster1;
+            //entity_manager.entity_list[i] = *monster1;
+            entityList[i] = monster6;
+            //slog("added monster to entity list");
             i++;
         }
     }
@@ -572,7 +659,9 @@ void player_think(Entity *self)
     if(keys[SDL_SCANCODE_7] && !keys[SDL_SCANCODE_LSHIFT]){
         monster7 = monster7_creeper_new(vector3d(self->position.x, self->position.y, self->position.z));
         if(monster7){
-            entity_manager.entity_list[i] = *monster1;
+            //entity_manager.entity_list[i] = *monster1;
+            entityList[i] = monster7;
+            //slog("added monster to entity list");
             i++;
         }
     }
@@ -589,7 +678,9 @@ void player_think(Entity *self)
     if(keys[SDL_SCANCODE_8] && !keys[SDL_SCANCODE_LSHIFT]){
         monster8 = monster8_finn_new(vector3d(self->position.x, self->position.y, self->position.z));
         if(monster8){
-            entity_manager.entity_list[i] = *monster1;
+            //entity_manager.entity_list[i] = *monster1;
+            entityList[i] = monster8;
+            //slog("added monster to entity list");
             i++;
         }
     }
@@ -606,7 +697,9 @@ void player_think(Entity *self)
     if(keys[SDL_SCANCODE_9] && !keys[SDL_SCANCODE_LSHIFT]){
         monster9 = monster9_goomba_new(vector3d(self->position.x, self->position.y, self->position.z));
         if(monster9){
-            entity_manager.entity_list[i] = *monster1;
+            //entity_manager.entity_list[i] = *monster1;
+            entityList[i] = monster9;
+            //slog("added monster to entity list");
             i++;
         }
     }
@@ -623,7 +716,9 @@ void player_think(Entity *self)
     if(keys[SDL_SCANCODE_0] && !keys[SDL_SCANCODE_LSHIFT]){
         monster10 = monster10_arlo_new(vector3d(self->position.x, self->position.y, self->position.z));
         if(monster10){
-            entity_manager.entity_list[i] = *monster1;
+            //entity_manager.entity_list[i] = *monster1;
+            entityList[i] = monster10;
+            //slog("added monster to entity list");
             i++;
         }
     }
@@ -641,6 +736,11 @@ void player_think(Entity *self)
     if(keys[SDL_SCANCODE_E] && !keys[SDL_SCANCODE_LALT]){
         fence = defense1_smallFence_new(vector3d(self->position.x, self->position.y, self->position.z - 5), self->rotation);
         fence->state = ES_BASE;
+        if(fence){
+            entityList[i] = fence;
+            //slog("added monster to entity list");
+            i++;
+        }
         //defenseList[defenseCount] = *fence;
         //self->defenseBounds[0] = gfc_box(1,1,1,1,1,1);
         //slog("%d", self->defenseBounds[0]);
@@ -662,6 +762,11 @@ void player_think(Entity *self)
     if(keys[SDL_SCANCODE_R] && !keys[SDL_SCANCODE_LALT]){
         wall = defense2_smallWall_new(vector3d(self->position.x, self->position.y, self->position.z - 5), self->rotation);
         //defenseList[defenseCount] = *wall;
+        if(wall){
+            entityList[i] = wall;
+            //slog("added monster to entity list");
+            i++;
+        }
         self->defenseBounds[defenseCount] = wall->bounds;
         self->defenseCount = defenseCount;
         defenseCount++;
@@ -679,6 +784,11 @@ void player_think(Entity *self)
     if(keys[SDL_SCANCODE_T] && !keys[SDL_SCANCODE_LALT]){
         turret1 = defense3_turret1_new(vector3d(self->position.x, self->position.y, self->position.z - 5), self->rotation);
         //defenseList[defenseCount] = *turret1;
+        if(turret1){
+            entityList[i] = turret1;
+            //slog("added monster to entity list");
+            i++;
+        }
         self->defenseBounds[defenseCount] = turret1->bounds;
         self->defenseCount = defenseCount;
         defenseCount++;
@@ -696,6 +806,11 @@ void player_think(Entity *self)
     if(keys[SDL_SCANCODE_Y] && !keys[SDL_SCANCODE_LALT]){
         turret2 =defense4_turret2_new(vector3d(self->position.x, self->position.y, self->position.z - 5), self->rotation);
         //defenseList[defenseCount] = *turret2;
+        if(turret2){
+            entityList[i] = turret2;
+            //slog("added monster to entity list");
+            i++;
+        }
         self->defenseBounds[defenseCount] = turret2->bounds;
         self->defenseCount = defenseCount;
         defenseCount++;
@@ -713,6 +828,11 @@ void player_think(Entity *self)
     if(keys[SDL_SCANCODE_U] && !keys[SDL_SCANCODE_LALT]){
         turret3 = defense5_turret3_new(vector3d(self->position.x, self->position.y, self->position.z - 5), self->rotation);
         //defenseList[defenseCount] = *turret3;
+        if(turret3){
+            entityList[i] = turret3;
+            //slog("added monster to entity list");
+            i++;
+        }
         self->defenseBounds[defenseCount] = turret3->bounds;
         self->defenseCount = defenseCount;
         defenseCount++;
@@ -732,18 +852,45 @@ void player_think(Entity *self)
     //spawns for goo
     if(keys[SDL_SCANCODE_V]){
         slowGoo = slowGoo_new(self->position);
+        if(slowGoo){
+            entityList[i] = slowGoo;
+            //slog("added monster to entity list");
+            i++;
+        }
     }
     if(keys[SDL_SCANCODE_B]){
         fastGoo = fastGoo_new(self->position);
+        if(fastGoo){
+            entityList[i] = fastGoo;
+            //slog("added monster to entity list");
+            i++;
+        }
     }
     if(keys[SDL_SCANCODE_N]){
         dmgGoo = dmgGoo_new(self->position);
+        if(dmgGoo){
+            entityList[i] = dmgGoo;
+            //slog("added monster to entity list");
+            if(temp == i){
+                i++;
+            }
+        }
     }
     if(keys[SDL_SCANCODE_M]){
         healGoo = healGoo_new(self->position);
+        if(healGoo){
+            entityList[i] = healGoo;
+            //slog("added monster to entity list");
+            i++;
+        }
     }
     if(keys[SDL_SCANCODE_COMMA]){
         incDmgGoo = incDmgGoo_new(self->position);
+        if(incDmgGoo){
+            entityList[i] = incDmgGoo;
+            //slog("added monster to entity list");
+            i++;
+        }
     }
     
 }
@@ -857,12 +1004,22 @@ void player_update(Entity *self, Entity *player)//needed player twice to stop a 
     }
 
     //check for goo effects
+    int loopNum = 0;
     if(dmgGoo){
-        slog("dmgGoo exists");
-        if(gfc_box_overlap(self->bounds, dmgGoo->bounds)){
-            entity_damage(dmgGoo, self, 1, 0);
-            slog("trying to damage");
+        //slog("dmgGoo exists");
+        for(int j=0; j<i; j++){
+            //slog("j: %d, loop: %d", j, loopNum);
+            //slog("able to get in for");
+            if(entityList[j]->type == ET_goo){
+                continue;
+            }
+            if(gfc_box_overlap(entityList[j]->bounds, dmgGoo->bounds)){
+                //slog("trying to damage %i", j);
+                entity_damage(dmgGoo, entityList[j], 1, 0);
+                //slog("trying to damage %i", entityList[j]->health);
+            }
         }
+
     }
     if(healGoo){
         if(gfc_box_overlap(self->bounds, healGoo->bounds)){
@@ -874,6 +1031,15 @@ void player_update(Entity *self, Entity *player)//needed player twice to stop a 
             self->attackDamage *= 2;
         }
     }
+
+
+    //pass entity list into player entity so monsters can see it
+    // for(int j=0; j<i; j++){
+    //     switch(entityList[j]->type){
+    //         case ET_monster:
+    //     }
+
+    // }
 }
 
 void player_damage(int damage, Entity *self, int heal, Entity *inflictor){

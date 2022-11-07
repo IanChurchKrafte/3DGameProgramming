@@ -38,6 +38,8 @@ Entity *monster3_porygon_new(Vector3D position)
 
     ent->health = 100;
     
+    ent->type = ET_monster;
+
     return ent;
 }
 

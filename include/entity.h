@@ -30,6 +30,15 @@ typedef enum
     R_ice = 4
 }EntityResistance;
 
+typedef enum
+{
+    ET_monster = 0,
+    ET_wall = 1,
+    ET_turret = 2,
+    ET_goo = 3
+}EntityType;
+
+
 typedef struct Entity_S
 {
     Uint8       _inuse;     /**<keeps track of memory usage*/
@@ -75,6 +84,7 @@ typedef struct Entity_S
     int                 defenseCount;
     int                 behindWall; //1 if behind wall (start to damage wall), 0 if not
     int                 stateSwitched;
+    EntityType          type;
 
     //for jumping
     float       startPosition;

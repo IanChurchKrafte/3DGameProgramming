@@ -41,6 +41,8 @@ Entity *defense4_turret2_new(Vector3D position, Vector3D rotation)
     ent->bounds.h = 10;
     ent->bounds.d = 5;
 
+    ent->type = ET_turret;
+
     defense4_turret2_BASE_upgrade(ent);
     //ent->health = 200;
     //slog("%f", rotation.z);

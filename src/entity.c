@@ -166,7 +166,9 @@ void entity_damage(Entity *inflictor, Entity *self, int damage, int heal){
         //slog("temp: %i, health: %i, damage: %i", temp, self->health, damage);
         if(temp<0) temp = 0;
         if(temp == 0){
-            self->onDeath(self);
+            if(self->isPlayer == 0){
+                self->onDeath(self);
+            }
             inflictor->points+=60; //50 for a kill +10 for the hit that had to happend to get the kill
         }
         else{
