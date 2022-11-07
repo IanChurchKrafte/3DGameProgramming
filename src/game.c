@@ -52,8 +52,9 @@ int main(int argc,char *argv[])
     float mouseFrame = 0;
     World *w;
     //Entity *agu;
-    Entity *charmander, *kong, *porygon, *skelly, *mario, *yoshi, *creeper, *finn, *goomba, *arlo;
-    Entity *fence, *wall, *turret1, *turret2, *turret3;
+    Entity *charmander = NULL, *kong = NULL, *porygon = NULL, *skelly = NULL, 
+           *mario = NULL, *yoshi = NULL, *creeper = NULL, *finn = NULL, *goomba = NULL, *arlo = NULL;
+    Entity *fence = NULL, *wall = NULL, *turret1 = NULL, *turret2 = NULL, *turret3 = NULL;
     //Particle particle[100];
     Matrix4 skyMat;
     Model *sky;
@@ -226,7 +227,7 @@ int main(int argc,char *argv[])
     }    
     //free sample entities
     for(int i=0; i<10; i++){
-        if(entList[i])
+        if(entList[i] != NULL)
             entity_free(entList[i]);
     }
     //entity_free(creeper);

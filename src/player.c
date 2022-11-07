@@ -1019,7 +1019,9 @@ void player_update(Entity *self, Entity *player)//needed player twice to stop a 
                 //slog("trying to damage %i", entityList[j]->health);
             }
         }
-
+        if(gfc_box_overlap(self->bounds, dmgGoo->bounds)){
+            entity_damage(dmgGoo, self, 1, 0);
+        }
     }
     if(healGoo){
         if(gfc_box_overlap(self->bounds, healGoo->bounds)){
