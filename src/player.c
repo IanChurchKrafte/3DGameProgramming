@@ -211,53 +211,6 @@ void player_think(Entity *self)
     }
     
 
-
-    // if(slowGoo){
-    //     for(int j=0; j<i; j++){
-    //         if(gfc_box_overlap(entityList[j]->bounds, fastGoo->bounds)){
-    //             Vector3D temp = {0};
-    //             temp.x = 0.5;
-    //             temp.y = 0.5;
-
-    //             mW = vector2d_from_angle(entityList[j]->rotation.z);
-    //             mForward.x = mW.x;
-    //             mForward.y = mW.y;
-    //             mForward = vector3d_multiply(forward, temp); 
-    //             mW = vector2d_from_angle(entityList[j]->rotation.z - GFC_HALF_PI);
-    //             mRight.x = mW.x;
-    //             mRight.y = mW.y;
-    //             mRight = vector3d_multiply(right, temp);    
-    //         }
-    //         else{
-    //             mW = vector2d_from_angle(entityList[j]->rotation.z);
-    //             mForward.x = mW.x;
-    //             forward.y = mW.y;
-
-    //             w = vector2d_from_angle(entityList[j]->rotation.z - GFC_HALF_PI);
-    //             mRight.x = mW.x;
-    //             mRight.y = mW.y;
-    //         }
-    //     }
-    //     if(gfc_box_overlap(self->bounds, slowGoo->bounds)){
-    //         //increase speed
-    //         Vector3D temp = {0};
-    //         temp.x = 0.5;
-    //         temp.y = 0.5;
-
-    //         forward = vector3d_multiply(forward, temp);    
-    //         right = vector3d_multiply(right, temp);    
-    //     }
-    //     else{
-    //         w = vector2d_from_angle(self->rotation.z);
-    //         forward.x = w.x;
-    //         forward.y = w.y;
-
-    //         w = vector2d_from_angle(self->rotation.z - GFC_HALF_PI);
-    //         right.x = w.x;
-    //         right.y = w.y;
-    //     }   
-    // }
-
     //Entity *monster1;
 
     //for checking for lag
@@ -1004,7 +957,6 @@ void player_update(Entity *self, Entity *player)//needed player twice to stop a 
     }
 
     //check for goo effects
-    int loopNum = 0;
     if(dmgGoo){
         //slog("dmgGoo exists");
         for(int j=0; j<i; j++){
@@ -1063,22 +1015,4 @@ void player_death(Entity *self){
     //respawn player or send to main menu
 }
 
-
-
-// bool jump(Entity *self, clock_t startTime, bool isJumping, bool midJump){
-//     do{
-//         printf("elapsed time: %ld, currentTime: %d, startTime: %ld\n", self->currentTime - startTime, self->currentTime, startTime);
-//         if(startTime - self->currentTime >= .50 && midJump == false){//go up
-//             self->position.z += 5;
-//             return midJump = true;
-//         }
-//         else{//go down
-//             self->position.z -= 5;
-//             isJumping = false;
-//             return isJumping;
-//         }
-       
-//     }
-//     while(isJumping);
-// }
 /*eol@eof*/
