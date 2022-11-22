@@ -7,6 +7,8 @@ do dmg check for dmg reduction
 */
 
 #include "simple_logger.h"
+#include "simple_json.h"
+#include "simple_json_object.h"
 #include "gfc_types.h"
 
 #include "gf3d_camera.h"
@@ -32,6 +34,8 @@ do dmg check for dmg reduction
 #include "defense4_turret2.h"
 #include "defense5_turret3.h"
 #include "collision.h"
+#include "saveGame.h"
+
 #include "gf2d_sprite.h"
 #include "gf2d_draw.h"
 
@@ -45,7 +49,7 @@ do dmg check for dmg reduction
 
 int i=0;
 
-Entity *entityList[100];
+Entity *entityList[512];
 static int thirdPersonMode = 0;
 int points = 0;
 Entity *slowGoo = NULL, *fastGoo = NULL, *healGoo = NULL, *dmgGoo = NULL, *incDmgGoo = NULL;
@@ -129,7 +133,9 @@ void player_think(Entity *self)
     SDL_GetRelativeMouseState(&mx,&my);
     const Uint8 * keys;
     keys = SDL_GetKeyboardState(NULL); // get the keyboard state for this frame
-
+    //const Uint8 *mouseButton;
+    SDL_Event testEvent;
+    
     mouse.x = mx;
     mouse.y = my;
     w = vector2d_from_angle(self->rotation.z);
@@ -799,8 +805,26 @@ void player_think(Entity *self)
             turret3->stateSwitched = 1;
         }
     }
+    while(SDL_PollEvent(&testEvent) > 0){
+        slog("in SDL_PollEvent");
+        //slog("%s", testEvent.type);
+        switch (testEvent.type){
+            case SDL_MOUSEBUTTONDOWN:
+                if(testEvent.button.button == SDL_BUTTON_LEFT)
+                    slog("button down");
+                break;
+            case SDL_MOUSEBUTTONUP:
+                slog("button up");
+                break;
+        }
+    }
+
+    // int lClick = 0;
     // if(SDL_BUTTON(2)){
-    //     slog("mouse button pressed");
+    //     if (lClick == 0){
+    //         slog("mouse button pressed");
+    //         lClick = 1;
+    //     }
     // }
     //spawns for goo
     if(keys[SDL_SCANCODE_V]){
@@ -843,6 +867,303 @@ void player_think(Entity *self)
             entityList[i] = incDmgGoo;
             //slog("added monster to entity list");
             i++;
+        }
+    }
+
+    //save game
+    if(keys[SDL_SCANCODE_Q] && !keys[SDL_SCANCODE_LSHIFT]){//test save
+        //test json stuff
+        SJson *body = sj_object_new();
+        SJson *playerEnt = sj_object_new();
+        playerSave(self, playerEnt);
+        sj_object_insert(body, "playerInfo", playerEnt);
+        for(int j=0; j<i; j++){ //loop through entity list, entityList[j]
+            SJson *entity = sj_object_new();
+            slog("pre save rotation x: %f, y: %f, z: %f", entityList[j]->rotation.x, entityList[j]->rotation.y, entityList[j]->rotation.z);
+            // sj_object_insert(entity, "entityType", sj_new_int(entityList[j]->type));
+            // sj_object_insert(entity, "entityNum", sj_new_int(entityList[j]->entityNum));
+            // sj_object_insert(entity, "isPLayer", sj_new_int(entityList[j]->isPlayer));
+            
+            // sj_object_insert(entity, "position_x", sj_new_float(entityList[j]->position.x));
+            // sj_object_insert(entity, "position_y", sj_new_float(entityList[j]->position.y));
+            // sj_object_insert(entity, "position_z", sj_new_float(entityList[j]->position.z));
+            
+            // sj_object_insert(entity, "rotation_x", sj_new_float(entityList[j]->rotation.x));
+            // sj_object_insert(entity, "rotation_y", sj_new_float(entityList[j]->rotation.y));
+            // sj_object_insert(entity, "rotation_z", sj_new_float(entityList[j]->rotation.z));
+            
+            entity = testSave(entityList[j], entity);
+
+            char str[20];
+            sprintf(str, "Entity %i", j); //entities are numbered in the order that they are initialy spawned in
+            sj_object_insert(body, str, entity);
+        }
+        //sj_echo(body);
+        sj_save(body, "saves/entityList.json");
+        slog("saved");
+    }
+    if(keys[SDL_SCANCODE_Q] && keys[SDL_SCANCODE_LSHIFT]){//test load
+        slog("start load");
+        SJson *body = sj_object_new();
+        body = sj_load("saves/entityList.json");
+
+        SJList *keysList = sj_object_get_keys_list(body);
+
+        //load player info
+        SJson *playerEnt = sj_object_new();
+        playerEnt = sj_object_get_value(body, sj_list_get_nth(keysList, 0));
+        playerLoad(self, playerEnt);
+
+        slog("keyList size: %i, count: %i",keysList->size, keysList->count);
+        //entityList = NULL; //reset entityList
+
+        //reset entityList to 0, only needed when loading while already playing
+        for(int j=0; j<512; j++){
+            entityList[j] == NULL;
+        }
+        i=0;
+        
+        for(int j=1; j<keysList->count; j++){
+            SJson *entity = sj_object_new();
+            entity = sj_object_get_value(body, sj_list_get_nth(keysList, j));
+            Entity *temp = entity_new();
+            // int *type = NULL, *num = NULL, *isPlayer = NULL;
+            // float *position_x = NULL, *position_y = NULL, *position_z = NULL, *rotation_x = NULL, *rotation_y = NULL, *rotation_z = NULL;
+            sj_get_integer_value(sj_object_get_value(entity, "entityType"), &temp->type);
+            sj_get_integer_value(sj_object_get_value(entity, "entityNum"), &temp->entityNum);
+            // sj_get_integer_value(sj_object_get_value(entity, "isPlayer"), &temp->isPlayer);
+
+            sj_get_float_value(sj_object_get_value(entity, "position_x"), &temp->position.x);
+            sj_get_float_value(sj_object_get_value(entity, "position_y"), &temp->position.y);
+            sj_get_float_value(sj_object_get_value(entity, "position_z"), &temp->position.z);
+
+            sj_get_float_value(sj_object_get_value(entity, "rotation_x"), &temp->rotation.x);
+            sj_get_float_value(sj_object_get_value(entity, "rotation_y"), &temp->rotation.y);
+            sj_get_float_value(sj_object_get_value(entity, "rotation_z"), &temp->rotation.z);
+
+            // /slog("Type: %i, Num: %i", type, num);
+
+            // Vector3D position = vector3d(position_x, position_y, position_z);
+            // Vector3D rotation = vector3d(rotation_x, rotation_y, rotation_z);
+            // slog("position: x: %f, y:%f, z:%f", *position_x, *position_y, *position_z);
+            // slog("rotation: x: %f, y:%f, z:%f", *rotation_x, *rotation_y, *rotation_z);
+
+            Entity *newEnt;
+            if(temp->isPlayer == 1){
+                //is the player
+            }
+            else if(temp->type == 0){
+                //is a monster
+                switch(temp->entityNum){
+                    case 1:
+                        newEnt = NULL;
+                        newEnt = monster1_new(temp->position);
+                        slog("spawning monster1, EntityType: %i", temp->type);
+                        newEnt = testLoad(newEnt, entity);
+                        entityList[j] = newEnt;
+                        i++;
+                        break;
+                    case 2:
+                        newEnt = NULL;
+                        newEnt = monster2_kong_new(temp->position);
+                        newEnt = testLoad(newEnt, entity);
+                        entityList[j] = newEnt;
+                        i++;
+                        break;
+                    case 3:
+                        newEnt = NULL;
+                        newEnt = monster3_porygon_new(temp->position);
+                        newEnt = testLoad(newEnt, entity);
+                        entityList[j] = newEnt;
+                        i++;
+                        break;
+                    case 4:
+                        newEnt = NULL;
+                        newEnt = monster4_skelly_new(temp->position);
+                        newEnt = testLoad(newEnt, entity);
+                        entityList[j] = newEnt;
+                        i++;
+                        break;
+                    case 5:
+                        newEnt = NULL;
+                        newEnt = monster5_mario_new(temp->position);
+                        newEnt = testLoad(newEnt, entity);
+                        entityList[j] = newEnt;
+                        i++;
+                        break;
+                    case 6:
+                        newEnt = NULL;
+                        newEnt = monster6_yoshi_new(temp->position);
+                        newEnt = testLoad(newEnt, entity);
+                        entityList[j] = newEnt;
+                        i++;
+                        break;
+                    case 7:
+                        newEnt = NULL;
+                        newEnt = monster7_creeper_new(temp->position);
+                        newEnt = testLoad(newEnt, entity);
+                        entityList[j] = newEnt;
+                        i++;
+                        break;
+                    case 8:
+                        newEnt = NULL;
+                        newEnt = monster8_finn_new(temp->position);
+                        newEnt = testLoad(newEnt, entity);
+                        entityList[j] = newEnt;
+                        i++;
+                        break;
+                    case 9:
+                        newEnt = NULL;
+                        newEnt = monster9_goomba_new(temp->position);
+                        newEnt = testLoad(newEnt, entity);
+                        entityList[j] = newEnt;
+                        i++;
+                        break;
+                    case 10:
+                        newEnt = NULL;
+                        newEnt = monster10_arlo_new(temp->position);
+                        newEnt = testLoad(newEnt, entity);
+                        entityList[j] = newEnt;
+                        i++;
+                        break;
+                }
+            }
+            else if(temp->type == 1){
+                //is a wall
+                switch(temp->entityNum){
+                    case 1:
+                        newEnt = entity_new();
+                        temp->rotation.z += (M_PI/2.0);
+                        newEnt = defense1_smallFence_new(temp->position, temp->rotation);
+                        newEnt = testLoad(newEnt, entity);
+                        entityList[j] = newEnt;
+                        i++;
+                        break;
+                    case 2:
+                        newEnt = NULL;
+                        temp->rotation.z += (M_PI/2.0);
+                        newEnt = defense2_smallWall_new(temp->position, temp->rotation);
+                        newEnt = testLoad(newEnt, entity);
+                        entityList[j] = newEnt;
+                        i++;
+                        break;
+                }
+            }
+            else if(temp->type == 2){
+                //is a turret
+                switch(temp->entityNum){
+                    case 1:
+                        newEnt = NULL;
+                        temp->rotation.z += (M_PI/2.0);
+                        newEnt = defense3_turret1_new(temp->position, temp->rotation);
+                        newEnt = testLoad(newEnt, entity);
+                        entityList[j] = newEnt;
+                        i++;
+                        break;
+                    case 2:
+                        newEnt = NULL;
+                        temp->rotation.z += (M_PI/2.0);
+                        newEnt = defense4_turret2_new(temp->position, temp->rotation);
+                        newEnt = testLoad(newEnt, entity);
+                        entityList[j] = newEnt;
+                        i++;
+                        break;
+                    case 3:
+                        newEnt = NULL;
+                        temp->rotation.z += (M_PI/2.0);
+                        newEnt = defense5_turret3_new(temp->position, temp->rotation);
+                        newEnt = testLoad(newEnt, entity);
+                        entityList[j] = newEnt;
+                        i++;
+                        break;
+                }
+            }
+            else if(temp->type == 3){
+                //is goo
+                switch(temp->entityNum){
+                    case 1:
+                        newEnt = NULL;
+                        newEnt = slowGoo_new(temp->position);
+                        newEnt = testLoad(newEnt, entity);
+                        entityList[j] = newEnt;
+                        i++;
+                        break;
+                    case 2:
+                        newEnt = NULL;
+                        newEnt = fastGoo_new(temp->position);
+                        newEnt = testLoad(newEnt, entity);
+                        entityList[j] = newEnt;
+                        i++;
+                        break;
+                    case 3:
+                        newEnt = NULL;
+                        newEnt = dmgGoo_new(temp->position);
+                        newEnt = testLoad(newEnt, entity);
+                        entityList[j] = newEnt;
+                        i++;
+                        break;
+                    case 4:
+                        newEnt = NULL;
+                        newEnt = healGoo_new(temp->position);
+                        newEnt = testLoad(newEnt, entity);
+                        entityList[j] = newEnt;
+                        i++;
+                        break;
+                    case 5:
+                        newEnt = NULL;
+                        newEnt = incDmgGoo_new(temp->position);
+                        newEnt = testLoad(newEnt, entity);
+                        entityList[j] = newEnt;
+                        i++;
+                        break;
+                }
+            }
+        }
+
+        slog("load done");
+    }
+    if(keys[SDL_SCANCODE_O]){
+        for(int j=0; j<i; j++){
+            slog("entityList[j]->type: %i", entityList[j]->type);
+        }
+    }
+    if(keys[SDL_SCANCODE_P]){
+        SJson *entList = sj_object_new();
+        saveGame_to_json(self, "saves/playerSave.json");
+        //testSave(self, "saves/saveTest.json");
+        for(int j=0; j<i; j++){
+            if(saveGame_to_json(entityList[j], "saves/saveTest.json") == 0)
+                slog("save failed");
+            else
+                slog("saved");
+        }
+        for(int j=0; j<i; j++){
+            sj_object_insert(entList, "entityType", sj_new_int(entityList[j]->type));
+            sj_object_insert(entList, "entityNum", sj_new_int(entityList[j]->entityNum));
+            sj_echo(entList);
+            sj_save(entList, "saves/entityList.json");
+        }
+        
+        //sj_free(entList);
+    }
+    //load json
+    if(keys[SDL_SCANCODE_L]){
+        loadGame_from_json(self, "saves/playerSave.json");
+        for(int j=0; j<i; j++){
+            if(loadGame_from_json(entityList[j], "saves/saveTest.json") == 0)
+                slog("load failed");
+            else{
+                //monster1_new(monster1->position);
+                slog("loaded");
+            }
+        }
+    }
+
+    //test entity list
+    if(keys[SDL_SCANCODE_RCTRL]){
+        for(int j=1; j<i; j++){
+            slog("entityType: %i", entityList[j]->type);
+            slog("entityNum: %i", entityList[j]->entityNum);
         }
     }
     
@@ -902,7 +1223,7 @@ void player_update(Entity *self, Entity *player)//needed player twice to stop a 
             }
             else{
                 self->isDescending = 0;
-                slog("collision with center box");
+                //slog("collision with center box");
                 self->position.z += 1;
             }
         }

@@ -5,6 +5,7 @@
 #include "gfc_vector.h"
 #include "gfc_matrix.h"
 #include "gfc_primitives.h"
+#include "gfc_audio.h"
 
 #include "gf3d_vgraphics.h"
 #include "gf3d_pipeline.h"
@@ -52,9 +53,9 @@ int main(int argc,char *argv[])
     float mouseFrame = 0;
     World *w;
     //Entity *agu;
-    Entity *charmander = NULL, *kong = NULL, *porygon = NULL, *skelly = NULL, 
-           *mario = NULL, *yoshi = NULL, *creeper = NULL, *finn = NULL, *goomba = NULL, *arlo = NULL;
-    Entity *fence = NULL, *wall = NULL, *turret1 = NULL, *turret2 = NULL, *turret3 = NULL;
+    // Entity *charmander = NULL, *kong = NULL, *porygon = NULL, *skelly = NULL, 
+    //        *mario = NULL, *yoshi = NULL, *creeper = NULL, *finn = NULL, *goomba = NULL, *arlo = NULL;
+    // Entity *fence = NULL, *wall = NULL, *turret1 = NULL, *turret2 = NULL, *turret3 = NULL;
     //Particle particle[100];
     Matrix4 skyMat;
     Model *sky;
@@ -71,10 +72,17 @@ int main(int argc,char *argv[])
     gfc_input_init("config/input.cfg");
     slog("gf3d begin");
     gf3d_vgraphics_init("config/setup.cfg");
+    //gfc_audio_init(256, 16, 4, 1, 1, 1);
     gf2d_font_init("config/font.cfg");
     gf2d_draw_manager_init(1000);
     
     slog_sync();
+
+    //Before loasing world or entities the main menu will be shown
+    //They will have the options of new game or load game
+    //Load game will load it from a JSON
+    //start main menu
+    
     
     //1024 max entites
     entity_system_init(1024);
@@ -88,28 +96,28 @@ int main(int argc,char *argv[])
     //if (charmander)charmander->selected = 1;
     //Vector3D default = vector3d(-3.0, 0, 0);
     //spawn in sample characters
-    charmander = monster1_new(vector3d(-40, -35, -25));
-    kong = monster2_kong_new(vector3d(-40, -27, -26));
-    porygon = monster3_porygon_new(vector3d(-40, -20, -25));
-    skelly = monster4_skelly_new(vector3d(-40, -13, -25));
-    mario = monster5_mario_new(vector3d(-40, -6, -27));
+    // charmander = monster1_new(vector3d(-40, -35, -25));
+    // kong = monster2_kong_new(vector3d(-40, -27, -26));
+    // porygon = monster3_porygon_new(vector3d(-40, -20, -25));
+    // skelly = monster4_skelly_new(vector3d(-40, -13, -25));
+    // mario = monster5_mario_new(vector3d(-40, -6, -27));
     // yoshi = monster6_yoshi_new(vector3d(-40, 1, -27));
     // creeper = monster7_creeper_new(vector3d(-40, 8, -25));
     // finn = monster8_finn_new(vector3d(-40, 15, -24));
     // goomba = monster9_goomba_new(vector3d(-40, 22, -27));
     // arlo = monster10_arlo_new(vector3d(-40, 30, -25));
-    fence = defense1_smallFence_new(vector3d(-30, -40, -28), vector3d(-3.0, 0, 0));
-    fence->selected = 0;
-    wall = defense2_smallWall_new(vector3d(-15, -40, -28), vector3d(-3.0, 0, 0));
-    wall->selected = 0;
-    turret1 = defense3_turret1_new(vector3d(0, -40, -28), vector3d(-3.0, 0, 0));
-    turret1->selected = 0;
-    turret2 = defense4_turret2_new(vector3d(15, -40, -28), vector3d(-3.0, 0, 0));
-    turret2->selected = 0;
-    turret3 = defense5_turret3_new(vector3d(30, -40, -28), vector3d(-3.0, 0, 0));
-    turret3->selected = 0;
+    // fence = defense1_smallFence_new(vector3d(-30, -40, -28), vector3d(-3.0, 0, 0));
+    // fence->selected = 0;
+    // wall = defense2_smallWall_new(vector3d(-15, -40, -28), vector3d(-3.0, 0, 0));
+    // wall->selected = 0;
+    // turret1 = defense3_turret1_new(vector3d(0, -40, -28), vector3d(-3.0, 0, 0));
+    // turret1->selected = 0;
+    // turret2 = defense4_turret2_new(vector3d(15, -40, -28), vector3d(-3.0, 0, 0));
+    // turret2->selected = 0;
+    // turret3 = defense5_turret3_new(vector3d(30, -40, -28), vector3d(-3.0, 0, 0));
+    // turret3->selected = 0;
     //list for easier freeing later
-    Entity *entList[15] = {charmander, kong, porygon, skelly, mario, yoshi, creeper, finn, goomba, arlo, fence, wall, turret1, turret2, turret3};
+    //Entity *entList[15] = {charmander, kong, porygon, skelly, mario, yoshi, creeper, finn, goomba, arlo, fence, wall, turret1, turret2, turret3};
 
 
     w = world_load("config/world.json");
@@ -173,6 +181,10 @@ int main(int argc,char *argv[])
                 }
                 */
             //2D draws
+                /*
+                    could try representing the points with a bar graph
+                    or doing atomic variables with multi-threading so its a seperate thread doing the points
+                */
                 //setting up ui to be drawn
                 char ui[64];
                 char attack[7];
@@ -198,16 +210,12 @@ int main(int argc,char *argv[])
                         strncpy(attack, "ice", 7);
                         break;
                 }
+                //ui draw
                 sprintf(ui, "Points: %hi     Health: %hi     Attack: %s    Damage: %hi", points, health, attack, damage);
-                
 
                 gf2d_draw_rect_filled(gfc_rect(10 ,10,1000,32),gfc_color8(128,128,128,255));
                 
-                /*
-                could try representing the points with a bar graph
 
-                or doing atomic variables with multi-threading so its a seperate thread doing the points
-                */
                 gf2d_font_draw_line_tag(ui,FT_H1,gfc_color(1,1,1,1), vector2d(10,10));
                 //free(point);
                 gf2d_draw_rect(gfc_rect(10 ,10,1000,32),gfc_color8(255,255,255,255));
@@ -226,10 +234,10 @@ int main(int argc,char *argv[])
         //slog("Time Elapsed: %u", currentTime-lastTime);
     }    
     //free sample entities
-    for(int i=0; i<10; i++){
-        if(entList[i] != NULL)
-            entity_free(entList[i]);
-    }
+    // for(int i=0; i<10; i++){
+    //     if(entList[i] != NULL)
+    //         entity_free(entList[i]);
+    // }
     //entity_free(creeper);
     world_delete(w);
     

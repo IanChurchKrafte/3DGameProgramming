@@ -35,7 +35,8 @@ typedef enum
     ET_monster = 0,
     ET_wall = 1,
     ET_turret = 2,
-    ET_goo = 3
+    ET_goo = 3,
+    ET_player = 4
 }EntityType;
 
 
@@ -84,7 +85,15 @@ typedef struct Entity_S
     int                 defenseCount;
     int                 behindWall; //1 if behind wall (start to damage wall), 0 if not
     int                 stateSwitched;
-    EntityType          type;
+    EntityType          type; //0 for monster, 1 for wall, 2 for turret, 3 for goo
+    int                 entityNum;
+    /*For entity Num
+    monsters 1->10 (in order of fileName)
+    wall 1->2 (in order of fileName)
+    turret 1->3 (in order of fileName)
+    goo 1->5 (slow, fast, dmg, heal, incDmg)
+    
+    */
 
     //for jumping
     float       startPosition;

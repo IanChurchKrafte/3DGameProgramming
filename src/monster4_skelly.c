@@ -39,6 +39,7 @@ Entity *monster4_skelly_new(Vector3D position)
     ent->health = 100;
 
     ent->type = ET_monster;
+    ent->entityNum = 4;
     return ent;
 }
 

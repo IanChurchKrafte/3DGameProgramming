@@ -44,6 +44,7 @@ Entity *defense2_smallWall_new(Vector3D position, Vector3D rotation)
     //ent->health = 500;
 
     ent->type = ET_wall;
+    ent->entityNum = 2;
     
     ent->rotation.z = rotation.z + (M_PI/2.0); //rotate 90 degrees so it spawns perpendicular to where the player is looking
     return ent;

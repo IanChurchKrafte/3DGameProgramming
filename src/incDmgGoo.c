@@ -26,6 +26,7 @@ Entity *incDmgGoo_new(Vector3D position){
     ent->bounds.d = 10;
 
     ent->type = ET_goo;
+    ent->entityNum = 5;
 
     return ent;
 }

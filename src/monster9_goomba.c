@@ -39,6 +39,7 @@ Entity *monster9_goomba_new(Vector3D position)
     ent->health = 100;
 
     ent->type = ET_monster;
+    ent->entityNum = 9;
 
     ent->resistance = 3; //resistant to magic damage
     ent->selectedColor = gfc_color(0.58, 0, 0.78, 0.7); //purple

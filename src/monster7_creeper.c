@@ -41,6 +41,7 @@ Entity *monster7_creeper_new(Vector3D position)
     ent->bounds.d = 5;
 
     ent->type = ET_monster;
+    ent->entityNum = 7;
 
     ent->health = 100;
     ent->behindWall = 0;

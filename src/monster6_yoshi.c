@@ -39,6 +39,7 @@ Entity *monster6_yoshi_new(Vector3D position)
     ent->health = 100;
 
     ent->type = ET_monster;
+    ent->entityNum = 6;
 
     ent->resistance = 1; //resistant to fire damage
     ent->selectedColor = gfc_color(1,0,0,1); //red

@@ -26,6 +26,7 @@ Entity *slowGoo_new(Vector3D position){
     ent->bounds.d = 10;
 
     ent->type = ET_goo;
+    ent->entityNum = 1;
 
     return ent;
 }
