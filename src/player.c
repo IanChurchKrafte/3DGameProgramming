@@ -874,9 +874,11 @@ void player_think(Entity *self)
     if(keys[SDL_SCANCODE_Q] && !keys[SDL_SCANCODE_LSHIFT]){//test save
         //test json stuff
         SJson *body = sj_object_new();
+
         SJson *playerEnt = sj_object_new();
         playerSave(self, playerEnt);
         sj_object_insert(body, "playerInfo", playerEnt);
+        
         for(int j=0; j<i; j++){ //loop through entity list, entityList[j]
             SJson *entity = sj_object_new();
             slog("pre save rotation x: %f, y: %f, z: %f", entityList[j]->rotation.x, entityList[j]->rotation.y, entityList[j]->rotation.z);
@@ -913,6 +915,7 @@ void player_think(Entity *self)
         SJson *playerEnt = sj_object_new();
         playerEnt = sj_object_get_value(body, sj_list_get_nth(keysList, 0));
         playerLoad(self, playerEnt);
+        slog("isPlayer: %i", self->isPlayer);
 
         slog("keyList size: %i, count: %i",keysList->size, keysList->count);
         //entityList = NULL; //reset entityList
@@ -933,6 +936,7 @@ void player_think(Entity *self)
             sj_get_integer_value(sj_object_get_value(entity, "entityNum"), &temp->entityNum);
             // sj_get_integer_value(sj_object_get_value(entity, "isPlayer"), &temp->isPlayer);
 
+            //need to pull position/rotation data to spawn some entities
             sj_get_float_value(sj_object_get_value(entity, "position_x"), &temp->position.x);
             sj_get_float_value(sj_object_get_value(entity, "position_y"), &temp->position.y);
             sj_get_float_value(sj_object_get_value(entity, "position_z"), &temp->position.z);

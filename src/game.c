@@ -78,7 +78,7 @@ int main(int argc,char *argv[])
     
     slog_sync();
 
-    //Before loasing world or entities the main menu will be shown
+    //Before loading world or entities the main menu will be shown
     //They will have the options of new game or load game
     //Load game will load it from a JSON
     //start main menu
@@ -198,27 +198,27 @@ int main(int argc,char *argv[])
                         strncpy(attack, "bullet", 7);
                         break;
                     case 1:
-                        strncpy(attack, "fire", 7);
+                        strncpy(attack, "fire", 5);
                         break;
                     case 2:
-                        strncpy(attack, "melee", 7);
+                        strncpy(attack, "melee", 6);
                         break;
                     case 3:
-                        strncpy(attack, "magic", 7);
+                        strncpy(attack, "magic", 6);
                         break;
                     case 4:
-                        strncpy(attack, "ice", 7);
+                        strncpy(attack, "ice", 4);
                         break;
                 }
                 //ui draw
                 sprintf(ui, "Points: %hi     Health: %hi     Attack: %s    Damage: %hi", points, health, attack, damage);
 
-                gf2d_draw_rect_filled(gfc_rect(10 ,10,1000,32),gfc_color8(128,128,128,255));
+                gf2d_draw_rect_filled(gfc_rect(10,10,1000,40),gfc_color8(128,128,128,255));
                 
 
-                gf2d_font_draw_line_tag(ui,FT_H1,gfc_color(1,1,1,1), vector2d(10,10));
+                gf2d_font_draw_line_tag(ui,FT_H1,gfc_color(1,1,1,1), vector2d(10,12.5));
                 //free(point);
-                gf2d_draw_rect(gfc_rect(10 ,10,1000,32),gfc_color8(255,255,255,255));
+                gf2d_draw_rect(gfc_rect(10 ,10,1000,40),gfc_color8(255,0,0,255));
                 
                 gf2d_sprite_draw(crosshair, vector2d(240,320), vector2d(1,1), vector3d(0,0,0), gfc_color(1,1,1,1), 1);
                 //gf2d_sprite_draw(mouse,vector2d(mousex,mousey),vector2d(2,2),vector3d(8,8,0),gfc_color(0.3,.9,1,0.9),(Uint32)mouseFrame);
@@ -239,6 +239,37 @@ int main(int argc,char *argv[])
     //         entity_free(entList[i]);
     // }
     //entity_free(creeper);
+
+    //save world data
+    SJson *body = sj_object_new();
+    // SJson *modelMat = sj_object_new();
+    SJson *position = sj_object_new();
+    SJson *rotation = sj_object_new();
+    SJson *scale = sj_object_new();
+    SJson *model = sj_object_new();
+    // SJson *color = sj_object_new();
+    // SJson *spawnList = sj_object_new();
+    // SJson *entityList = sj_object_new();
+    sj_object_insert(position, "position_x", sj_new_float(w->position.x));
+    sj_object_insert(position, "position_y", sj_new_float(w->position.y));
+    sj_object_insert(position, "position_z", sj_new_float(w->position.z));
+    sj_object_insert(body, "position", position);
+
+    sj_object_insert(rotation, "rotation_x", sj_new_float(w->rotation.x));
+    sj_object_insert(rotation, "rotation_y", sj_new_float(w->rotation.y));
+    sj_object_insert(rotation, "rotation_z", sj_new_float(w->rotation.z));
+    sj_object_insert(body, "rotation", rotation);
+
+    sj_object_insert(scale, "scale_x", sj_new_float(w->scale.x));
+    sj_object_insert(scale, "scale_x", sj_new_float(w->scale.x));
+    sj_object_insert(scale, "scale_x", sj_new_float(w->scale.x));
+    sj_object_insert(body, "scale", scale);
+
+    sj_object_insert(model, "modelLocation", sj_new_str("models/world.model"));
+    sj_object_insert(body, "model", model);
+
+    sj_save(body, "saves/wordSave.json");
+    
     world_delete(w);
     
     vkDeviceWaitIdle(gf3d_vgraphics_get_default_logical_device());    

@@ -1,0 +1,7 @@
+{
+    "model":
+    {
+        "model":"models/enemies/skelly/walkAnimation/skelly_walk10.obj",
+        "texture":"models/enemies/skelly/skelleton.png"
+    }
+}

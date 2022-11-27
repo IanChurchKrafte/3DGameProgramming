@@ -68,14 +68,6 @@ void playerLoad(Entity *player, SJson *ent){
     sj_get_float_value(sj_object_get_value(ent, "startPosition"), &player->startPosition);
 }
 Entity * testLoad(Entity *self, SJson *ent){
-    // sj_get_float_value(sj_object_get_value(ent, "position_x"), &self->position.x);
-    // sj_get_float_value(sj_object_get_value(ent, "position_y"), &self->position.y);
-    // sj_get_float_value(sj_object_get_value(ent, "position_z"), &self->position.z);
-
-    // sj_get_float_value(sj_object_get_value(ent, "rotation_x"), &self->rotation.x);
-    // sj_get_float_value(sj_object_get_value(ent, "rotation_y"), &self->rotation.y);
-    // sj_get_float_value(sj_object_get_value(ent, "rotation_z"), &self->rotation.z);
-
     sj_get_integer_value(sj_object_get_value(ent, "health"), &self->health);
     sj_get_integer_value(sj_object_get_value(ent, "attackType"), &self->attackType);
     sj_get_integer_value(sj_object_get_value(ent, "state"), &self->state);

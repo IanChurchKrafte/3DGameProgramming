@@ -9,4 +9,4 @@ Ke 0.000000 0.000000 0.000000
 Ni 1.450000
 d 1.000000
 illum 1
-map_Kd blend stuff/Skeleton_Body
+map_Kd /home/ian/njit/Fall2022/it485/3DGame/3DGameProgramming/models/enemies/skelly/blend stuff/Skeleton_Body
