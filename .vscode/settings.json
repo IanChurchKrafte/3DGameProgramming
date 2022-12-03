@@ -1,5 +1,7 @@
 {
     "files.associations": {
-        "*.tcc": "c"
-    }
+        "*.tcc": "c",
+        "simple_logger.h": "c"
+    },
+    "C_Cpp.default.includePath": ["/usr/include/SDL2", "${default}"]
 }

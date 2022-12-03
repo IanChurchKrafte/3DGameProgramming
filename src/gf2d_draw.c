@@ -178,6 +178,7 @@ void gf2d_draw_rect_filled(Rect rect,Color color)
     gf2d_draw_image_new(sprite,shape,1);
 }
 
+
 #if 0
 
 void gf2d_draw_shape(Shape shape,Color color,Vector2D offset)

@@ -1,3 +1,4 @@
+#include <unistd.h>
 #include <SDL.h>            
 
 #include "simple_logger.h"
@@ -41,12 +42,15 @@
 
 extern int __DEBUG;
 
+void saveWorld(World *w);
+void loadWorld();
+
 int main(int argc,char *argv[])
 {
-    int done = 0;
+    int done = 0, fin = 0, new = 0, load = 0;
     int a;
     
-    //Sprite *mouse = NULL;
+    Sprite *mouse = NULL;
     Sprite *crosshair = NULL;
     int mousex,mousey;
     //Uint32 then;
@@ -88,7 +92,7 @@ int main(int argc,char *argv[])
     entity_system_init(1024);
     
     //mouse = gf2d_sprite_load("images/pointer.png",32,32, 16);
-    crosshair = gf2d_sprite_load("images/crosshair.png",32,32,16);
+    crosshair = gf2d_sprite_load_image("images/crosshair.png");
     
     //agu = agumon_new(vector3d(0,0,0));
     //if (agu)agu->selected = 1;
@@ -142,6 +146,130 @@ int main(int argc,char *argv[])
     gfc_matrix_identity(skyMat);
     gfc_matrix_scale(skyMat,vector3d(100,100,100));
 
+
+    //setup audio
+    //background game sound for when in the main menu, loops 10 times
+    gfc_audio_init(256, 16, 4, 1, 1, 1);
+    Sound *music = gfc_sound_load("music/209561__dneproman__8-bit-style.wav", 1.0, 1);
+    gfc_sound_play(music, 10, 1.0, -1, 1);
+    
+    //setup main menu
+    //will be a sprite with buttons to click, new game, load game, and exit
+    //main game loop wont start until new game or load game is clicked
+    //will be 4 sprites, the background image of the main menu, and the 3 buttons
+    int startGame = 0; //will turn to 1 when player chooses
+    Sprite *mainMenu = NULL, *newGame = NULL, *loadGame = NULL, *exitGame = NULL, *editMode;
+    mainMenu = gf2d_sprite_load_image("images/mainMenu/faith-spark-background1.png");
+    newGame = gf2d_sprite_load_image("images/mainMenu/newGame.png");
+    loadGame = gf2d_sprite_load_image("images/mainMenu/loadGame.png");
+    exitGame = gf2d_sprite_load_image("images/mainMenu/quitGame.png");
+    editMode = gf2d_sprite_load_image("images/mainMenu/editGame.png");
+
+    mouse = gf2d_sprite_load_image("images/mainMenu/mouse.png");
+
+    Sprite *bossGif[20];
+    bossGif[0] = gf2d_sprite_load_image("images/boss/boss1.png");
+    bossGif[1] = gf2d_sprite_load_image("images/boss/boss2.png");
+    bossGif[2] = gf2d_sprite_load_image("images/boss/boss3.png");
+    bossGif[3] = gf2d_sprite_load_image("images/boss/boss4.png");
+    bossGif[4] = gf2d_sprite_load_image("images/boss/boss5.png");
+    bossGif[5] = gf2d_sprite_load_image("images/boss/boss6.png");
+    bossGif[6] = gf2d_sprite_load_image("images/boss/boss7.png");
+    bossGif[7] = gf2d_sprite_load_image("images/boss/boss8.png");
+    bossGif[8] = gf2d_sprite_load_image("images/boss/boss9.png");
+    bossGif[9] = gf2d_sprite_load_image("images/boss/boss10.png");
+    bossGif[10] = gf2d_sprite_load_image("images/boss/boss11.png");
+    bossGif[11] = gf2d_sprite_load_image("images/boss/boss12.png");
+    bossGif[12] = gf2d_sprite_load_image("images/boss/boss13.png");
+    bossGif[13] = gf2d_sprite_load_image("images/boss/boss14.png");
+    bossGif[14] = gf2d_sprite_load_image("images/boss/boss15.png");
+    bossGif[15] = gf2d_sprite_load_image("images/boss/boss16.png");
+    bossGif[16] = gf2d_sprite_load_image("images/boss/boss17.png");
+    bossGif[17] = gf2d_sprite_load_image("images/boss/boss18.png");
+    bossGif[18] = gf2d_sprite_load_image("images/boss/boss19.png");
+    bossGif[19] = gf2d_sprite_load_image("images/boss/boss20.png");
+    //draw main menu
+    Vector2D bossBannerPostion = vector2d(680, 10);
+
+    int lastSpawn = 0;
+    while(!fin){
+        gf3d_vgraphics_render_start();
+
+        gfc_input_update();
+
+        SDL_GetMouseState(&mousex,&mousey);
+        
+        
+        mouseFrame += 0.01;
+        if (mouseFrame >= 16)mouseFrame = 0;
+
+        SDL_Event e;
+        int buttonDown = 0;
+        while(SDL_PollEvent(&e)){
+            slog("in poll event: %s", e.type);
+            switch (e.type){
+                case 4:
+                    buttonDown = 1;
+                    slog("buttonDown");
+                    break;
+            }
+        }
+
+        const Uint8 * keys;
+        keys = SDL_GetKeyboardState(NULL);
+        
+
+        gf2d_sprite_draw(mainMenu, vector2d(0,0), vector2d(2,2), vector3d(0,0,0), gfc_color(1,1,1,1), 1);
+        gf2d_sprite_draw(newGame, vector2d(800,320), vector2d(1,1), vector3d(0,0,0), gfc_color(1,1,1,1), 1);
+        gf2d_sprite_draw(loadGame, vector2d(800,460), vector2d(1,1), vector3d(0,0,0), gfc_color(1,1,1,1), 1);
+        gf2d_sprite_draw(editMode, vector2d(800,620), vector2d(1,1), vector3d(0,0,0), gfc_color(1,1,1,1), 1);
+        gf2d_sprite_draw(exitGame, vector2d(800,780), vector2d(1,1), vector3d(0,0,0), gfc_color(1,1,1,1), 1);
+        
+
+        //gf2d_sprite_draw(bossGif[lastSpawn], bossBannerPostion, vector2d(1,1), vector3d(0,0,0), gfc_color(1,1,1,1), 1);
+
+
+
+        if(keys[SDL_SCANCODE_N] || (mousex >= 800 && mousex<=1150 && mousey>=320 && mousey<=380)){
+            //start new game
+            fin = 1;
+            new = 1;
+            player->editMode = 0;
+            slog("new game attempt");
+        }
+        if(keys[SDL_SCANCODE_L] || (mousex >= 800 && mousex<=1150 && mousey>=460 && mousey<=520)){
+            //load game
+            fin = 1;
+            load = 1;
+            loadEntities(player);
+            player->editMode = 0;
+            slog("load game attempt");
+        }
+        if(keys[SDL_SCANCODE_Q] || (mousex >= 800 && mousex<=1150 && mousey>=780 && mousey<=810)){
+            fin = 1;
+            done = 1;
+            slog("exit game attempt");
+            //exit game
+        }
+        if(keys[SDL_SCANCODE_E] || (mousex >= 800 && mousex<=1150 && mousey>=620 && mousey<=650)){
+            slog("edit mode");
+            player->editMode = 1;
+            fin = 1;
+            new = 1;
+        }
+
+        gf2d_sprite_draw(mouse,vector2d(mousex,mousey),vector2d(0.5,0.5),vector3d(8,8,0),gfc_color(0.3,.9,1,0.9),(Uint32)mouseFrame);
+
+        gf3d_vgraphics_render_end();
+
+    }
+    gf2d_sprite_free(mainMenu);
+    gf2d_sprite_free(newGame);
+    gf2d_sprite_free(loadGame);
+    gf2d_sprite_free(exitGame);
+
+
+
     //set floor
     //VT_SPHERE sphere = gfc_plane3d(0, 0, -30, 30);
     //Plane3D bottom = gfc_plane3d(0, 0, -30, 30);
@@ -150,6 +278,8 @@ int main(int argc,char *argv[])
     //char* point = 100+'0';
     //char point[32] = "Points: ";
     //Entity *defenseList;
+
+    
     while(!done)
     {
         
@@ -186,6 +316,7 @@ int main(int argc,char *argv[])
                     or doing atomic variables with multi-threading so its a seperate thread doing the points
                 */
                 //setting up ui to be drawn
+
                 char ui[64];
                 char attack[7];
                 unsigned short points = player->points;
@@ -220,8 +351,92 @@ int main(int argc,char *argv[])
                 //free(point);
                 gf2d_draw_rect(gfc_rect(10 ,10,1000,40),gfc_color8(255,0,0,255));
                 
-                gf2d_sprite_draw(crosshair, vector2d(240,320), vector2d(1,1), vector3d(0,0,0), gfc_color(1,1,1,1), 1);
+                gf2d_sprite_draw(crosshair, vector2d(900,540), vector2d(1,1), vector3d(0,0,0), gfc_color(1,1,1,1), 1);
                 //gf2d_sprite_draw(mouse,vector2d(mousex,mousey),vector2d(2,2),vector3d(8,8,0),gfc_color(0.3,.9,1,0.9),(Uint32)mouseFrame);
+
+                if(player->bossSpawning == 1){
+                    if(lastSpawn == 0){
+                        gf2d_sprite_draw(bossGif[lastSpawn], bossBannerPostion, vector2d(1,1), vector3d(0,0,0), gfc_color(1,1,1,1), 1);
+                        lastSpawn++;
+                    }
+                    else if(lastSpawn == 1){
+                        gf2d_sprite_draw(bossGif[lastSpawn], bossBannerPostion, vector2d(1,1), vector3d(0,0,0), gfc_color(1,1,1,1), 1);
+                        lastSpawn++;
+                    }
+                    else if(lastSpawn == 2){
+                        gf2d_sprite_draw(bossGif[lastSpawn], bossBannerPostion, vector2d(1,1), vector3d(0,0,0), gfc_color(1,1,1,1), 1);
+                        lastSpawn++;
+                    }
+                    else if(lastSpawn == 3){
+                        gf2d_sprite_draw(bossGif[lastSpawn], bossBannerPostion, vector2d(1,1), vector3d(0,0,0), gfc_color(1,1,1,1), 1);
+                        lastSpawn++;
+                    }
+                    else if(lastSpawn == 4){
+                        gf2d_sprite_draw(bossGif[lastSpawn], bossBannerPostion, vector2d(1,1), vector3d(0,0,0), gfc_color(1,1,1,1), 1);
+                        lastSpawn++;
+                    }
+                    else if(lastSpawn == 5){
+                        gf2d_sprite_draw(bossGif[lastSpawn], bossBannerPostion, vector2d(1,1), vector3d(0,0,0), gfc_color(1,1,1,1), 1);
+                        lastSpawn++;
+                    }
+                    else if(lastSpawn == 6){
+                        gf2d_sprite_draw(bossGif[lastSpawn], bossBannerPostion, vector2d(1,1), vector3d(0,0,0), gfc_color(1,1,1,1), 1);
+                        lastSpawn++;
+                    }
+                    else if(lastSpawn == 7){
+                        gf2d_sprite_draw(bossGif[lastSpawn], bossBannerPostion, vector2d(1,1), vector3d(0,0,0), gfc_color(1,1,1,1), 1);
+                        lastSpawn++;
+                    }
+                    else if(lastSpawn == 8){
+                        gf2d_sprite_draw(bossGif[lastSpawn], bossBannerPostion, vector2d(1,1), vector3d(0,0,0), gfc_color(1,1,1,1), 1);
+                        lastSpawn++;
+                    }
+                    else if(lastSpawn == 9){
+                        gf2d_sprite_draw(bossGif[lastSpawn], bossBannerPostion, vector2d(1,1), vector3d(0,0,0), gfc_color(1,1,1,1), 1);
+                        lastSpawn++;
+                    }
+                    else if(lastSpawn == 10){
+                        gf2d_sprite_draw(bossGif[lastSpawn], bossBannerPostion, vector2d(1,1), vector3d(0,0,0), gfc_color(1,1,1,1), 1);
+                        lastSpawn++;
+                    }
+                    else if(lastSpawn == 11){
+                        gf2d_sprite_draw(bossGif[lastSpawn], bossBannerPostion, vector2d(1,1), vector3d(0,0,0), gfc_color(1,1,1,1), 1);
+                        lastSpawn++;
+                    }
+                    else if(lastSpawn == 12){
+                        gf2d_sprite_draw(bossGif[lastSpawn], bossBannerPostion, vector2d(1,1), vector3d(0,0,0), gfc_color(1,1,1,1), 1);
+                        lastSpawn++;
+                    }
+                    else if(lastSpawn == 13){
+                        gf2d_sprite_draw(bossGif[lastSpawn], bossBannerPostion, vector2d(1,1), vector3d(0,0,0), gfc_color(1,1,1,1), 1);
+                        lastSpawn++;
+                    }
+                    else if(lastSpawn == 14){
+                        gf2d_sprite_draw(bossGif[lastSpawn], bossBannerPostion, vector2d(1,1), vector3d(0,0,0), gfc_color(1,1,1,1), 1);
+                        lastSpawn++;
+                    }
+                    else if(lastSpawn == 15){
+                        gf2d_sprite_draw(bossGif[lastSpawn], bossBannerPostion, vector2d(1,1), vector3d(0,0,0), gfc_color(1,1,1,1), 1);
+                        lastSpawn++;
+                    }
+                    else if(lastSpawn == 16){
+                        gf2d_sprite_draw(bossGif[lastSpawn], bossBannerPostion, vector2d(1,1), vector3d(0,0,0), gfc_color(1,1,1,1), 1);
+                        lastSpawn++;
+                    }
+                    else if(lastSpawn == 17){
+                        gf2d_sprite_draw(bossGif[lastSpawn], bossBannerPostion, vector2d(1,1), vector3d(0,0,0), gfc_color(1,1,1,1), 1);
+                        lastSpawn++;
+                    }
+                    else if(lastSpawn == 18){
+                        gf2d_sprite_draw(bossGif[lastSpawn], bossBannerPostion, vector2d(1,1), vector3d(0,0,0), gfc_color(1,1,1,1), 1);
+                        lastSpawn++;
+                    }
+                    else if(lastSpawn == 19){
+                        gf2d_sprite_draw(bossGif[lastSpawn], bossBannerPostion, vector2d(1,1), vector3d(0,0,0), gfc_color(1,1,1,1), 1);
+                        lastSpawn = 0;
+                        player->bossSpawning=0;
+                    }
+                }
                 
                 //slog("Time Elapsed: %u", currentTime-lastTime);
         //unsigned int lastTime = SDL_GetTicks(), currentTime;
@@ -241,6 +456,20 @@ int main(int argc,char *argv[])
     //entity_free(creeper);
 
     //save world data
+    saveWorld(w);
+    
+    world_delete(w);
+
+    gfc_sound_free(music);
+    
+    vkDeviceWaitIdle(gf3d_vgraphics_get_default_logical_device());    
+    //cleanup
+    slog("gf3d program end");
+    slog_sync();
+    return 0;
+}
+
+void saveWorld(World *w){
     SJson *body = sj_object_new();
     // SJson *modelMat = sj_object_new();
     SJson *position = sj_object_new();
@@ -261,22 +490,44 @@ int main(int argc,char *argv[])
     sj_object_insert(body, "rotation", rotation);
 
     sj_object_insert(scale, "scale_x", sj_new_float(w->scale.x));
-    sj_object_insert(scale, "scale_x", sj_new_float(w->scale.x));
-    sj_object_insert(scale, "scale_x", sj_new_float(w->scale.x));
+    sj_object_insert(scale, "scale_y", sj_new_float(w->scale.y));
+    sj_object_insert(scale, "scale_z", sj_new_float(w->scale.z));
     sj_object_insert(body, "scale", scale);
 
     sj_object_insert(model, "modelLocation", sj_new_str("models/world.model"));
     sj_object_insert(body, "model", model);
 
     sj_save(body, "saves/wordSave.json");
+}
+
+void loadWorld(World *w){
+    SJson *body = sj_object_new();
+    body = sj_load("saves/worldSave.json");
+
+    SJson *position = sj_object_new();
+    SJson *rotation = sj_object_new();
+    SJson *scale = sj_object_new();
+    SJson *model = sj_object_new();
     
-    world_delete(w);
-    
-    vkDeviceWaitIdle(gf3d_vgraphics_get_default_logical_device());    
-    //cleanup
-    slog("gf3d program end");
-    slog_sync();
-    return 0;
+    position = sj_object_get_value(body, "position");
+    sj_get_float_value(sj_object_get_value(position, "position_x"), &w->position.x);
+    sj_get_float_value(sj_object_get_value(position, "position_y"), &w->position.y);
+    sj_get_float_value(sj_object_get_value(position, "position_z"), &w->position.z);
+
+    rotation = sj_object_get_value(body, "rotation");
+    sj_get_float_value(sj_object_get_value(rotation, "rotation_x"), &w->rotation.x);
+    sj_get_float_value(sj_object_get_value(rotation, "rotation_y"), &w->rotation.y);
+    sj_get_float_value(sj_object_get_value(rotation, "rotation_z"), &w->rotation.z);
+
+    scale = sj_object_get_value(body, "scale");
+    sj_get_float_value(sj_object_get_value(scale, "scale_x"), &w->scale.x);
+    sj_get_float_value(sj_object_get_value(scale, "scale_y"), &w->scale.y);
+    sj_get_float_value(sj_object_get_value(scale, "scale_z"), &w->scale.z);
+
+    model = sj_object_get_value(body, "model");
+    char *str = sj_get_string_value(sj_object_get_value(model, "model"));
+    //&w->model->filename=str;
+
 }
 
 /*eol@eof*/

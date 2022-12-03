@@ -87,6 +87,9 @@ typedef struct Entity_S
     int                 stateSwitched;
     EntityType          type; //0 for monster, 1 for wall, 2 for turret, 3 for goo
     int                 entityNum;
+    int                 isBoss;
+    int                 bossSpawning;
+    int                 editMode;
     /*For entity Num
     monsters 1->10 (in order of fileName)
     wall 1->2 (in order of fileName)

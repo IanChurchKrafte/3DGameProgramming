@@ -78,10 +78,10 @@ void monster4_skelly_update(Entity *self, Entity *player)
     self->bounds.z = self->position.z;
 
     //rotate towards player
-    Vector2D facingVec;
-    vector2d_sub(facingVec, player->position, self->position);
-    float rotate = atan2(facingVec.y, facingVec.x);
-    self->rotation.z = rotate + M_PI;
+    // Vector2D facingVec;
+    // vector2d_sub(facingVec, player->position, self->position);
+    // float rotate = atan2(facingVec.y, facingVec.x);
+    // self->rotation.z = rotate + M_PI;
 
     Vector2D *selfPos = NULL;
     Vector2D vect = vector2d(self->position.x, self->position.y);
@@ -159,6 +159,8 @@ void monster4_skelly_update(Entity *self, Entity *player)
         self->model = idleAnim[8];
         lastCheck = 0;
     }
+
+
     // else if(lastCheck == 9){
     //     self->model = idleAnim[9];
     //     lastCheck = 10;

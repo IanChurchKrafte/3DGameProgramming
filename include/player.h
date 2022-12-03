@@ -11,5 +11,11 @@
 Entity *player_new(Vector3D position);
 int getPoints();
 
+void save();
+
+void loadEntities(Entity *self);
+
+void player_spawnWaves(); 
+
 
 #endif

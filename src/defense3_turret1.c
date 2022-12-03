@@ -43,6 +43,7 @@ Entity *defense3_turret1_new(Vector3D position, Vector3D rotation)
 
     ent->type = ET_turret;
     ent->entityNum = 1;
+    ent->state = ES_BASE;
 
     defense3_turret1_BASE_upgrade(ent);
     //ent->health = 300;
