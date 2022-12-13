@@ -91,6 +91,7 @@ typedef struct Entity_S
     int                 isBoss;
     int                 bossSpawning;
     int                 editMode;
+    int                 currentWave;
     /*For entity Num
     monsters 1->10 (in order of fileName)
     wall 1->2 (in order of fileName)

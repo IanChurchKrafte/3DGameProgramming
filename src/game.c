@@ -47,6 +47,10 @@ void loadWorld();
 
 //function is buggy and gets stuck on the first frame
 bossGifFun(int lastFrame, Vector2D pos, Sprite *bossGif[20], Entity *player);
+void playDeathMusic();
+
+int deadMusicPlaying = 0;
+Sound *deadMusic = NULL;
 
 int main(int argc,char *argv[])
 {
@@ -155,19 +159,25 @@ int main(int argc,char *argv[])
     //background game sound for when in the main menu, loops 10 times
     gfc_audio_init(256, 16, 4, 1, 1, 1);
     Sound *menuMusic = gfc_sound_load("music/209561__dneproman__8-bit-style.wav", 1.0, 1);
-    gfc_sound_play(menuMusic, 10, 1.0, -1, 1);
+    deadMusic = gfc_sound_load("music/esm_8_bit_game_over_1_arcade_80s_simple_alert_notification_game.mp3", 1.0, 1);
+    Sound *backgroundMusic = gfc_sound_load("music/415804__sunsai__mushroom-background-music.wav", 1.0, 1);
     
     //setup main menu
     //will be a sprite with buttons to click, new game, load game, and exit
     //main game loop wont start until new game or load game is clicked
     //will be 4 sprites, the background image of the main menu, and the 3 buttons
     int startGame = 0; //will turn to 1 when player chooses
-    Sprite *mainMenu = NULL, *newGame = NULL, *loadGame = NULL, *exitGame = NULL, *editMode;
+    Sprite *mainMenu = NULL, *newGame = NULL, *loadGame = NULL, *exitGame = NULL, *editMode = NULL, *youDied = NULL, *monsterSpawns = NULL, *defenseSpawns = NULL;
     mainMenu = gf2d_sprite_load_image("images/mainMenu/faith-spark-background1.png");
     newGame = gf2d_sprite_load_image("images/mainMenu/newGame.png");
     loadGame = gf2d_sprite_load_image("images/mainMenu/loadGame.png");
     exitGame = gf2d_sprite_load_image("images/mainMenu/quitGame.png");
     editMode = gf2d_sprite_load_image("images/mainMenu/editGame.png");
+    youDied = gf2d_sprite_load_image("images/you-died.png");
+    monsterSpawns = gf2d_sprite_load_image("images/editMode_MonsterSpawns-clear.png");
+    defenseSpawns = gf2d_sprite_load_image("images/editMode_DefenseSpawns-clear.png");
+    
+
 
     mouse = gf2d_sprite_load_image("images/mainMenu/mouse.png");
 
@@ -196,6 +206,7 @@ int main(int argc,char *argv[])
     Vector2D bossBannerPostion = vector2d(680, 10);
 
     int lastSpawn = 0;
+    gfc_sound_play(menuMusic, 10, 1.0, 1, 1);
     while(!fin){
         gf3d_vgraphics_render_start();
 
@@ -229,6 +240,7 @@ int main(int argc,char *argv[])
         gf2d_sprite_draw(editMode, vector2d(800,620), vector2d(1,1), vector3d(0,0,0), gfc_color(1,1,1,1), 1);
         gf2d_sprite_draw(exitGame, vector2d(800,780), vector2d(1,1), vector3d(0,0,0), gfc_color(1,1,1,1), 1);
         
+        
 
         //gf2d_sprite_draw(bossGif[lastSpawn], bossBannerPostion, vector2d(1,1), vector3d(0,0,0), gfc_color(1,1,1,1), 1);
 
@@ -239,6 +251,7 @@ int main(int argc,char *argv[])
             fin = 1;
             new = 1;
             player->editMode = 0;
+            player->points = 0;
             slog("new game attempt");
         }
         if(keys[SDL_SCANCODE_L] || (mousex >= 800 && mousex<=1150 && mousey>=460 && mousey<=520)){
@@ -268,7 +281,7 @@ int main(int argc,char *argv[])
         gf3d_vgraphics_render_end();
 
     }
-    gfc_sound_play(menuMusic, 1, 0, -1, 1);
+    gfc_sound_play(menuMusic, 0, 0.001, 1, 1);
     gf2d_sprite_free(mainMenu);
     gf2d_sprite_free(newGame);
     gf2d_sprite_free(loadGame);
@@ -284,11 +297,10 @@ int main(int argc,char *argv[])
     //Plane3D bottom = gfc_plane3d(0, 0, -30, 30);
     // main game loop
     slog("gf3d main loop begin");
-    //char* point = 100+'0';
-    //char point[32] = "Points: ";
-    //Entity *defenseList;
 
-    
+    gfc_sound_play(backgroundMusic, 100, 0.5, -1, 1);
+
+    int dead = 0;
     while(!done)
     {
         
@@ -335,11 +347,17 @@ int main(int argc,char *argv[])
                 */
                 //setting up ui to be drawn
 
+                if(player->editMode == 1){
+                    gf2d_sprite_draw(monsterSpawns, vector2d(0,50), vector2d(1,1), vector3d(0,0,0), gfc_color(1,1,1,1), 1);
+                    gf2d_sprite_draw(defenseSpawns, vector2d(1550,50), vector2d(1,1), vector3d(0,0,0), gfc_color(1,1,1,1), 1);
+                }
+
                 char ui[64];
                 char attack[7];
                 unsigned int points = player->points;
                 unsigned short health = player->health;
                 unsigned short damage = player->attackDamage;
+                unsigned short currentWave = player->currentWave;
                 int attackType = player->attackType;
                 //slog("attack: %i", attackType);
                 switch(attackType){
@@ -368,7 +386,7 @@ int main(int argc,char *argv[])
 
 
                 //ui draw
-                sprintf(ui, "Points: %u     Health: %hi     Attack: %s    Damage: %hi", points, health, attack, damage);
+                sprintf(ui, "Points: %u     Health: %hi     Attack: %s    Damage: %hi   Wave: %hi", points, health, attack, damage, currentWave);
 
                 gf2d_draw_rect_filled(gfc_rect(10,10,1000,40),gfc_color8(128,128,128,255));
                 
@@ -471,6 +489,15 @@ int main(int argc,char *argv[])
                     // bossGifFun(lastSpawn, bossBannerPostion, bossGif, player);
                     //gf2d_draw_rect(box.s.r, gfc_color(0,1,0,1));
                 }
+
+                if (player->isDead == 1){
+                    //slog("trying to draw you died sprite");
+                    gf2d_sprite_draw(youDied, vector2d(0,0), vector2d(2,2), vector3d(0,0,0), gfc_color(1,1,1,1), 1);
+                    dead++;
+                    slog("You Died. Closing game in %i", 60-dead);
+                    playDeathMusic();
+                }
+                if(dead == 60) done=1;
                 
                 //slog("Time Elapsed: %u", currentTime-lastTime);
         //unsigned int lastTime = SDL_GetTicks(), currentTime;
@@ -572,6 +599,13 @@ int bossGifFun(int lastFrame, Vector2D pos, Sprite *bossGif[20], Entity *player)
     }
     else
         return lastFrame++;
+}
+
+void playDeathMusic(){
+    if(deadMusicPlaying == 0){
+        gfc_sound_play(deadMusic, 0, 1, 1, 1);
+        deadMusicPlaying = 1;
+    }
 }
 
 /*eol@eof*/

@@ -2,6 +2,7 @@
 #include "simple_logger.h"
 #include "monster10_arlo.h"
 #include "collision.h"
+#include "player.h"
 
 void monster10_arlo_update(Entity *self, Entity *player);
 
@@ -31,9 +32,9 @@ Entity *monster10_arlo_new(Vector3D position)
     ent->bounds.x = position.x;
     ent->bounds.y = position.y;
     ent->bounds.z = position.z;
-    ent->bounds.w = 10;
+    ent->bounds.w = 5;
     ent->bounds.h = 10;
-    ent->bounds.d = 10;
+    ent->bounds.d = 5;
 
     ent->health = 100;
 
@@ -101,7 +102,7 @@ void monster10_arlo_update(Entity *self, Entity *player)
     }
     else{
         // enemy is touching player
-        // player->health -= 1;
+        player_damage(1, player, 0, self);
     }
 }
 

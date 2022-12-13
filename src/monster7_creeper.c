@@ -4,6 +4,7 @@
 #include "collision.h"
 #include "gfc_vector.h"
 #include "math.h"
+#include "player.h"
 
 
 void monster7_creeper_update(Entity *self, Entity *player);
@@ -36,9 +37,9 @@ Entity *monster7_creeper_new(Vector3D position)
     ent->bounds.x = position.x;
     ent->bounds.y = position.y;
     ent->bounds.z = position.z;
-    ent->bounds.w = 2.5;
-    ent->bounds.h = 5;
-    ent->bounds.d = 2.5;
+    ent->bounds.w = 4;
+    ent->bounds.h = 7.5;
+    ent->bounds.d = 4;
 
     ent->type = ET_monster;
     ent->entityNum = 7;
@@ -121,7 +122,7 @@ void monster7_creeper_update(Entity *self, Entity *player)
     }
     else{
         // enemy is touching player
-        // player->health -= 1;
+        player->health -= 1;player_damage(1, player, 0, self);
     }
 }
 

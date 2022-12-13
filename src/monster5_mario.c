@@ -2,6 +2,7 @@
 #include "simple_logger.h"
 #include "monster5_mario.h"
 #include "collision.h"
+#include "player.h"
 
 
 void monster5_mario_update(Entity *self, Entity *player);
@@ -67,8 +68,39 @@ void monster5_mario_update(Entity *self, Entity *player)
     if(collision_box_to_plane_z_down(self->bounds, bottomPlane) && !gfc_box_overlap(self->bounds, centerBox)){ //check for collison on gound and center box
         //self->position.z -=1;
     }
-    
-    //self->rotation.z += 0.01;
+
+    Vector2D *selfPos = NULL;
+    Vector2D vect = vector2d(self->position.x, self->position.y);
+    selfPos = &vect;
+    Vector2D playerPos = vector2d(player->position.x, player->position.y);
+    if(!gfc_box_overlap(player->bounds, self->bounds) && player->editMode != 1){ //if the player is in edit mode, don't let the AI move from their spawn location
+        //slog("not colliding with player");
+        //add entity list for entities spawn in by the player
+        if(player->defenseCount == 0){
+            //slog("no defenses found");
+            vector2d_move_towards(selfPos, vector2d(self->position.x, self->position.y), playerPos, 0.5);
+            self->position.x = selfPos->x;
+            self->position.y = selfPos->y;
+        }
+        for(int i=0; i<player->defenseCount; i++){
+            //slog("knows that a fence is here");
+            if(!gfc_box_overlap(player->defenseBounds[i], self->bounds)){
+                //slog("not colliding with defense entity");
+                vector2d_move_towards(selfPos, vector2d(self->position.x, self->position.y), playerPos, 0.5);
+                self->position.x = selfPos->x;
+                self->position.y = selfPos->y;
+                //return 1;
+            }
+            else{
+                //slog("stuck beind wall, now damaging it");
+                self->behindWall = 1;
+            }
+        }
+    }
+    else{
+        // enemy is touching player
+        player_damage(1, player, 0, self);
+    }
 }
 
 void monster5_mario_think(Entity *self)

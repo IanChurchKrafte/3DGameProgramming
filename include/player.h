@@ -17,5 +17,6 @@ void loadEntities(Entity *self);
 
 void player_spawnWaves(); 
 
+void player_damage(int damage, Entity *self, int heal, Entity *inflictor);
 
 #endif

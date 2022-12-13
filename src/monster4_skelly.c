@@ -2,6 +2,7 @@
 #include "simple_logger.h"
 #include "monster4_skelly.h"
 #include "collision.h"
+#include "player.h"
 
 
 void monster4_skelly_update(Entity *self, Entity *player);
@@ -114,6 +115,7 @@ void monster4_skelly_update(Entity *self, Entity *player)
     }
     else{
         self->state = ES_idle;
+        player_damage(1, player, 0, self);
     }
 
 

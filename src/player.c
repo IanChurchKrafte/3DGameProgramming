@@ -76,8 +76,9 @@ void player_death(Entity *self);
 bool jump(Entity *self, clock_t startTime, bool isJumping, bool midJump);
 void loadEntity(Entity *self);
 void player_spawnWave();
-Entity * rayCast(Entity *self);
+void rayCast(Entity *self, float distance);
 Entity *creeper, *creeperBounds, *fenceBounds = NULL;
+Sound *gunshot;
 
 /*
 will need to establish a 2d grid for the AI to be able to traverse on to be able to have pathfinding
@@ -108,7 +109,7 @@ Entity *player_new(Vector3D position)
     ent->bounds.x = position.x;
     ent->bounds.y = position.y;
     ent->bounds.z = position.z;
-    ent->bounds.h = 10.0;
+    ent->bounds.h = 5.0;
     ent->bounds.w = 5.0;
     ent->bounds.d = 5.0;
     ent->rotation.x = -GFC_PI;
@@ -118,7 +119,7 @@ Entity *player_new(Vector3D position)
     ent->isJumping = 0;
     ent->isDescending = 0;
 
-    ent->health = 100;
+    ent->health = 150;
     ent->attackType = 0;
     i=0;
 
@@ -134,7 +135,6 @@ Entity *player_new(Vector3D position)
     // creeper = monster7_creeper_new(vector3d(-32, 23, -24));
     // entityList[i] = creeper;
     // i++;
-
     // creeperBounds = hitBoxEnt_new(creeper->position, creeper);
     return ent;
 
@@ -248,7 +248,7 @@ void player_think(Entity *self)
             // self->position.y = selfPos->y;
         // vector3d_add(testPoint, playerPoint, distance);
         Vector3D testPoint = vector3d(x1, y1, playerPoint.z);
-        self->position = testPoint;
+        //self->position = testPoint;
         //vector3d_add(testPoint, )
         slog("test point: %f, %f, %f", testPoint.x, testPoint.y, testPoint.z);
         Edge3D ray;
@@ -278,56 +278,37 @@ void player_think(Entity *self)
     // hitBoxEnt_update(creeperBounds, creeper);
     // if(fence != NULL && fenceBounds != NULL)
     //     hitBoxEnt_update(fenceBounds, fence);
-    if(keys[SDL_SCANCODE_F2]){ //probably should change the button
-        //self is the player entity
-        //seems to work when trying to raycast into the -y side, very inconsistent when ray casting into the +y side
-        Vector3D playerPos = self->position;
-        //playerPos.z += 7.5;
-        float distance = 5.0; //10 actually makes a distance of 25, 5 = 12.5 distance and so on
-        float pitch = self->rotation.x;
-        float yaw = self->rotation.z;
-        float sp = sinf(pitch);
-        float cp = cosf(pitch) - M_PI_2;
-        float sy = sinf(yaw - M_PI_2);
-        float cy = cosf(yaw - M_PI_2);
-
-        Vector3D dir = vector3d(cp*cy, cp*sy, sp);
-        float x = playerPos.x + dir.x * distance;
-        float y = playerPos.y + dir.y * distance;
-        float z = playerPos.z + dir.z * distance;
-        Vector3D testPoint = vector3d(x, y, z);
-        slog("testPoint: %f, %f, %f", x, y, z);
-        Edge3D ray; //more like a line segment then a ray
-        ray.a = playerPos;
-        ray.b = testPoint;
-        Vector3D *poc = NULL, *normal = NULL;
-        slog("edge length: %f", edge3DLength(ray));
-        self->position = testPoint;
-        for(int j=0; j<i; j++){
-            //slog("in entity loop");
-            //slog("Entity[j] bounding box: %f, %f, %f\n%f, %f, %f", entityList[j]->bounds.x, entityList[j]->bounds.y, entityList[j]->bounds.z, entityList[j]->bounds.d, entityList[j]->bounds.w, entityList[j]->bounds.h);
-            // Box bound;
-            // bound.x = entityList[j]->bounds.x;
-            // bound.y = entityList[j]->bounds.y;
-            // bound.z = entityList[j]->bounds.z;
-            // bound.h = 10;
-            // bound.d = 5;
-            // bound.w = 5;
-            //slog("bound box: %f, %f, %f\n%f, %f, %f", bound.x, bound.y, bound.z, bound.d, bound.w, bound.h);
-
-            if(gfc_edge_box_test(ray, entityList[j]->bounds, poc, normal) && entityList[j]->type == ET_monster){
-                slog("intersected with entity type: %i", entityList[j]->type);
-                slog("intersected entity pos: %f, %f, %f", entityList[j]->position.x, entityList[j]->position.y, entityList[j]->position.z);
-                entity_damage(self, entityList[j], self->attackDamage, 0);
-                //return entityList[j];
-            }
-            else if(gfc_edge_box_test(ray, entityList[j]->bounds, poc, normal) && entityList[j]->type != ET_monster){
-                slog("interected with non-monster ent");
-            }
+    if(keys[SDL_SCANCODE_F2]){ //raycast, distance based off attack type, probably should change the button
+        gunshot = gfc_sound_load("sounds/382735__schots__gun-shot.wav", 1.0, 3);
+        gfc_sound_play(gunshot, 0, 0.5, -1, -1);
+        switch(self->attackType){
+            case 0:
+                //bullet
+                rayCast(self, 50);
+                break;
+            case 1:
+                //fire
+                rayCast(self, 15);
+                break;
+            case 2:
+                //melee
+                rayCast(self, 5);
+                break;
+            case 3:
+                //magic
+                rayCast(self, 15);
+                break;
+            case 4:
+                //ice
+                rayCast(self, 20);
+                break;
         }
+        gfc_sound_free(gunshot);
     }
     
     if(keys[SDL_SCANCODE_F4]){
+        //rotate 180 degrees instantly
+        //used for testing since track pad is slow to turn
         self->rotation.z += M_PI;
     }
     //check for goo effects, eventually make them work on entities
@@ -656,7 +637,7 @@ void player_think(Entity *self)
         slog("pos x: %f, pos y: %f, pos z: %f\n", self->position.x, self->position.y, self->position.z);
     }
     //keys for spawning monsters when in edit mode
-    if(self->editMode == 0){
+    if(self->editMode == 1){
         if (keys[SDL_SCANCODE_1] && !keys[SDL_SCANCODE_LSHIFT]){
             monster1 = monster1_new(vector3d(self->position.x, self->position.y, self->position.z));
             if(monster1){
@@ -1654,13 +1635,23 @@ void player_update(Entity *self, Entity *player)//needed player twice to stop a 
             }
         }
     }
+
+    if(self->health == 0){
+        //slog("self->isDead == %i", self->isDead);
+        //you died
+        self->isDead = 1;
+    }
 }
 
 void player_damage(int damage, Entity *self, int heal, Entity *inflictor){
     if(heal == 0){//damage not heal
         int temp = self->health - damage;
-        if(temp<0) temp = 0;
-        self->health = 0;
+        //slog("temp1: %i", temp);
+        if(temp < 0){
+            temp = 0;
+        }
+        //slog("temp2: %i", temp);
+        if(self->editMode != 1) self->health = temp;
     }
     else{//heal player with number from damage value
         int temp = self->health + damage;
@@ -1904,86 +1895,100 @@ void loadEntities(Entity *self){ //loads entities from json and spawns them
 
 int x = 0, waveCount = 0;
 void player_spawnWave(Vector3D spawnPos, Entity *player){
+    player->currentWave = waveCount;
     Entity *newEnt = NULL;
     srand(time(NULL));
     time(&currentTime);
     time_t dif = currentTime - lastTime;//if dif = 1, then thats 10 sec
-
     spawnPos.z -= 3;
-    if(dif>=1 && player->editMode != 0){
-        int num = (rand() % 10); //get a random number 0-9 to spawn a random enemy
+    if(dif>=2 && player->editMode != 1){
         // newEnt = monster7_creeper_new(spawnPos);
         // lastTime = currentTime;
         // entityList[i] = newEnt;
         // i++;
-        switch (num){
-            case 0:
-                spawnPos.z += 2;
-                newEnt = monster1_new(spawnPos);
-                lastTime = currentTime;
-                entityList[i] = newEnt;
-                i++;
-                break;
-            case 11:
-                newEnt = monster2_kong_new(spawnPos);
-                lastTime = currentTime;
-                entityList[i] = newEnt;
-                i++;
-                break;
-            case 2:
-                spawnPos.z += 5;
-                newEnt = monster3_porygon_new(spawnPos);
-                lastTime = currentTime;
-                entityList[i] = newEnt;
-                i++;
-                break;
-            case 3:
-                spawnPos.z += 1;
-                newEnt = monster4_skelly_new(spawnPos);
-                lastTime = currentTime;
-                entityList[i] = newEnt;
-                i++;
-                break;
-            case 41:
-                newEnt = monster5_mario_new(spawnPos);
-                lastTime = currentTime;
-                entityList[i] = newEnt;
-                i++;
-                break;
-            case 51:
-                spawnPos.z += 2;
-                newEnt = monster7_creeper_new(spawnPos);
-                lastTime = currentTime;
-                entityList[i] = newEnt;
-                i++;
-                break;
-            case 6:
-                spawnPos.z += 3;
-                newEnt = monster8_finn_new(spawnPos);
-                lastTime = currentTime;
-                entityList[i] = newEnt;
-                i++;
-                break;
-            case 7:
-                spawnPos.z -= 0.5;
-                newEnt = monster9_goomba_new(spawnPos);
-                lastTime = currentTime;
-                entityList[i] = newEnt;
-                i++;
-                break;
-            case 8:
-                spawnPos.z += 2;
-                newEnt = monster10_arlo_new(spawnPos);
-                lastTime = currentTime;
-                entityList[i] = newEnt;
-                i++;
-                break;
-            case 91:
-                newEnt = monster6_yoshi_new(spawnPos);
-                lastTime = currentTime;
-                entityList[i] = newEnt;
-                i++;
-                break;
+        if(waveCount % 5 != 0){
+            for(int m = 0; m<waveCount; m++){
+                Vector3D newSpawnPos = {0};
+                if (m != 0) newSpawnPos.x += 4;
+                int num = (rand() % 10); //get a random number 0-9 to spawn a random enemy
+                switch (num){
+                    case 0:
+                        newSpawnPos = spawnPos;
+                        newSpawnPos.z += 1;
+                        newEnt = monster1_new(newSpawnPos);
+                        lastTime = currentTime;
+                        entityList[i] = newEnt;
+                        i++;
+                        break;
+                    case 1:
+                        newEnt = monster2_kong_new(spawnPos);
+                        lastTime = currentTime;
+                        entityList[i] = newEnt;
+                        i++;
+                        break;
+                    case 2:
+                        newSpawnPos = spawnPos;
+                        newSpawnPos.z += 5;
+                        newEnt = monster3_porygon_new(newSpawnPos);
+                        lastTime = currentTime;
+                        entityList[i] = newEnt;
+                        i++;
+                        break;
+                    case 3:
+                        newSpawnPos = spawnPos;
+                        newSpawnPos.z += 1;
+                        newEnt = monster4_skelly_new(newSpawnPos);
+                        lastTime = currentTime;
+                        entityList[i] = newEnt;
+                        i++;
+                        break;
+                    case 4:
+                        newEnt = monster5_mario_new(spawnPos);
+                        lastTime = currentTime;
+                        entityList[i] = newEnt;
+                        i++;
+                        break;
+                    case 5:
+                        newSpawnPos = spawnPos;
+                        newSpawnPos.z += 2;
+                        newEnt = monster7_creeper_new(newSpawnPos);
+                        lastTime = currentTime;
+                        entityList[i] = newEnt;
+                        i++;
+                        break;
+                    case 6:
+                        newSpawnPos = spawnPos;
+                        newSpawnPos.z += 3;
+                        newEnt = monster8_finn_new(newSpawnPos);
+                        lastTime = currentTime;
+                        entityList[i] = newEnt;
+                        i++;
+                        break;
+                    case 7:
+                        newSpawnPos = spawnPos;
+                        newSpawnPos.z -= 0.5;
+                        newEnt = monster9_goomba_new(newSpawnPos);
+                        lastTime = currentTime;
+                        entityList[i] = newEnt;
+                        i++;
+                        break;
+                    case 8:
+                        newSpawnPos = spawnPos;
+                        newSpawnPos.z += 2;
+                        newEnt = monster10_arlo_new(newSpawnPos);
+                        lastTime = currentTime;
+                        entityList[i] = newEnt;
+                        i++;
+                        break;
+                    case 9:
+                        newEnt = monster6_yoshi_new(spawnPos);
+                        lastTime = currentTime;
+                        entityList[i] = newEnt;
+                        i++;
+                        break;
+                }
+                spawnPos.x -= 2;
+            }
         }        
         waveCount++;
         if(waveCount % 5 == 0 && newEnt != NULL){ //every 5 waves, make the enemy that spawns a boss by raising the scale and damage, setting it to a boss will raise the damage
@@ -1991,7 +1996,7 @@ void player_spawnWave(Vector3D spawnPos, Entity *player){
             vector3d_scale(newEnt->scale, currentScale, 4);
             newEnt->isBoss = 1;
             newEnt->health *= 3; //triple normal health
-            newEnt->attackDamage *=2; //double normal attack
+            newEnt->attackDamage *=4; //double normal attack
             newEnt->position.z += 10; //gets set in the ground so raise it up a little bit
             newEnt->bounds.z -= 10; //change to location of the bottom of the bounding box
             newEnt->bounds.d *= 2; //update the bounds for the new size of the model
@@ -2003,6 +2008,7 @@ void player_spawnWave(Vector3D spawnPos, Entity *player){
         }
         
         x++;
+
         slog("spawned one: %i", x);
     }
 
@@ -2011,33 +2017,51 @@ void player_spawnWave(Vector3D spawnPos, Entity *player){
     // slog("currentTime(%ld) - lastTime(%ld) = %ld",currentTime, lastTime, dif);
 }
 
-Entity * rayCast(Entity *self){
+void rayCast(Entity *self, float distance){
     //self is the player entity
+    //seems to work when trying to raycast into the -y side, very inconsistent when ray casting into the +y side
     Vector3D playerPos = self->position;
-    float distance = 1000.0;
-    float pitch = self->rotation.x;// * (M_PI/180);
-    float yaw = self->rotation.z;// * (M_PI/180);
+    playerPos.z += 7.5;
+    //float distance = 5.0; //10 actually makes a distance of 25, 5 = 12.5 distance and so on
+    float pitch = self->rotation.x;
+    float yaw = self->rotation.z;
     float sp = sinf(pitch);
     float cp = cosf(pitch) - M_PI_2;
     float sy = sinf(yaw - M_PI_2);
     float cy = cosf(yaw - M_PI_2);
 
-    Vector3D dir = vector3d((cp*cy), cp*sy, sp);
+    Vector3D dir = vector3d(cp*cy, cp*sy, sp);
     float x = playerPos.x + dir.x * distance;
     float y = playerPos.y + dir.y * distance;
     float z = playerPos.z + dir.z * distance;
     Vector3D testPoint = vector3d(x, y, z);
-
-    Edge3D ray;
+    slog("testPoint: %f, %f, %f", x, y, z);
+    Edge3D ray; //more like a line segment then a ray
     ray.a = playerPos;
     ray.b = testPoint;
-    Vector3D *poc = NULL, *normal = NULL;       
-    
+    Vector3D *poc = NULL, *normal = NULL;
+    slog("edge length: %f", edge3DLength(ray));
+    // self->position = testPoint;
     for(int j=0; j<i; j++){
-        slog("in entity loop");
-        if(gfc_edge_box_test(ray, entityList[j]->bounds, poc, normal)){
+        //slog("in entity loop");
+        //slog("Entity[j] bounding box: %f, %f, %f\n%f, %f, %f", entityList[j]->bounds.x, entityList[j]->bounds.y, entityList[j]->bounds.z, entityList[j]->bounds.d, entityList[j]->bounds.w, entityList[j]->bounds.h);
+        // Box bound;
+        // bound.x = entityList[j]->bounds.x;
+        // bound.y = entityList[j]->bounds.y;
+        // bound.z = entityList[j]->bounds.z;
+        // bound.h = 10;
+        // bound.d = 5;
+        // bound.w = 5;
+        //slog("bound box: %f, %f, %f\n%f, %f, %f", bound.x, bound.y, bound.z, bound.d, bound.w, bound.h);
+
+        if(gfc_edge_box_test(ray, entityList[j]->bounds, poc, normal) && entityList[j]->type == ET_monster){
             slog("intersected with entity type: %i", entityList[j]->type);
-            return entityList[j];
+            slog("intersected entity pos: %f, %f, %f", entityList[j]->position.x, entityList[j]->position.y, entityList[j]->position.z);
+            entity_damage(self, entityList[j], self->attackDamage, 0);
+            //return entityList[j];
+        }
+        else if(gfc_edge_box_test(ray, entityList[j]->bounds, poc, normal) && entityList[j]->type != ET_monster){
+            slog("interected with non-monster ent");
         }
     }
 }

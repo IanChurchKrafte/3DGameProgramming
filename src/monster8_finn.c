@@ -2,6 +2,7 @@
 #include "simple_logger.h"
 #include "monster8_finn.h"
 #include "collision.h"
+#include "player.h"
 
 
 void monster8_finn_update(Entity *self, Entity *player);
@@ -103,7 +104,7 @@ void monster8_finn_update(Entity *self, Entity *player)
     }
     else{
         // enemy is touching player
-        // player->health -= 1;
+        player_damage(1, player, 0, self);
     }
 }
 
