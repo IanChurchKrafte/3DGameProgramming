@@ -32,8 +32,8 @@ Entity *monster2_kong_new(Vector3D position)
     ent->bounds.x = position.x;
     ent->bounds.y = position.y;
     ent->bounds.z = position.z;
-    ent->bounds.w = 10;
-    ent->bounds.h = 10;
+    ent->bounds.w = 5;
+    ent->bounds.h = 5;
     ent->bounds.d = 10;
 
     ent->health = 100;

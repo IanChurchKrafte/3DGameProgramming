@@ -76,7 +76,7 @@ void monster6_yoshi_update(Entity *self, Entity *player)
     Vector2D vect = vector2d(self->position.x, self->position.y);
     selfPos = &vect;
     Vector2D playerPos = vector2d(player->position.x, player->position.y);
-    if(!gfc_box_overlap(player->bounds, self->bounds)){
+    if(!gfc_box_overlap(player->bounds, self->bounds) && player->editMode != 1){ //if the player is in edit mode, don't let the AI move from their spawn location
         //slog("not colliding with player");
         //add entity list for entities spawn in by the player
         if(player->defenseCount == 0){

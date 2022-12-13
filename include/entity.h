@@ -83,6 +83,7 @@ typedef struct Entity_S
     //Entity              *defenseList;
     Box                 defenseBounds[200]; //list of bounding boxes for the defenses, max is 200
     int                 defenseCount;
+    Box                 defenseObj;
     int                 behindWall; //1 if behind wall (start to damage wall), 0 if not
     int                 stateSwitched;
     EntityType          type; //0 for monster, 1 for wall, 2 for turret, 3 for goo

@@ -88,6 +88,7 @@ void monster4_skelly_update(Entity *self, Entity *player)
     selfPos = &vect;
     Vector2D playerPos = vector2d(player->position.x, player->position.y);
     if(!gfc_box_overlap(player->bounds, self->bounds)){
+        self->state = ES_hunt;
         //slog("not colliding with player");
         //add entity list for entities spawn in by the player
         if(player->defenseCount == 0){
@@ -112,8 +113,7 @@ void monster4_skelly_update(Entity *self, Entity *player)
         }
     }
     else{
-        // enemy is touching player
-        // player->health -= 1;
+        self->state = ES_idle;
     }
 
 
@@ -123,42 +123,7 @@ void monster4_skelly_update(Entity *self, Entity *player)
     //     self->position.z -=1;
     // }
     
-    if(lastCheck == 0){
-        self->model = idleAnim[0];
-        lastCheck = 1;
-    }
-    else if(lastCheck == 1){
-        self->model = idleAnim[1];
-        lastCheck = 2;
-    }
-    else if(lastCheck == 2){
-        self->model = idleAnim[2];
-        lastCheck = 3;
-    }
-    else if(lastCheck == 3){
-        self->model = idleAnim[3];
-        lastCheck = 4;
-    }
-    else if(lastCheck == 4){
-        self->model = idleAnim[4];
-        lastCheck = 5;
-    }
-    else if(lastCheck == 5){
-        self->model = idleAnim[5];
-        lastCheck = 6;
-    }
-    else if(lastCheck == 6){
-        self->model = idleAnim[6];
-        lastCheck = 7;
-    }
-    else if(lastCheck == 7){
-        self->model = idleAnim[7];
-        lastCheck = 8;
-    }
-    else if(lastCheck == 8){
-        self->model = idleAnim[8];
-        lastCheck = 0;
-    }
+    
 
 
     // else if(lastCheck == 9){
@@ -181,9 +146,48 @@ void monster4_skelly_think(Entity *self)
         case ES_idle:
             //look for player
             //do idle animation
+            self->model = idleAnim[0];
             break;
         case ES_hunt:
             // set move towards player
+            if(self->isDead == 1)
+                self->state = ES_dead;
+            if(lastCheck == 0){
+                self->model = idleAnim[0];
+                lastCheck = 1;
+            }
+            else if(lastCheck == 1){
+                self->model = idleAnim[1];
+                lastCheck = 2;
+            }
+            else if(lastCheck == 2){
+                self->model = idleAnim[2];
+                lastCheck = 3;
+            }
+            else if(lastCheck == 3){
+                self->model = idleAnim[3];
+                lastCheck = 4;
+            }
+            else if(lastCheck == 4){
+                self->model = idleAnim[4];
+                lastCheck = 5;
+            }
+            else if(lastCheck == 5){
+                self->model = idleAnim[5];
+                lastCheck = 6;
+            }
+            else if(lastCheck == 6){
+                self->model = idleAnim[6];
+                lastCheck = 7;
+            }
+            else if(lastCheck == 7){
+                self->model = idleAnim[7];
+                lastCheck = 8;
+            }
+            else if(lastCheck == 8){
+                self->model = idleAnim[8];
+                lastCheck = 0;
+            }
             break;
         case ES_dead:
             // remove myself from the system

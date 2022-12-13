@@ -45,6 +45,9 @@ extern int __DEBUG;
 void saveWorld(World *w);
 void loadWorld();
 
+//function is buggy and gets stuck on the first frame
+bossGifFun(int lastFrame, Vector2D pos, Sprite *bossGif[20], Entity *player);
+
 int main(int argc,char *argv[])
 {
     int done = 0, fin = 0, new = 0, load = 0;
@@ -61,6 +64,7 @@ int main(int argc,char *argv[])
     //        *mario = NULL, *yoshi = NULL, *creeper = NULL, *finn = NULL, *goomba = NULL, *arlo = NULL;
     // Entity *fence = NULL, *wall = NULL, *turret1 = NULL, *turret2 = NULL, *turret3 = NULL;
     //Particle particle[100];
+    //Entity *creeper = NULL;
     Matrix4 skyMat;
     Model *sky;
     
@@ -150,8 +154,8 @@ int main(int argc,char *argv[])
     //setup audio
     //background game sound for when in the main menu, loops 10 times
     gfc_audio_init(256, 16, 4, 1, 1, 1);
-    Sound *music = gfc_sound_load("music/209561__dneproman__8-bit-style.wav", 1.0, 1);
-    gfc_sound_play(music, 10, 1.0, -1, 1);
+    Sound *menuMusic = gfc_sound_load("music/209561__dneproman__8-bit-style.wav", 1.0, 1);
+    gfc_sound_play(menuMusic, 10, 1.0, -1, 1);
     
     //setup main menu
     //will be a sprite with buttons to click, new game, load game, and exit
@@ -203,17 +207,17 @@ int main(int argc,char *argv[])
         mouseFrame += 0.01;
         if (mouseFrame >= 16)mouseFrame = 0;
 
-        SDL_Event e;
-        int buttonDown = 0;
-        while(SDL_PollEvent(&e)){
-            slog("in poll event: %s", e.type);
-            switch (e.type){
-                case 4:
-                    buttonDown = 1;
-                    slog("buttonDown");
-                    break;
-            }
-        }
+        // SDL_Event e;
+        // int buttonDown = 0;
+        // while(SDL_PollEvent(&e)){
+        //     slog("in poll event: %s", e.type);
+        //     switch (e.type){
+        //         case 4:
+        //             buttonDown = 1;
+        //             slog("buttonDown");
+        //             break;
+        //     }
+        // }
 
         const Uint8 * keys;
         keys = SDL_GetKeyboardState(NULL);
@@ -256,6 +260,7 @@ int main(int argc,char *argv[])
             player->editMode = 1;
             fin = 1;
             new = 1;
+            player->points = 50000;
         }
 
         gf2d_sprite_draw(mouse,vector2d(mousex,mousey),vector2d(0.5,0.5),vector3d(8,8,0),gfc_color(0.3,.9,1,0.9),(Uint32)mouseFrame);
@@ -263,10 +268,14 @@ int main(int argc,char *argv[])
         gf3d_vgraphics_render_end();
 
     }
+    gfc_sound_play(menuMusic, 1, 0, -1, 1);
     gf2d_sprite_free(mainMenu);
     gf2d_sprite_free(newGame);
     gf2d_sprite_free(loadGame);
+    gf2d_sprite_free(editMode);
     gf2d_sprite_free(exitGame);
+    gfc_sound_free(menuMusic);
+
 
 
 
@@ -303,6 +312,15 @@ int main(int argc,char *argv[])
                 gf3d_model_draw_sky(sky,skyMat,gfc_color(1,1,1,1));
                 world_draw(w);
                 entity_draw_all();
+                // Shape box;
+                // box.s.r.h = creeper->bounds.h;
+                // box.s.r.w = creeper->bounds.w;
+                // box.s.r.x = creeper->bounds.x;
+                // box.s.r.y = creeper->bounds.y;
+                // box.type = ST_RECT;
+                
+                //gf2d_draw_shape(box, gfc_color(0,1,0,1), vector2d(0,0));
+                
                 
                 /*
                 for (a = 0; a < 100; a++)
@@ -319,7 +337,7 @@ int main(int argc,char *argv[])
 
                 char ui[64];
                 char attack[7];
-                unsigned short points = player->points;
+                unsigned int points = player->points;
                 unsigned short health = player->health;
                 unsigned short damage = player->attackDamage;
                 int attackType = player->attackType;
@@ -341,19 +359,33 @@ int main(int argc,char *argv[])
                         strncpy(attack, "ice", 4);
                         break;
                 }
+                //for testing
+                // float x = player->position.x;
+                // float y = player->position.y;
+                // float z = player->position.z;
+                // char pos[32];
+                // sprintf(pos, "X: %f, Y: %f, z: %f", x, y, z);
+
+
                 //ui draw
-                sprintf(ui, "Points: %hi     Health: %hi     Attack: %s    Damage: %hi", points, health, attack, damage);
+                sprintf(ui, "Points: %u     Health: %hi     Attack: %s    Damage: %hi", points, health, attack, damage);
 
                 gf2d_draw_rect_filled(gfc_rect(10,10,1000,40),gfc_color8(128,128,128,255));
                 
 
                 gf2d_font_draw_line_tag(ui,FT_H1,gfc_color(1,1,1,1), vector2d(10,12.5));
+
+                
                 //free(point);
                 gf2d_draw_rect(gfc_rect(10 ,10,1000,40),gfc_color8(255,0,0,255));
                 
-                gf2d_sprite_draw(crosshair, vector2d(900,540), vector2d(1,1), vector3d(0,0,0), gfc_color(1,1,1,1), 1);
+                //for testing
+                // gf2d_font_draw_line_tag(pos,FT_H1,gfc_color(0,0,0,1), vector2d(10,30)); 
+                gf2d_sprite_draw(crosshair, vector2d(900,510), vector2d(1,1), vector3d(0,0,0), gfc_color(1,1,1,1), 1);
                 //gf2d_sprite_draw(mouse,vector2d(mousex,mousey),vector2d(2,2),vector3d(8,8,0),gfc_color(0.3,.9,1,0.9),(Uint32)mouseFrame);
 
+                //the only way that seem to work to go through each frame of the gif with the right timing, each time it goes into the next iteration of the game loop it will go to the next frame of the gif
+                //looks bad but it works perfectly
                 if(player->bossSpawning == 1){
                     if(lastSpawn == 0){
                         gf2d_sprite_draw(bossGif[lastSpawn], bossBannerPostion, vector2d(1,1), vector3d(0,0,0), gfc_color(1,1,1,1), 1);
@@ -436,6 +468,8 @@ int main(int argc,char *argv[])
                         lastSpawn = 0;
                         player->bossSpawning=0;
                     }
+                    // bossGifFun(lastSpawn, bossBannerPostion, bossGif, player);
+                    //gf2d_draw_rect(box.s.r, gfc_color(0,1,0,1));
                 }
                 
                 //slog("Time Elapsed: %u", currentTime-lastTime);
@@ -460,7 +494,7 @@ int main(int argc,char *argv[])
     
     world_delete(w);
 
-    gfc_sound_free(music);
+    
     
     vkDeviceWaitIdle(gf3d_vgraphics_get_default_logical_device());    
     //cleanup
@@ -528,6 +562,16 @@ void loadWorld(World *w){
     char *str = sj_get_string_value(sj_object_get_value(model, "model"));
     //&w->model->filename=str;
 
+}
+
+int bossGifFun(int lastFrame, Vector2D pos, Sprite *bossGif[20], Entity *player){
+    gf2d_sprite_draw(bossGif[lastFrame], pos, vector2d(1,1), vector3d(0,0,0), gfc_color(1,1,1,1), 1);
+    if(lastFrame == 19){
+        player->bossSpawning = 0;
+        return 0;
+    }
+    else
+        return lastFrame++;
 }
 
 /*eol@eof*/

@@ -104,7 +104,7 @@ FontImage *gf2d_font_image_get(
             continue;
         }
         if (!gfc_color_cmp(image->color, color)){
-            slog("color doesn't match");
+            //slog("color doesn't match");
             continue;
         }
         if (gfc_block_cmp(image->text,text)!= 0){

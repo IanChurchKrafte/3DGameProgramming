@@ -36,9 +36,9 @@ Entity *monster7_creeper_new(Vector3D position)
     ent->bounds.x = position.x;
     ent->bounds.y = position.y;
     ent->bounds.z = position.z;
-    ent->bounds.w = 5;
+    ent->bounds.w = 2.5;
     ent->bounds.h = 5;
-    ent->bounds.d = 5;
+    ent->bounds.d = 2.5;
 
     ent->type = ET_monster;
     ent->entityNum = 7;
@@ -81,7 +81,7 @@ void monster7_creeper_update(Entity *self, Entity *player)
     Vector2D vect = vector2d(self->position.x, self->position.y);
     selfPos = &vect;
     Vector2D playerPos = vector2d(player->position.x, player->position.y);
-    if(!gfc_box_overlap(player->bounds, self->bounds)){
+    if(!gfc_box_overlap(player->bounds, self->bounds) && player->editMode != 1){
         //slog("not colliding with player");
         //add entity list for entities spawn in by the player
         if(player->defenseCount == 0){
@@ -91,17 +91,31 @@ void monster7_creeper_update(Entity *self, Entity *player)
             self->position.y = selfPos->y;
         }
         for(int i=0; i<player->defenseCount; i++){
-            //slog("knows that a fence is here");
-            if(!gfc_box_overlap(player->defenseBounds[i], self->bounds)){
-                //slog("not colliding with defense entity");
+            // //slog("knows that a fence is here");
+            // if(!gfc_box_overlap(player->defenseBounds[i], self->bounds)){
+            //     //slog("not colliding with defense entity");
+            //     vector2d_move_towards(selfPos, vector2d(self->position.x, self->position.y), playerPos, 0.5);
+            //     self->position.x = selfPos->x;
+            //     self->position.y = selfPos->y;
+            //     //return 1;
+            // }
+            // else{
+            //     //slog("stuck beind wall, now damaging it");
+            //     self->behindWall = 1;
+            // }
+            if(gfc_box_overlap(player->defenseBounds[i], self->bounds)){
+                //colision with a defense object
+                self->defenseObj = player->defenseBounds[i];
+            }
+            else if(gfc_box_overlap(player->bounds, self->bounds)){
+                //collision with player
+                entity_damage(self, player, 2, 0);
+            }
+            else{
+                //no collision continue on path
                 vector2d_move_towards(selfPos, vector2d(self->position.x, self->position.y), playerPos, 0.5);
                 self->position.x = selfPos->x;
                 self->position.y = selfPos->y;
-                //return 1;
-            }
-            else{
-                //slog("stuck beind wall, now damaging it");
-                self->behindWall = 1;
             }
         }
     }

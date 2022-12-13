@@ -168,6 +168,8 @@ void entity_damage(Entity *inflictor, Entity *self, int damage, int heal){
         if(temp == 0){
             if(self->isPlayer == 0){
                 self->onDeath(self);
+                if(inflictor->behindWall == 1)
+                    inflictor->behindWall = 0;
             }
             inflictor->points+=60; //50 for a kill +10 for the hit that had to happend to get the kill
         }
