@@ -44,6 +44,7 @@ Entity *monster10_arlo_new(Vector3D position)
     ent->resistance = 0; //resistant to bullet damage
     ent->selectedColor = gfc_color(0.98, 0.35, 0, 0.93); //orange
     ent->selected = 1;
+    ent->attackDamage = 1;
     return ent;
 }
 
@@ -102,7 +103,7 @@ void monster10_arlo_update(Entity *self, Entity *player)
     }
     else{
         // enemy is touching player
-        player_damage(1, player, 0, self);
+        player_damage(self->attackDamage, player, 0, self);
     }
 }
 

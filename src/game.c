@@ -213,26 +213,9 @@ int main(int argc,char *argv[])
         gfc_input_update();
 
         SDL_GetMouseState(&mousex,&mousey);
-        
-        
-        mouseFrame += 0.01;
-        if (mouseFrame >= 16)mouseFrame = 0;
-
-        // SDL_Event e;
-        // int buttonDown = 0;
-        // while(SDL_PollEvent(&e)){
-        //     slog("in poll event: %s", e.type);
-        //     switch (e.type){
-        //         case 4:
-        //             buttonDown = 1;
-        //             slog("buttonDown");
-        //             break;
-        //     }
-        // }
 
         const Uint8 * keys;
-        keys = SDL_GetKeyboardState(NULL);
-        
+        keys = SDL_GetKeyboardState(NULL);     
 
         gf2d_sprite_draw(mainMenu, vector2d(0,0), vector2d(2,2), vector3d(0,0,0), gfc_color(1,1,1,1), 1);
         gf2d_sprite_draw(newGame, vector2d(800,320), vector2d(1,1), vector3d(0,0,0), gfc_color(1,1,1,1), 1);
@@ -246,7 +229,7 @@ int main(int argc,char *argv[])
 
 
 
-        if(keys[SDL_SCANCODE_N] || (mousex >= 800 && mousex<=1150 && mousey>=320 && mousey<=380)){
+        if(keys[SDL_SCANCODE_N] || ((SDL_GetMouseState(&mousex, &mousey) & SDL_BUTTON_LMASK) && (mousex >= 800 && mousex<=1150 && mousey>=320 && mousey<=380))){
             //start new game
             fin = 1;
             new = 1;
@@ -254,7 +237,7 @@ int main(int argc,char *argv[])
             player->points = 0;
             slog("new game attempt");
         }
-        if(keys[SDL_SCANCODE_L] || (mousex >= 800 && mousex<=1150 && mousey>=460 && mousey<=520)){
+        if(keys[SDL_SCANCODE_L] || ((SDL_GetMouseState(&mousex, &mousey) & SDL_BUTTON_LMASK) && (mousex >= 800 && mousex<=1150 && mousey>=460 && mousey<=520))){
             //load game
             fin = 1;
             load = 1;
@@ -262,13 +245,13 @@ int main(int argc,char *argv[])
             player->editMode = 0;
             slog("load game attempt");
         }
-        if(keys[SDL_SCANCODE_Q] || (mousex >= 800 && mousex<=1150 && mousey>=780 && mousey<=810)){
+        if(keys[SDL_SCANCODE_Q] || ((SDL_GetMouseState(&mousex, &mousey) & SDL_BUTTON_LMASK) && (mousex >= 800 && mousex<=1150 && mousey>=780 && mousey<=810))){
             fin = 1;
             done = 1;
             slog("exit game attempt");
             //exit game
         }
-        if(keys[SDL_SCANCODE_E] || (mousex >= 800 && mousex<=1150 && mousey>=620 && mousey<=650)){
+        if(keys[SDL_SCANCODE_E] || ((SDL_GetMouseState(&mousex, &mousey) & SDL_BUTTON_LMASK) && (mousex >= 800 && mousex<=1150 && mousey>=620 && mousey<=650))){
             slog("edit mode");
             player->editMode = 1;
             fin = 1;
@@ -303,6 +286,7 @@ int main(int argc,char *argv[])
     int dead = 0;
     while(!done)
     {
+        gunModel_update(player->gunModel, player);
         
         gfc_input_update();
         gf2d_font_update();

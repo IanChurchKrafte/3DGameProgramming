@@ -45,6 +45,7 @@ Entity *monster8_finn_new(Vector3D position)
     ent->resistance = 4; //resistant to ice damage
     ent->selectedColor = gfc_color(0,0,1,0.9);//blue 
     ent->selected = 1;
+    ent->attackDamage = 1;
     return ent;
 }
 
@@ -104,7 +105,7 @@ void monster8_finn_update(Entity *self, Entity *player)
     }
     else{
         // enemy is touching player
-        player_damage(1, player, 0, self);
+        player_damage(self->attackDamage, player, 0, self);
     }
 }
 

@@ -45,6 +45,7 @@ Entity *monster9_goomba_new(Vector3D position)
     ent->resistance = 3; //resistant to magic damage
     ent->selectedColor = gfc_color(0.58, 0, 0.78, 0.7); //purple
     ent->selected = 1;
+    ent->attackDamage = 1;
     return ent;
 }
 
@@ -103,7 +104,7 @@ void monster9_goomba_update(Entity *self, Entity *player)
     }
     else{
         // enemy is touching player
-        player_damage(1, player, 0, self);
+        player_damage(self->attackDamage, player, 0, self);
     }
 }
 

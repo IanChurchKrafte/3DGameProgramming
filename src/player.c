@@ -34,6 +34,8 @@ this also helps incase multiple of same entity is spawned its not lost by settin
 #include "defense5_turret3.h"
 #include "collision.h"
 #include "saveGame.h"
+#include "rayCast.h"
+#include "gunModel.h"
 
 #include "gf2d_sprite.h"
 #include "gf2d_draw.h"
@@ -46,14 +48,6 @@ this also helps incase multiple of same entity is spawned its not lost by settin
 #include <time.h>
 #include <inttypes.h>
 
-float edge3DLength(Edge3D e){
-    float a,b,c;
-    a = e.a.x - e.b.x;
-    b = e.a.y - e.b.y;
-    c = e.a.z - e.b.z;
-    return vector3d_magnitude(vector3d(a,b,c));
-}
-
 //for wave spawning
 time_t *lastTime = 0, *currentTime = 0;
 
@@ -65,6 +59,7 @@ static int thirdPersonMode = 0;
 int points = 0, bossSpawning = 0, wallDestroyed = 0;
 Entity *slowGoo = NULL, *fastGoo = NULL, *healGoo = NULL, *dmgGoo = NULL, *incDmgGoo = NULL;
 Entity *fence, *wall, *turret1, *turret2, *turret3;
+Entity *gunModel = NULL;
 //Entity *defenseList;
 int defenseCount = 0; //to keep track of how many defense has spawned for collision
 Entity *monster1 = NULL, *monster2 = NULL, *monster3 = NULL, *monster4 = NULL, *monster5 = NULL, 
@@ -76,7 +71,7 @@ void player_death(Entity *self);
 bool jump(Entity *self, clock_t startTime, bool isJumping, bool midJump);
 void loadEntity(Entity *self);
 void player_spawnWave();
-void rayCast(Entity *self, float distance);
+//void rayCast(Entity *self, float distance);
 Entity *creeper, *creeperBounds, *fenceBounds = NULL;
 Sound *gunshot;
 
@@ -132,6 +127,9 @@ Entity *player_new(Vector3D position)
     //testing for points
     ent->points = 15000;
 
+    gunModel = gunModel_new(ent->position);
+    ent->gunModel = gunModel;
+
     // creeper = monster7_creeper_new(vector3d(-32, 23, -24));
     // entityList[i] = creeper;
     // i++;
@@ -144,6 +142,7 @@ Entity *player_new(Vector3D position)
 
 void player_think(Entity *self)
 {
+    
     //try to spawn wave
     player_spawnWave(vector3d(-32, 23, -24), self);
 
@@ -191,6 +190,8 @@ void player_think(Entity *self)
     w = vector2d_from_angle(self->rotation.z - GFC_HALF_PI);
     right.x = w.x;
     right.y = w.y;
+
+    int mmx, mmy;
 
     if(keys[SDL_SCANCODE_MINUS]){//just to put a breakpoint in gdb to check values
         slog("TEST");
@@ -278,31 +279,33 @@ void player_think(Entity *self)
     // hitBoxEnt_update(creeperBounds, creeper);
     // if(fence != NULL && fenceBounds != NULL)
     //     hitBoxEnt_update(fenceBounds, fence);
-    if(keys[SDL_SCANCODE_F2]){ //raycast, distance based off attack type, probably should change the button
+    if(SDL_GetMouseState(&mmx, &mmy) & SDL_BUTTON_LMASK){ //raycast, distance based off attack type, probably should change the button
         gunshot = gfc_sound_load("sounds/382735__schots__gun-shot.wav", 1.0, 3);
         gfc_sound_play(gunshot, 0, 0.5, -1, -1);
+        Entity *hitEnt = NULL;
         switch(self->attackType){
             case 0:
                 //bullet
-                rayCast(self, 50);
+                hitEnt = rayCast(self, 50, self);
                 break;
             case 1:
                 //fire
-                rayCast(self, 15);
+                hitEnt = rayCast(self, 15, self);
                 break;
             case 2:
                 //melee
-                rayCast(self, 5);
+                hitEnt = rayCast(self, 5, self);
                 break;
             case 3:
                 //magic
-                rayCast(self, 15);
+                hitEnt = rayCast(self, 15, self);
                 break;
             case 4:
                 //ice
-                rayCast(self, 20);
+                hitEnt = rayCast(self, 20, self);
                 break;
         }
+        if(hitEnt) entity_damage(self, hitEnt, self->attackDamage, 0);
         gfc_sound_free(gunshot);
     }
     
@@ -657,6 +660,7 @@ void player_think(Entity *self)
         }
         if (keys[SDL_SCANCODE_2] && !keys[SDL_SCANCODE_LSHIFT]){
             monster2 = monster2_kong_new(vector3d(self->position.x, self->position.y, self->position.z));
+            hitBoxEnt_new(monster2->position, monster2);
             if(monster2){
                 entityList[i] = monster2;
                 i++;
@@ -1641,6 +1645,9 @@ void player_update(Entity *self, Entity *player)//needed player twice to stop a 
         //you died
         self->isDead = 1;
     }
+
+    for(int j=0; j<i; j++)
+        self->entityList[j] = entityList[j];
 }
 
 void player_damage(int damage, Entity *self, int heal, Entity *inflictor){
@@ -2017,52 +2024,52 @@ void player_spawnWave(Vector3D spawnPos, Entity *player){
     // slog("currentTime(%ld) - lastTime(%ld) = %ld",currentTime, lastTime, dif);
 }
 
-void rayCast(Entity *self, float distance){
-    //self is the player entity
-    //seems to work when trying to raycast into the -y side, very inconsistent when ray casting into the +y side
-    Vector3D playerPos = self->position;
-    playerPos.z += 7.5;
-    //float distance = 5.0; //10 actually makes a distance of 25, 5 = 12.5 distance and so on
-    float pitch = self->rotation.x;
-    float yaw = self->rotation.z;
-    float sp = sinf(pitch);
-    float cp = cosf(pitch) - M_PI_2;
-    float sy = sinf(yaw - M_PI_2);
-    float cy = cosf(yaw - M_PI_2);
+// void rayCast(Entity *self, float distance){
+//     //self is the player entity
+//     //seems to work when trying to raycast into the -y side, very inconsistent when ray casting into the +y side
+//     Vector3D playerPos = self->position;
+//     playerPos.z += 7.5;
+//     //float distance = 5.0; //10 actually makes a distance of 25, 5 = 12.5 distance and so on
+//     float pitch = self->rotation.x;
+//     float yaw = self->rotation.z;
+//     float sp = sinf(pitch);
+//     float cp = cosf(pitch) - M_PI_2;
+//     float sy = sinf(yaw - M_PI_2);
+//     float cy = cosf(yaw - M_PI_2);
 
-    Vector3D dir = vector3d(cp*cy, cp*sy, sp);
-    float x = playerPos.x + dir.x * distance;
-    float y = playerPos.y + dir.y * distance;
-    float z = playerPos.z + dir.z * distance;
-    Vector3D testPoint = vector3d(x, y, z);
-    slog("testPoint: %f, %f, %f", x, y, z);
-    Edge3D ray; //more like a line segment then a ray
-    ray.a = playerPos;
-    ray.b = testPoint;
-    Vector3D *poc = NULL, *normal = NULL;
-    slog("edge length: %f", edge3DLength(ray));
-    // self->position = testPoint;
-    for(int j=0; j<i; j++){
-        //slog("in entity loop");
-        //slog("Entity[j] bounding box: %f, %f, %f\n%f, %f, %f", entityList[j]->bounds.x, entityList[j]->bounds.y, entityList[j]->bounds.z, entityList[j]->bounds.d, entityList[j]->bounds.w, entityList[j]->bounds.h);
-        // Box bound;
-        // bound.x = entityList[j]->bounds.x;
-        // bound.y = entityList[j]->bounds.y;
-        // bound.z = entityList[j]->bounds.z;
-        // bound.h = 10;
-        // bound.d = 5;
-        // bound.w = 5;
-        //slog("bound box: %f, %f, %f\n%f, %f, %f", bound.x, bound.y, bound.z, bound.d, bound.w, bound.h);
+//     Vector3D dir = vector3d(cp*cy, cp*sy, sp);
+//     float x = playerPos.x + dir.x * distance;
+//     float y = playerPos.y + dir.y * distance;
+//     float z = playerPos.z + dir.z * distance;
+//     Vector3D testPoint = vector3d(x, y, z);
+//     slog("testPoint: %f, %f, %f", x, y, z);
+//     Edge3D ray; //more like a line segment then a ray
+//     ray.a = playerPos;
+//     ray.b = testPoint;
+//     Vector3D *poc = NULL, *normal = NULL;
+//     slog("edge length: %f", edge3DLength(ray));
+//     // self->position = testPoint;
+//     for(int j=0; j<i; j++){
+//         //slog("in entity loop");
+//         //slog("Entity[j] bounding box: %f, %f, %f\n%f, %f, %f", entityList[j]->bounds.x, entityList[j]->bounds.y, entityList[j]->bounds.z, entityList[j]->bounds.d, entityList[j]->bounds.w, entityList[j]->bounds.h);
+//         // Box bound;
+//         // bound.x = entityList[j]->bounds.x;
+//         // bound.y = entityList[j]->bounds.y;
+//         // bound.z = entityList[j]->bounds.z;
+//         // bound.h = 10;
+//         // bound.d = 5;
+//         // bound.w = 5;
+//         //slog("bound box: %f, %f, %f\n%f, %f, %f", bound.x, bound.y, bound.z, bound.d, bound.w, bound.h);
 
-        if(gfc_edge_box_test(ray, entityList[j]->bounds, poc, normal) && entityList[j]->type == ET_monster){
-            slog("intersected with entity type: %i", entityList[j]->type);
-            slog("intersected entity pos: %f, %f, %f", entityList[j]->position.x, entityList[j]->position.y, entityList[j]->position.z);
-            entity_damage(self, entityList[j], self->attackDamage, 0);
-            //return entityList[j];
-        }
-        else if(gfc_edge_box_test(ray, entityList[j]->bounds, poc, normal) && entityList[j]->type != ET_monster){
-            slog("interected with non-monster ent");
-        }
-    }
-}
+//         if(gfc_edge_box_test(ray, entityList[j]->bounds, poc, normal) && entityList[j]->type == ET_monster){
+//             slog("intersected with entity type: %i", entityList[j]->type);
+//             slog("intersected entity pos: %f, %f, %f", entityList[j]->position.x, entityList[j]->position.y, entityList[j]->position.z);
+//             entity_damage(self, entityList[j], self->attackDamage, 0);
+//             //return entityList[j];
+//         }
+//         else if(gfc_edge_box_test(ray, entityList[j]->bounds, poc, normal) && entityList[j]->type != ET_monster){
+//             slog("interected with non-monster ent");
+//         }
+//     }
+// }
 /*eol@eof*/

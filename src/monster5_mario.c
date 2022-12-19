@@ -42,6 +42,7 @@ Entity *monster5_mario_new(Vector3D position)
 
     ent->type = ET_monster;
     ent->entityNum = 5;
+    ent->attackDamage = 1;
     return ent;
 }
 
@@ -99,7 +100,7 @@ void monster5_mario_update(Entity *self, Entity *player)
     }
     else{
         // enemy is touching player
-        player_damage(1, player, 0, self);
+        player_damage(self->attackDamage, player, 0, self);
     }
 }
 

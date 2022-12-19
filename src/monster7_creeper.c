@@ -50,6 +50,7 @@ Entity *monster7_creeper_new(Vector3D position)
     ent->resistance = 2; //resistant to melee damage;
     ent->selectedColor = gfc_color(0.96, 0.16, 0.57, 0.8); //pink
     ent->selected = 1;
+    ent->attackDamage = 1;
     return ent;
 }
 
@@ -122,7 +123,7 @@ void monster7_creeper_update(Entity *self, Entity *player)
     }
     else{
         // enemy is touching player
-        player->health -= 1;player_damage(1, player, 0, self);
+        player_damage(self->attackDamage, player, 0, self);
     }
 }
 

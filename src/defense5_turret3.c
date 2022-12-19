@@ -2,6 +2,7 @@
 #include "simple_logger.h"
 #include "defense5_turret3.h"
 #include "gfc_types.h"
+#include "rayCast.h"
 
 
 void defense5_turret3_update(Entity *self, Entity *player);
@@ -61,7 +62,36 @@ void defense5_turret3_update(Entity *self, Entity *player)
         slog("self pointer not provided");
         return;
     }
+    Entity *entityList[512];
+    for(int i=0; i<512; i++)
+        entityList[i] = player->entityList[i];
+    
     vector3d_add(self->position,self->position,self->velocity);
+    float distance = 0, temp = 1000;
+    Entity *followedMonster;
+    for(int i=0; i<512; i++){
+        if(entityList[i] == NULL)
+            continue; 
+        
+        if(entityList[i] && entityList[i]->type == ET_monster){
+            distance = distance3D(self->position, entityList[i]->position);
+            if (temp > distance){
+                temp = distance;
+                followedMonster = entityList[i];
+            }
+        }
+    }
+
+    if(followedMonster && distance <= 40){
+        Vector2D facingVec;
+        vector2d_sub(facingVec, followedMonster->position, self->position);
+        float rotate = atan2(facingVec.y, facingVec.x);
+        self->rotation.z = rotate + M_PI/2.0;
+        slog("%f, %f, %f", self->position.x, self->position.y, self->position.z);
+        Entity *hitEnt = rayCast(self, 50, player);
+        if(hitEnt)
+            entity_damage(player, hitEnt, 1, 0);
+    }
     
     self->bounds.x = self->position.x;
     self->bounds.y = self->position.y;

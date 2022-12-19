@@ -2,6 +2,7 @@
 #include "simple_logger.h"
 #include "defense4_turret2.h"
 #include "gfc_types.h"
+#include "rayCast.h"
 
 
 void defense4_turret2_update(Entity *self, Entity *player);
@@ -62,6 +63,37 @@ void defense4_turret2_update(Entity *self, Entity *player)
         return;
     }
     vector3d_add(self->position,self->position,self->velocity);
+
+    Entity *entityList[512];
+    for(int i=0; i<512; i++)
+        entityList[i] = player->entityList[i];
+    
+    vector3d_add(self->position,self->position,self->velocity);
+    float distance = 0, temp = 1000;
+    Entity *followedMonster;
+    for(int i=0; i<512; i++){
+        if(entityList[i] == NULL)
+            continue; 
+        
+        if(entityList[i] && entityList[i]->type == ET_monster){
+            distance = distance3D(self->position, entityList[i]->position);
+            if (temp > distance){
+                temp = distance;
+                followedMonster = entityList[i];
+            }
+        }
+    }
+
+    if(followedMonster && distance <= 40){
+        Vector2D facingVec;
+        vector2d_sub(facingVec, followedMonster->position, self->position);
+        float rotate = atan2(facingVec.y, facingVec.x);
+        self->rotation.z = rotate + M_PI;
+        slog("%f, %f, %f", self->position.x, self->position.y, self->position.z);
+        Entity *hitEnt = rayCast(self, 50, player);
+        if(hitEnt)
+            entity_damage(player, hitEnt, 15, 0);
+    }
     
     self->bounds.x = self->position.x;
     self->bounds.y = self->position.y;
@@ -106,14 +138,14 @@ void defense4_turret2_think(Entity *self)
 
 //for the fence and wall upgrading will only give more health for the enemies to break through
 void defense4_turret2_BASE_upgrade(Entity *self){
-    self->health = 150;
+    self->health = 300;
     self->attackDamage = 15;
     self->attackType = R_fire;
     self->selectedColor = gfc_color(1,1,1,1);
     self->selected = 1;
 }
 void defense4_turret2_T1_upgrade(Entity *self){
-    self->health = 150*2;
+    self->health = 300*2;
     self->attackDamage = 15 * 1.5;
     self->selectedColor = gfc_color(0, 1, 0, 0.8);
     self->selected = 1;
@@ -121,7 +153,7 @@ void defense4_turret2_T1_upgrade(Entity *self){
 }
 
 void defense4_turret2_T2_upgrade(Entity *self){
-    self->health = 150*3;
+    self->health = 300*3;
     self->attackDamage = self->attackDamage * 1.5;
     self->selectedColor = gfc_color(0, 0.5, 1, 0.8);
     self->selected = 1;

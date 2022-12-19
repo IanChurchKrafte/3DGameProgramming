@@ -62,6 +62,7 @@ Entity *monster4_skelly_new(Vector3D position)
 
     ent->type = ET_monster;
     ent->entityNum = 4;
+    ent->attackDamage = 1;
     return ent;
 }
 int lastCheck = 0;
@@ -115,7 +116,7 @@ void monster4_skelly_update(Entity *self, Entity *player)
     }
     else{
         self->state = ES_idle;
-        player_damage(1, player, 0, self);
+        player_damage(self->attackDamage, player, 0, self);
     }
 
 

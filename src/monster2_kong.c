@@ -34,13 +34,14 @@ Entity *monster2_kong_new(Vector3D position)
     ent->bounds.y = position.y;
     ent->bounds.z = position.z;
     ent->bounds.w = 5;
-    ent->bounds.h = 5;
-    ent->bounds.d = 10;
+    ent->bounds.h = 10;
+    ent->bounds.d = 5;
 
     ent->health = 100;
 
     ent->type = ET_monster;
     ent->entityNum = 2;
+    ent->attackDamage = 1;
     return ent;
 }
 
@@ -52,10 +53,16 @@ void monster2_kong_update(Entity *self, Entity *player)
         return;
     }
     vector3d_add(self->position,self->position,self->velocity);
+
+    Vector3D boxPos = vector3d(self->position.x - (self->bounds.w / 2), self->position.y - (self->bounds.h / 2.0), self->position.z);
     
     self->bounds.x = self->position.x;
     self->bounds.y = self->position.y;
     self->bounds.z = self->position.z;
+
+    // self->bounds.x = boxPos.x;
+    // self->bounds.y = boxPos.y;
+    // self->bounds.z = boxPos.z;
 
     Vector2D facingVec;
     vector2d_sub(facingVec, player->position, self->position);
@@ -92,14 +99,14 @@ void monster2_kong_update(Entity *self, Entity *player)
                 //return 1;
             }
             else{
-                //slog("stuck beind wall, now damaging it");
+                slog("stuck beind wall, now damaging it");
                 self->behindWall = 1;
             }
         }
     }
     else{
         // enemy is touching player
-        player_damage(1, player, 0, self);
+        player_damage(self->attackDamage, player, 0, self);
     }
     //self->rotation.z += 0.01;
 }

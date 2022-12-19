@@ -19,7 +19,7 @@ Entity *hitBoxEnt_new(Vector3D position, Entity *follow)
     }
     //ent->selectedColor = gfc_color(0.1,1,0.1,1);
     //ent->color = gfc_color(1,1,1,1);
-    ent->model = gf3d_model_load("models/hitbox.model");
+    ent->model = gf3d_model_load("models/test.model");
     ent->think = monster7_creeper_think;
     ent->update = hitBoxEnt_update;
     ent->scale = vector3d(1,1,1);
@@ -41,9 +41,9 @@ Entity *hitBoxEnt_new(Vector3D position, Entity *follow)
 }
 
 void hitBoxEnt_update(Entity *self, Entity *follow){
-    self->position.x = follow->bounds.x;
-    self->position.y = follow->bounds.y;
-    self->position.z = follow->bounds.z;
+    // self->position.x = follow->bounds.x;
+    // self->position.y = follow->bounds.y;
+    // self->position.z = follow->bounds.z;
 
     
 }

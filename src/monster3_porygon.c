@@ -41,6 +41,7 @@ Entity *monster3_porygon_new(Vector3D position)
     
     ent->type = ET_monster;
     ent->entityNum = 3;
+    ent->attackDamage = 1;
 
     return ent;
 }
@@ -99,7 +100,7 @@ void monster3_porygon_update(Entity *self, Entity *player)
     }
     else{
         // enemy is touching player
-        player_damage(1, player, 0, self);
+        player_damage(self->attackDamage, player, 0, self);
     }
     //self->rotation.z += 0.01;
 }

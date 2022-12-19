@@ -45,6 +45,7 @@ Entity *monster6_yoshi_new(Vector3D position)
     ent->resistance = 1; //resistant to fire damage
     ent->selectedColor = gfc_color(1,0,0,1); //red
     ent->selected = 1;
+    ent->attackDamage = 1;
     return ent;
 }
 
@@ -103,7 +104,7 @@ void monster6_yoshi_update(Entity *self, Entity *player)
     }
     else{
         // enemy is touching player
-        player_damage(1, player, 0, self);
+        player_damage(self->attackDamage, player, 0, self);
     }
 }
 
