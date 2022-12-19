@@ -1,0 +1,24 @@
+# Blender 3.4.0 MTL File: 'None'
+# www.blender.org
+
+newmtl spas12_mat01
+Ns 43.219307
+Ka 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+map_Kd SPAS12/C:/Users/user/Desktop/SPAS12/textures/spas12_mat02_Albedo.png
+map_Ks SPAS12/C:/Users/user/Desktop/SPAS12/textures/spas12_mat01_Metallic.png
+map_Bump SPAS12/C:/Users/user/Desktop/SPAS12/textures/spas12_mat01_Normal.png
+
+newmtl spas12_mat02
+Ns 43.219307
+Ka 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+map_Kd SPAS12/C:/Users/user/Desktop/SPAS12/textures/spas12_mat02_Albedo.png
+map_Ks SPAS12/C:/Users/user/Desktop/SPAS12/textures/spas12_mat02_Metallic.png
+map_Bump SPAS12/C:/Users/user/Desktop/SPAS12/textures/spas12_mat02_Normal.png

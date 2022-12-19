@@ -1,0 +1,7 @@
+{
+    "model":
+    {
+        "model":"models/gun/awp/awp.obj",
+        "texture":"models/gun/awp/Color.png"
+    }
+}

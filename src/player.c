@@ -73,7 +73,7 @@ void loadEntity(Entity *self);
 void player_spawnWave();
 //void rayCast(Entity *self, float distance);
 Entity *creeper, *creeperBounds, *fenceBounds = NULL;
-Sound *gunshot;
+Sound *pistol, *revolver, *ak47, *awp, *shotgun;
 
 /*
 will need to establish a 2d grid for the AI to be able to traverse on to be able to have pathfinding
@@ -129,6 +129,8 @@ Entity *player_new(Vector3D position)
 
     gunModel = gunModel_new(ent->position);
     ent->gunModel = gunModel;
+
+    
 
     // creeper = monster7_creeper_new(vector3d(-32, 23, -24));
     // entityList[i] = creeper;
@@ -189,33 +191,46 @@ void player_think(Entity *self)
     }
 
     if(SDL_GetMouseState(&mmx, &mmy) & SDL_BUTTON_LMASK){ //raycast, distance based off attack type
-        gunshot = gfc_sound_load("sounds/382735__schots__gun-shot.wav", 1.0, 3);
-        gfc_sound_play(gunshot, 0, 0.5, -1, -1);
+        pistol = gfc_sound_load("sounds/guns/382735__schots__gun-shot.wav", 1.0, 3);
+        revolver = gfc_sound_load("sounds/guns/231248-augustsandberg-smith-wesson-686-plus-4-inch-barrel_qigsONMB.wav", 1.0, 3);
+        ak47 = gfc_sound_load("sounds/guns/163457__lemudcrab__ak47-shot.wav", 1.0, 3);
+        awp = gfc_sound_load("sounds/guns/522359__filmmakersmanual__sniper-rifle-firing-shot-4.wav", 1.0, 3);
+        shotgun = gfc_sound_load("sounds/guns/163455__lemudcrab__shotgun-shot.wav", 1.0, 3);
         Entity *hitEnt = NULL;
         switch(self->attackType){
             case 0:
                 //bullet
+                //pistol with arms
                 hitEnt = rayCast(self, 50, self);
+                gfc_sound_play(pistol, 0, 0.5, -1, -1);
                 break;
             case 1:
                 //fire
+                //revolver
                 hitEnt = rayCast(self, 15, self);
+                gfc_sound_play(revolver, 0, 0.5, -1, -1);
                 break;
             case 2:
                 //melee
+                //shotgun
                 hitEnt = rayCast(self, 5, self);
+                gfc_sound_play(shotgun, 0, 0.5, -1, -1);
                 break;
             case 3:
                 //magic
+                //awp
                 hitEnt = rayCast(self, 15, self);
+                gfc_sound_play(awp, 0, 0.5, -1, -1);
                 break;
             case 4:
                 //ice
+                //ak47
                 hitEnt = rayCast(self, 20, self);
+                gfc_sound_play(ak47, 0, 0.5, -1, -1);
                 break;
         }
         if(hitEnt) entity_damage(self, hitEnt, self->attackDamage, 0);
-        gfc_sound_free(gunshot);
+        //gfc_sound_free(gunshot);
     }
     
     if(keys[SDL_SCANCODE_F4]){
@@ -1791,7 +1806,7 @@ void player_spawnWave(Vector3D spawnPos, Entity *player){
     time(&currentTime);
     time_t dif = currentTime - lastTime;//if dif = 1, then thats 10 sec
     spawnPos.z -= 3;
-    if(dif>=6 && player->editMode != 1 || waveCount == 0){
+    if((dif>=6 && player->editMode != 1) || (waveCount == 0 && player->editMode != 1)){
         // newEnt = monster7_creeper_new(spawnPos);
         // lastTime = currentTime;
         // entityList[i] = newEnt;

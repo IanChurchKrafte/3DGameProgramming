@@ -1,0 +1,7 @@
+{
+    "model":
+    {
+        "model":"models/gun/pistol/pistol.obj",
+        "texture":"models/gun/pistol/Gun.png"
+    }
+}

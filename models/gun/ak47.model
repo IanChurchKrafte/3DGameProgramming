@@ -1,0 +1,7 @@
+{
+    "model":
+    {
+        "model":"models/gun/ak47/ak47.obj",
+        "texture":"models/gun/ak47/AK47_low_None_BaseColor.png"
+    }
+}

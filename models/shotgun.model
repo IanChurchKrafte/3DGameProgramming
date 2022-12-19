@@ -1,0 +1,7 @@
+{
+    "model":
+    {
+        "model":"models/gun/shotgun/shotgun.obj",
+        "texture":"models/gun/shotgun/spas12_mat02_Albedo.png"
+    }
+}
