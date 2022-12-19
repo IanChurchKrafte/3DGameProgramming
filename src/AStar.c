@@ -5,8 +5,15 @@
 //[0][0]-[0][1] are the 2d x coordinates and [1][0]-[1][1] are the y coordinates of the box
 //201 total space, 200 for limit of defenses, and 1 extra for the center box
 
-int obstacleWS[201][2][2];
+//world coordinates
+//x: -40 y:40
+//x:40 y:40
+//x:40 y:-40
+//x:-40 y-40
+
+int obstacleWS[201][2][2] = {0};
 int k = 0;
+int world[80][80] = {0};
 
 int pMoves[4];
 void obstacleWorldSpace(Box obstacle){
@@ -15,15 +22,28 @@ void obstacleWorldSpace(Box obstacle){
     int x2 = obstacle.w + x1;
     int y2 = obstacle.d + y1;
 
-    obstacleWS[k][0][0] = x1;
-    obstacleWS[k][0][1] = x2;
-    obstacleWS[k][1][0] = y1;
-    obstacleWS[k][1][1] = y2;
+    obstacleWS[k][0][0] = (int) x1;
+    obstacleWS[k][0][1] = (int) x2;
+    obstacleWS[k][1][0] = (int) y1;
+    obstacleWS[k][1][1] = (int) y2;
     k++;
 }
 //takes 3d vector but gets distance on the 2d plane
 float distance2D(Vector3D start, Vector3D end){
     return sqrtf(powf(end.x, start.x) + powf(end.y, start.y));
+}
+
+void buildWorld(){
+    for(int i=0; i<201; i++){
+        int xLength = abs(obstacleWS[i][0][0] - obstacleWS[i][0][1]);
+        int yLength = abs(obstacleWS[i][1][0] - obstacleWS[i][1][1]);
+        for(int j=0; j<xLength; j++){
+            world[obstacleWS[i][0][0]+j][obstacleWS[i][1][0]] = 1;
+        }
+        for(int j=0; j<yLength; j++){
+            world[obstacleWS[i][0][0]][obstacleWS[i][1][0]+j] = 1;
+        }
+    }
 }
 int distanceWS(Vector2D vector);
 

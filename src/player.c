@@ -146,18 +146,7 @@ void player_think(Entity *self)
     //try to spawn wave
     player_spawnWave(vector3d(-32, 23, -24), self);
 
-    
 
-    //trying to draw the hit box
-    // for(int j=0; j<i; j++){
-    //     Rect front, side1, side2, back;
-    //     front.x = entityList[j]->bounds.x;
-    //     front.y = entityList[j]->bounds.y;
-    //     front.h = entityList[j]->bounds.h;
-    //     front.w = entityList[j]->bounds.w;
-
-    //     gf2d_draw_rect(front, gfc_color(0,1,0,1));
-    // }
     int temp = i;
 
     //set planes and boxes to test collision
@@ -198,88 +187,8 @@ void player_think(Entity *self)
 
         slog("TEST");
     }
-    //ray casting test
-    
-    if(keys[SDL_SCANCODE_LCTRL]){ //not current ray casting button, f2 is
 
-        // slog("rayCast started");
-        // Vector3D playerPoint = vector3d(self->position.x, self->position.y, self->position.y);
-        // slog("PlayerPoint: x: %f, y: %f, z: %f", playerPoint.x, playerPoint.y, playerPoint.z);
-        // //point far off in distance to draw an edge too, in the direction the player is looking
-        // Vector3D testingPoint = vector3d(forward.x+1000, forward.y+1000, playerPoint.z);
-        // slog("PlayerPoint: x: %f, y: %f, z: %f", testingPoint.x, testingPoint.y, testingPoint.z);
-        // Edge3D rayCast;
-        // rayCast.a = playerPoint;
-        // rayCast.b = testingPoint;
-        Vector3D *poc = NULL, *normal = NULL;
-        // Shape drawShape;
-        // drawShape.type = edge;
-        // drawShape.s = 
-        float distance = 10.0;
-        float rot = self->rotation.z;
-        slog("player rotation: %f, %f, %f", self->rotation.x, self->rotation.y, self->rotation.z);
-        slog("player position: %f, %f, %f", self->position.x, self->position.y, self->position.z);
-        Vector3D playerPoint = vector3d(self->position.x, self->position.y, self->position.z);
-        float ang = rot;
-        slog("ang: %f, sinf(ang): %f, cosf(ang): %f", ang, sinf(ang), cosf(ang));
-        // // Vector3D *rayForward= NULL, *rayUp=NULL, *rayRight=NULL;
-        // // vector3d_angle_vectors(self->rotation, rayForward, rayRight, rayUp);
-        // // slog("rayForward: %f, %f, %f", rayForward->x, rayForward->y, rayForward->z);
-        float c = cosf(ang);
-        float s = sinf(ang);
-        float x1,y1;
-        if(c == 0.0){ //looking directly in the x axis
-            slog('shouldnt be here');
-            x1 = playerPoint.x + 1 * distance;
-            y1 = playerPoint.y + 1 * distance;
-        }
-        else{
-            x1 = playerPoint.x + sinf(ang) * distance;
-            y1 = playerPoint.y + cosf(ang) * distance;
-            slog("sinf(ang) * distance = %f", playerPoint.x + sinf(ang) * distance);
-            slog("cosf(ang) * distance = %f", playerPoint.y + cosf(ang) * distance);
-        }
-
-        // Vector3D testPoint = self->position;
-        // Vector3D temp = {0};
-        // temp.x = 5;
-        // temp.y = 5;
-            // vector2d_move_towards();
-            // self->position.x = selfPos->x;
-            // self->position.y = selfPos->y;
-        // vector3d_add(testPoint, playerPoint, distance);
-        Vector3D testPoint = vector3d(x1, y1, playerPoint.z);
-        //self->position = testPoint;
-        //vector3d_add(testPoint, )
-        slog("test point: %f, %f, %f", testPoint.x, testPoint.y, testPoint.z);
-        Edge3D ray;
-        ray.a = playerPoint;
-        ray.b = testPoint;
-        //Edge rayCast = gfc_edge(playerPoint.x, playerPoint.y, testPoint.x, testPoint.y);
-        // Vector2D testPoint = vector2d(forward.x+1000, forward.y+1000);
-        
-        // Shape drawShape;
-        // drawShape.type = ST_EDGE;
-        // drawShape.s.e = rayCast;
-        // vector2d_angle
-
-
-        //gf2d_draw_shape(drawShape, gfc_color(0,1,0,1), vector2d(0,0));
-
-        for(int j=0; j<i; j++){
-            slog("in entity loop");
-            if(gfc_edge_box_test(ray, entityList[j]->bounds, poc, normal)){
-                slog("intersected with entity");
-                // slog("poc: %f, %f, %f", poc->x, poc->y, poc->z);
-                // slog("normal: %f, %f, %f", normal->x, normal->y, normal->z);
-            }
-        }
-    }
-
-    // hitBoxEnt_update(creeperBounds, creeper);
-    // if(fence != NULL && fenceBounds != NULL)
-    //     hitBoxEnt_update(fenceBounds, fence);
-    if(SDL_GetMouseState(&mmx, &mmy) & SDL_BUTTON_LMASK){ //raycast, distance based off attack type, probably should change the button
+    if(SDL_GetMouseState(&mmx, &mmy) & SDL_BUTTON_LMASK){ //raycast, distance based off attack type
         gunshot = gfc_sound_load("sounds/382735__schots__gun-shot.wav", 1.0, 3);
         gfc_sound_play(gunshot, 0, 0.5, -1, -1);
         Entity *hitEnt = NULL;
@@ -590,16 +499,14 @@ void player_think(Entity *self)
         //vector3d_add(self->position,self->position,-right);
     }
 
-    if(!self->isJumping && !self->isDescending){ //jump button, can only jump when not mid jump or mid descent
-        if(keys[SDL_SCANCODE_SPACE]){
-            slog("space pressed");
-            self->startPosition = self->position.z;
-            self->isJumping = 1;
+    if(!self->isJumping && !self->isDescending && keys[SDL_SCANCODE_SPACE]){ //jump button, can only jump when not mid jump or mid descent
+        slog("space pressed");
+        self->startPosition = self->position.z;
+        self->isJumping = 1;
 
-            Sound *jump = gfc_sound_load("sounds/456369__felixyadomi__hop6.wav", 1.0, 2);
-            gfc_sound_play(jump, 0, 1.0, -1, 1);
-            gfc_sound_free(jump);
-        }
+        Sound *jump = gfc_sound_load("sounds/456369__felixyadomi__hop6.wav", 1.0, 2);
+        gfc_sound_play(jump, 0, 1.0, -1, 1);
+        gfc_sound_free(jump);
     }
 
     //only able to go up and down when in edit mode
@@ -635,7 +542,7 @@ void player_think(Entity *self)
         thirdPersonMode = !thirdPersonMode;
         self->hidden = !self->hidden;
     }
-    if(keys[SDL_SCANCODE_C]){
+    if(keys[SDL_SCANCODE_C] && self->editMode == 1){ //print roatation and position values for testing
         slog("rot x: %f, rot y: %f, rot z: %f\n", self->rotation.x, self->rotation.y, self->rotation.z);
         slog("pos x: %f, pos y: %f, pos z: %f\n", self->position.x, self->position.y, self->position.z);
     }
@@ -1069,27 +976,7 @@ void player_think(Entity *self)
         }
     }
 
-    while(SDL_PollEvent(&testEvent) > 0){
-        //slog("in SDL_PollEvent");
-        //slog("%s", testEvent.type);
-        switch (testEvent.type){
-            case SDL_MOUSEBUTTONDOWN:
-                if(testEvent.button.button == SDL_BUTTON_LEFT)
-                    slog("button down");
-                break;
-            case SDL_MOUSEBUTTONUP:
-                slog("button up");
-                break;
-        }
-    }
 
-    // int lClick = 0;
-    // if(SDL_BUTTON(2)){
-    //     if (lClick == 0){
-    //         slog("mouse button pressed");
-    //         lClick = 1;
-    //     }
-    // }
     //spawns for goo
     if(keys[SDL_SCANCODE_V]){
         slowGoo = slowGoo_new(self->position);
@@ -1391,56 +1278,52 @@ void player_think(Entity *self)
 
         // slog("load done");
     }
+    
     if(keys[SDL_SCANCODE_O]){ //loop and print through entity list, type of entities
         for(int j=0; j<i; j++){
             slog("entityList[j]->type: %i", entityList[j]->type);
         }
     }
-    if(keys[SDL_SCANCODE_P]){ //NOT USED, test player save
-        SJson *entList = sj_object_new();
-        saveGame_to_json(self, "saves/playerSave.json");
-        //testSave(self, "saves/saveTest.json");
-        for(int j=0; j<i; j++){
-            if(saveGame_to_json(entityList[j], "saves/saveTest.json") == 0)
-                slog("save failed");
-            else
-                slog("saved");
-        }
-        for(int j=0; j<i; j++){
-            sj_object_insert(entList, "entityType", sj_new_int(entityList[j]->type));
-            sj_object_insert(entList, "entityNum", sj_new_int(entityList[j]->entityNum));
-            sj_echo(entList);
-            sj_save(entList, "saves/entityList.json");
-        }
+    // if(keys[SDL_SCANCODE_P]){ //NOT USED, test player save
+    //     SJson *entList = sj_object_new();
+    //     saveGame_to_json(self, "saves/playerSave.json");
+    //     //testSave(self, "saves/saveTest.json");
+    //     for(int j=0; j<i; j++){
+    //         if(saveGame_to_json(entityList[j], "saves/saveTest.json") == 0)
+    //             slog("save failed");
+    //         else
+    //             slog("saved");
+    //     }
+    //     for(int j=0; j<i; j++){
+    //         sj_object_insert(entList, "entityType", sj_new_int(entityList[j]->type));
+    //         sj_object_insert(entList, "entityNum", sj_new_int(entityList[j]->entityNum));
+    //         sj_echo(entList);
+    //         sj_save(entList, "saves/entityList.json");
+    //     }
         
-        //sj_free(entList);
-    }
-    //load json
-    if(keys[SDL_SCANCODE_L]){ //NOT USED, test player load
-        loadGame_from_json(self, "saves/playerSave.json");
-        for(int j=0; j<i; j++){
-            if(loadGame_from_json(entityList[j], "saves/saveTest.json") == 0)
-                slog("load failed");
-            else{
-                //monster1_new(monster1->position);
-                slog("loaded");
-            }
-        }
-    }
+    //     //sj_free(entList);
+    // }
+    // //load json
+    // if(keys[SDL_SCANCODE_L]){ //NOT USED, test player load
+    //     loadGame_from_json(self, "saves/playerSave.json");
+    //     for(int j=0; j<i; j++){
+    //         if(loadGame_from_json(entityList[j], "saves/saveTest.json") == 0)
+    //             slog("load failed");
+    //         else{
+    //             //monster1_new(monster1->position);
+    //             slog("loaded");
+    //         }
+    //     }
+    // }
 
     //test entity list
-    if(keys[SDL_SCANCODE_RCTRL]){//loop through entity list and print type and num
+    if(keys[SDL_SCANCODE_RCTRL] && self->editMode == 1){//loop through entity list and print type and num
         for(int j=1; j<i; j++){
             slog("entityType: %i", entityList[j]->type);
             slog("entityNum: %i", entityList[j]->entityNum);
         }
     }
 
-    if(keys[SDL_SCANCODE_F1]){//start audio for test
-        Sound *music = gfc_sound_load("music/209561__dneproman__8-bit-style.wav", 1.0, 1);
-        gfc_sound_play(music, 0, 1.0, -1, 1);
-        gfc_sound_free(music);
-    }
     
 }
 int lastSpawn = 0;
@@ -1908,7 +1791,7 @@ void player_spawnWave(Vector3D spawnPos, Entity *player){
     time(&currentTime);
     time_t dif = currentTime - lastTime;//if dif = 1, then thats 10 sec
     spawnPos.z -= 3;
-    if(dif>=2 && player->editMode != 1){
+    if(dif>=6 && player->editMode != 1 || waveCount == 0){
         // newEnt = monster7_creeper_new(spawnPos);
         // lastTime = currentTime;
         // entityList[i] = newEnt;

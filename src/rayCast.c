@@ -32,7 +32,7 @@ Entity * rayCast(Entity *self, float distance, Entity *player){
     Vector3D *poc = &playerPos, *normal = NULL;
     //slog("edge length: %f", edge3DLength(ray));
     // self->position = testPoint;
-    slog("poc1: %f, %f, %f", poc->x, poc->y, poc->z);
+    //slog("poc1: %f, %f, %f", poc->x, poc->y, poc->z);
     for(int j=0; j<512; j++){
         if(!entityList[j])
             continue;
@@ -40,7 +40,7 @@ Entity * rayCast(Entity *self, float distance, Entity *player){
         if(gfc_edge_box_test(ray, entityList[j]->bounds, poc, normal) && entityList[j]->type == ET_monster){
             slog("intersected with entity type: %i", entityList[j]->type);
             slog("intersected entity pos: %f, %f, %f", entityList[j]->position.x, entityList[j]->position.y, entityList[j]->position.z);
-            slog("poc2: %f, %f, %f", poc->x, poc->y, poc->z);
+            //slog("poc2: %f, %f, %f", poc->x, poc->y, poc->z);
             return entityList[j];
             //entity_damage(self, entityList[j], self->attackDamage, 0);
             //return entityList[j];
