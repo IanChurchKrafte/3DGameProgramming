@@ -203,33 +203,37 @@ void player_think(Entity *self)
                 //pistol with arms
                 hitEnt = rayCast(self, 50, self);
                 gfc_sound_play(pistol, 0, 0.5, -1, -1);
+                if(hitEnt) entity_damage(self, hitEnt, 2, 0);
                 break;
             case 1:
                 //fire
                 //revolver
                 hitEnt = rayCast(self, 15, self);
                 gfc_sound_play(revolver, 0, 0.5, -1, -1);
+                if(hitEnt) entity_damage(self, hitEnt, 4, 0);
                 break;
             case 2:
                 //melee
                 //shotgun
                 hitEnt = rayCast(self, 5, self);
                 gfc_sound_play(shotgun, 0, 0.5, -1, -1);
+                if(hitEnt) entity_damage(self, hitEnt, 70, 0);
                 break;
             case 3:
                 //magic
                 //awp
                 hitEnt = rayCast(self, 15, self);
                 gfc_sound_play(awp, 0, 0.5, -1, -1);
+                if(hitEnt) entity_damage(self, hitEnt, 90, 0);
                 break;
             case 4:
                 //ice
                 //ak47
                 hitEnt = rayCast(self, 20, self);
                 gfc_sound_play(ak47, 0, 0.5, -1, -1);
+                if(hitEnt) entity_damage(self, hitEnt, 30, 0);
                 break;
         }
-        if(hitEnt) entity_damage(self, hitEnt, self->attackDamage, 0);
         //gfc_sound_free(gunshot);
     }
     
