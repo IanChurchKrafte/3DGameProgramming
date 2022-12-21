@@ -71,6 +71,7 @@ void player_death(Entity *self);
 bool jump(Entity *self, clock_t startTime, bool isJumping, bool midJump);
 void loadEntity(Entity *self);
 void player_spawnWave();
+void makeBoss(Entity *newEnt);
 //void rayCast(Entity *self, float distance);
 Entity *creeper, *creeperBounds, *fenceBounds = NULL;
 Sound *pistol, *revolver, *ak47, *awp, *shotgun;
@@ -114,7 +115,7 @@ Entity *player_new(Vector3D position)
     ent->isJumping = 0;
     ent->isDescending = 0;
 
-    ent->health = 150;
+    ent->health = 200;
     ent->attackType = 0;
     i=0;
 
@@ -125,7 +126,7 @@ Entity *player_new(Vector3D position)
     ent->editMode = 0;
 
     //testing for points
-    ent->points = 15000;
+    ent->points = 0;
 
     gunModel = gunModel_new(ent->position);
     ent->gunModel = gunModel;
@@ -146,8 +147,7 @@ void player_think(Entity *self)
 {
     
     //try to spawn wave
-    player_spawnWave(vector3d(-32, 23, -24), self);
-
+    player_spawnWave(vector3d(-32, 23, -20), self);
 
     int temp = i;
 
@@ -203,35 +203,35 @@ void player_think(Entity *self)
                 //pistol with arms
                 hitEnt = rayCast(self, 50, self);
                 gfc_sound_play(pistol, 0, 0.5, -1, -1);
-                if(hitEnt) entity_damage(self, hitEnt, 2, 0);
+                if(hitEnt) entity_damage(self, hitEnt, self->attackDamage, 0);
                 break;
             case 1:
                 //fire
                 //revolver
                 hitEnt = rayCast(self, 15, self);
                 gfc_sound_play(revolver, 0, 0.5, -1, -1);
-                if(hitEnt) entity_damage(self, hitEnt, 4, 0);
+                if(hitEnt) entity_damage(self, hitEnt, self->attackDamage, 0);
                 break;
             case 2:
                 //melee
                 //shotgun
                 hitEnt = rayCast(self, 5, self);
                 gfc_sound_play(shotgun, 0, 0.5, -1, -1);
-                if(hitEnt) entity_damage(self, hitEnt, 70, 0);
+                if(hitEnt) entity_damage(self, hitEnt, self->attackDamage, 0);
                 break;
             case 3:
                 //magic
                 //awp
                 hitEnt = rayCast(self, 15, self);
                 gfc_sound_play(awp, 0, 0.5, -1, -1);
-                if(hitEnt) entity_damage(self, hitEnt, 90, 0);
+                if(hitEnt) entity_damage(self, hitEnt, self->attackDamage, 0);
                 break;
             case 4:
                 //ice
                 //ak47
                 hitEnt = rayCast(self, 20, self);
                 gfc_sound_play(ak47, 0, 0.5, -1, -1);
-                if(hitEnt) entity_damage(self, hitEnt, 30, 0);
+                if(hitEnt) entity_damage(self, hitEnt, self->attackDamage, 0);
                 break;
         }
         //gfc_sound_free(gunshot);
@@ -586,7 +586,7 @@ void player_think(Entity *self)
         }
         if (keys[SDL_SCANCODE_2] && !keys[SDL_SCANCODE_LSHIFT]){
             monster2 = monster2_kong_new(vector3d(self->position.x, self->position.y, self->position.z));
-            hitBoxEnt_new(monster2->position, monster2);
+            //hitBoxEnt_new(monster2->position, monster2);
             if(monster2){
                 entityList[i] = monster2;
                 i++;
@@ -1429,19 +1429,19 @@ void player_update(Entity *self, Entity *player)//needed player twice to stop a 
     */
    switch(self->attackType){
         case R_bullet:
-            self->attackDamage = 15;
+            self->attackDamage = 2;
             break;
         case R_fire:
-            self->attackDamage = 25;
+            self->attackDamage = 4;
             break;
         case R_ice:
-            self->attackDamage = 25;
-            break;
-        case R_magic:
             self->attackDamage = 30;
             break;
+        case R_magic:
+            self->attackDamage = 90;
+            break;
         case R_melee:
-            self->attackDamage = 10;
+            self->attackDamage = 70;
             break;
 
    }
@@ -1620,6 +1620,9 @@ void loadEntities(Entity *self){ //loads entities from json and spawns them
             sj_get_float_value(sj_object_get_value(entity, "rotation_y"), &temp->rotation.y);
             sj_get_float_value(sj_object_get_value(entity, "rotation_z"), &temp->rotation.z);
 
+            
+            //if(temp->isBoss == 1) slog("this is a boss");
+
             // /slog("Type: %i, Num: %i", type, num);
 
             // Vector3D position = vector3d(position_x, position_y, position_z);
@@ -1706,6 +1709,7 @@ void loadEntities(Entity *self){ //loads entities from json and spawns them
                         i++;
                         break;
                 }
+                if(newEnt->isBoss) makeBoss(newEnt);
             }
             else if(temp->type == 1){
                 //is a wall
@@ -1802,7 +1806,7 @@ void loadEntities(Entity *self){ //loads entities from json and spawns them
         slog("load done");
 }
 
-int x = 0, waveCount = 0;
+int x = 0, waveCount = 1, startGame = 0;
 void player_spawnWave(Vector3D spawnPos, Entity *player){
     player->currentWave = waveCount;
     Entity *newEnt = NULL;
@@ -1810,11 +1814,8 @@ void player_spawnWave(Vector3D spawnPos, Entity *player){
     time(&currentTime);
     time_t dif = currentTime - lastTime;//if dif = 1, then thats 10 sec
     spawnPos.z -= 3;
-    if((dif>=6 && player->editMode != 1) || (waveCount == 0 && player->editMode != 1)){
-        // newEnt = monster7_creeper_new(spawnPos);
-        // lastTime = currentTime;
-        // entityList[i] = newEnt;
-        // i++;
+    if((dif>=1 && player->editMode != 1) || (startGame == 0 && player->editMode != 1)){
+        if(startGame == 0) startGame = 1;
         if(waveCount % 5 != 0){
             for(int m = 0; m<waveCount; m++){
                 Vector3D newSpawnPos = {0};
@@ -1901,17 +1902,7 @@ void player_spawnWave(Vector3D spawnPos, Entity *player){
         }        
         waveCount++;
         if(waveCount % 5 == 0 && newEnt != NULL){ //every 5 waves, make the enemy that spawns a boss by raising the scale and damage, setting it to a boss will raise the damage
-            Vector3D currentScale = newEnt->scale;
-            vector3d_scale(newEnt->scale, currentScale, 4);
-            newEnt->isBoss = 1;
-            newEnt->health *= 3; //triple normal health
-            newEnt->attackDamage *=4; //double normal attack
-            newEnt->position.z += 10; //gets set in the ground so raise it up a little bit
-            newEnt->bounds.z -= 10; //change to location of the bottom of the bounding box
-            newEnt->bounds.d *= 2; //update the bounds for the new size of the model
-            newEnt->bounds.h *= 2;
-            newEnt->bounds.w *= 2;
-            
+            makeBoss(newEnt);
             slog("BOSS SPAWNING!!");
             player->bossSpawning = 1;
         }
@@ -1924,6 +1915,21 @@ void player_spawnWave(Vector3D spawnPos, Entity *player){
 
 
     // slog("currentTime(%ld) - lastTime(%ld) = %ld",currentTime, lastTime, dif);
+}
+
+void makeBoss(Entity *newEnt){
+    Vector3D currentScale = newEnt->scale;
+    vector3d_scale(newEnt->scale, currentScale, 4);
+    newEnt->isBoss = 1;
+    newEnt->health *= 3; //triple normal health
+    newEnt->attackDamage *=4; //double normal attack
+    newEnt->position.z += 5; //gets set in the ground so raise it up a little bit
+    //newEnt->bounds.z = newEnt->position.z; //change to location of the bottom of the bounding box
+    // newEnt->bounds.z += 20;
+    // newEnt->bounds.z += 15;
+    newEnt->bounds.d *= 4; //update the bounds for the new size of the model
+    newEnt->bounds.h *= 4;
+    newEnt->bounds.w *= 4;
 }
 
 // void rayCast(Entity *self, float distance){

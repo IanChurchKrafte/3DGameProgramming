@@ -39,6 +39,7 @@
 #include "defense5_turret3.h"
 #include "player.h"
 #include "world.h"
+#include "gunModel.h"
 
 extern int __DEBUG;
 
@@ -336,8 +337,8 @@ int main(int argc,char *argv[])
                     gf2d_sprite_draw(defenseSpawns, vector2d(1550,50), vector2d(1,1), vector3d(0,0,0), gfc_color(1,1,1,1), 1);
                 }
 
-                char ui[64];
-                char attack[7];
+                char ui[99];
+                char attack[16];
                 unsigned int points = player->points;
                 unsigned short health = player->health;
                 unsigned short damage = player->attackDamage;
@@ -346,19 +347,19 @@ int main(int argc,char *argv[])
                 //slog("attack: %i", attackType);
                 switch(attackType){
                     case 0:
-                        strncpy(attack, "bullet", 7);
+                        strncpy(attack, "bullet (pistol)", 16);
                         break;
                     case 1:
-                        strncpy(attack, "fire", 5);
+                        strncpy(attack, "fire (revolver)", 16);
                         break;
                     case 2:
-                        strncpy(attack, "melee", 6);
+                        strncpy(attack, "melee (shotgun)", 16);
                         break;
                     case 3:
-                        strncpy(attack, "magic", 6);
+                        strncpy(attack, "magic (sniper)", 15);
                         break;
                     case 4:
-                        strncpy(attack, "ice", 4);
+                        strncpy(attack, "ice (ak47)", 11); 
                         break;
                 }
                 //for testing
@@ -372,14 +373,14 @@ int main(int argc,char *argv[])
                 //ui draw
                 sprintf(ui, "Points: %u     Health: %hi     Attack: %s    Damage: %hi   Wave: %hi", points, health, attack, damage, currentWave);
 
-                gf2d_draw_rect_filled(gfc_rect(10,10,1000,40),gfc_color8(128,128,128,255));
+                gf2d_draw_rect_filled(gfc_rect(10,10,1150,40),gfc_color8(128,128,128,255));
                 
 
-                gf2d_font_draw_line_tag(ui,FT_H1,gfc_color(1,1,1,1), vector2d(10,12.5));
+                gf2d_font_draw_line_tag(ui,FT_H1,gfc_color(1,1,1,1), vector2d(25,12.5));
 
                 
                 //free(point);
-                gf2d_draw_rect(gfc_rect(10 ,10,1000,40),gfc_color8(255,0,0,255));
+                gf2d_draw_rect(gfc_rect(10 ,10,1150,40),gfc_color8(255,0,0,255));
                 
                 //for testing
                 // gf2d_font_draw_line_tag(pos,FT_H1,gfc_color(0,0,0,1), vector2d(10,30)); 

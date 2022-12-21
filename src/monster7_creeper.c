@@ -65,13 +65,19 @@ void monster7_creeper_update(Entity *self, Entity *player)
     
     self->bounds.x = self->position.x;
     self->bounds.y = self->position.y;
-    self->bounds.z = self->position.z;
+    self->bounds.z = self->position.z+2;
+
+    if(self->isBoss == 1){
+        self->bounds.z = self->position.z - 6;
+    }
     
     //self->rotation.z += 0.01;
     Box centerBox = gfc_box(0,0,-25, 10,10,10);
     Plane3D bottomPlane = gfc_plane3d(0,0,-25,25);
     if(collision_box_to_plane_z_down(self->bounds, bottomPlane) && !gfc_box_overlap(self->bounds, centerBox)){ //check for collison on gound and center box
-        //self->position.z -=1;
+        if(!(self->position.z <= -25) && (self->isBoss == 0)){
+            self->position.z -=1;
+        }
     }
     //trying to get it to rotate towards the player since im already moving in that direction
     Vector2D facingVec;

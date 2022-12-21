@@ -52,9 +52,9 @@ Entity *monster4_skelly_new(Vector3D position)
     ent->bounds.x = position.x;
     ent->bounds.y = position.y;
     ent->bounds.z = position.z;
-    ent->bounds.w = 10;
-    ent->bounds.h = 10;
-    ent->bounds.d = 10;
+    ent->bounds.w = 5;
+    ent->bounds.h = 7;
+    ent->bounds.d = 5;
 
     ent->health = 100;
 
@@ -77,19 +77,25 @@ void monster4_skelly_update(Entity *self, Entity *player)
     
     self->bounds.x = self->position.x;
     self->bounds.y = self->position.y;
-    self->bounds.z = self->position.z;
+    self->bounds.z = self->position.z+1;
 
-    //rotate towards player
-    // Vector2D facingVec;
-    // vector2d_sub(facingVec, player->position, self->position);
-    // float rotate = atan2(facingVec.y, facingVec.x);
-    // self->rotation.z = rotate + M_PI;
+    if(self->isBoss == 1){
+        self->bounds.z = self->position.z - 6;
+    }
+
+    Box centerBox = gfc_box(0,0,-25, 10,10,10);
+    Plane3D bottomPlane = gfc_plane3d(0,0,-25,25);
+    if(collision_box_to_plane_z_down(self->bounds, bottomPlane) && !gfc_box_overlap(self->bounds, centerBox)){ //check for collison on gound and center box
+        if(!(self->position.z <= -25) && (self->isBoss == 0)){
+            self->position.z -=1;
+        }
+    }
 
     Vector2D *selfPos = NULL;
     Vector2D vect = vector2d(self->position.x, self->position.y);
     selfPos = &vect;
     Vector2D playerPos = vector2d(player->position.x, player->position.y);
-    if(!gfc_box_overlap(player->bounds, self->bounds)){
+    if(!gfc_box_overlap(player->bounds, self->bounds) && player->editMode != 1){
         self->state = ES_hunt;
         //slog("not colliding with player");
         //add entity list for entities spawn in by the player
@@ -119,7 +125,8 @@ void monster4_skelly_update(Entity *self, Entity *player)
         player_damage(self->attackDamage, player, 0, self);
     }
 
-
+    if(player->editMode == 1)
+        self->state = ES_hunt;
     // Box centerBox = gfc_box(0,0,-25, 10,10,10);
     // Plane3D bottomPlane = gfc_plane3d(0,0,-25,25);
     // if(collision_box_to_plane_z_down(self->bounds, bottomPlane) && !gfc_box_overlap(self->bounds, centerBox)){ //check for collison on gound and center box

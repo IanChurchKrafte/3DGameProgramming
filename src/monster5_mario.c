@@ -35,7 +35,7 @@ Entity *monster5_mario_new(Vector3D position)
     ent->bounds.y = position.y;
     ent->bounds.z = position.z;
     ent->bounds.w = 10;
-    ent->bounds.h = 10;
+    ent->bounds.h = 5;
     ent->bounds.d = 10;
 
     ent->health = 100;
@@ -55,9 +55,13 @@ void monster5_mario_update(Entity *self, Entity *player)
     }
     vector3d_add(self->position,self->position,self->velocity);
     
+
     self->bounds.x = self->position.x;
     self->bounds.y = self->position.y;
-    self->bounds.z = self->position.z;
+    self->bounds.z = self->position.z+2;
+    if(self->isBoss == 1){
+        self->bounds.z = self->position.z - 6;
+    }
 
     Vector2D facingVec;
     vector2d_sub(facingVec, player->position, self->position);
@@ -67,7 +71,9 @@ void monster5_mario_update(Entity *self, Entity *player)
     Box centerBox = gfc_box(0,0,-25, 10,10,10);
     Plane3D bottomPlane = gfc_plane3d(0,0,-25,25);
     if(collision_box_to_plane_z_down(self->bounds, bottomPlane) && !gfc_box_overlap(self->bounds, centerBox)){ //check for collison on gound and center box
-        //self->position.z -=1;
+        if(!(self->position.z <= -25) && (self->isBoss == 0)){
+            self->position.z -=1;
+        }
     }
 
     Vector2D *selfPos = NULL;

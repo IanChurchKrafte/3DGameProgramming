@@ -34,7 +34,7 @@ Entity *monster2_kong_new(Vector3D position)
     ent->bounds.y = position.y;
     ent->bounds.z = position.z;
     ent->bounds.w = 5;
-    ent->bounds.h = 10;
+    ent->bounds.h = 7;
     ent->bounds.d = 5;
 
     ent->health = 100;
@@ -56,9 +56,14 @@ void monster2_kong_update(Entity *self, Entity *player)
 
     Vector3D boxPos = vector3d(self->position.x - (self->bounds.w / 2), self->position.y - (self->bounds.h / 2.0), self->position.z);
     
+    
     self->bounds.x = self->position.x;
     self->bounds.y = self->position.y;
-    self->bounds.z = self->position.z;
+    self->bounds.z = self->position.z+2;
+
+    if(self->isBoss == 1){
+        self->bounds.z = self->position.z - 6;
+    }
 
     // self->bounds.x = boxPos.x;
     // self->bounds.y = boxPos.y;
@@ -72,7 +77,9 @@ void monster2_kong_update(Entity *self, Entity *player)
     Box centerBox = gfc_box(0,0,-25, 10,10,10);
     Plane3D bottomPlane = gfc_plane3d(0,0,-25,25);
     if(collision_box_to_plane_z_down(self->bounds, bottomPlane) && !gfc_box_overlap(self->bounds, centerBox)){ //check for collison on gound and center box
-        //self->position.z -=1;
+        if(!(self->position.z <= -25) && (self->isBoss == 0)){
+            self->position.z -=1;
+        }
     }
     
 

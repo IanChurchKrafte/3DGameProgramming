@@ -2,6 +2,6 @@
     "model":
     {
         "model":"models/gun/shotgun/shotgun.obj",
-        "texture":"models/gun/shotgun/spas12_mat02_Albedo.png"
+        "texture":"models/gun/shotgun/spas12_mat01_Albedo.png"
     }
 }

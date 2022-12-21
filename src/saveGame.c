@@ -27,6 +27,8 @@ SJson * testSave(Entity *self, SJson *ent){
     sj_object_insert(ent, "isJumping", sj_new_int(self->isJumping));
     sj_object_insert(ent, "startPosition", sj_new_float(self->startPosition));
 
+    sj_object_insert(ent, "isBoss", sj_new_int(self->isBoss));
+
     return ent;
 }
 
@@ -48,6 +50,9 @@ void playerSave(Entity *player, SJson *ent){
     sj_object_insert(ent, "isJumping", sj_new_int(player->isJumping));
     sj_object_insert(ent, "isDescending", sj_new_int(player->isDescending));
     sj_object_insert(ent, "startPosition", sj_new_float(player->startPosition));
+
+    sj_object_insert(ent, "currentWave", sj_new_int(player->currentWave));
+    sj_object_insert(ent, "currentTime", sj_new_int(player->currentTime));
 }
 
 void playerLoad(Entity *player, SJson *ent){
@@ -66,7 +71,11 @@ void playerLoad(Entity *player, SJson *ent){
     sj_get_integer_value(sj_object_get_value(ent, "isDescending"), &player->isDescending);
     sj_get_integer_value(sj_object_get_value(ent, "isJumping"), &player->isJumping);
     sj_get_float_value(sj_object_get_value(ent, "startPosition"), &player->startPosition);
+
+    sj_get_integer_value(sj_object_get_value(ent, "currentWave"), &player->currentWave);
+    sj_get_integer_value(sj_object_get_value(ent, "currentTime"), &player->currentTime);
 }
+
 Entity * testLoad(Entity *self, SJson *ent){
     sj_get_integer_value(sj_object_get_value(ent, "health"), &self->health);
     sj_get_integer_value(sj_object_get_value(ent, "attackType"), &self->attackType);
@@ -76,6 +85,10 @@ Entity * testLoad(Entity *self, SJson *ent){
     sj_get_integer_value(sj_object_get_value(ent, "isDescending"), &self->isDescending);
     sj_get_integer_value(sj_object_get_value(ent, "isJumping"), &self->isJumping);
     sj_get_float_value(sj_object_get_value(ent, "startPosition"), &self->startPosition);
+
+    sj_get_integer_value(sj_object_get_value(ent, "isBoss"), &self->isBoss);
+
+    if(self->isBoss == 1) slog("this is a boss");
 
     return self;
     

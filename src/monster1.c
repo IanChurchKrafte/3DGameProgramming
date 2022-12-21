@@ -46,9 +46,9 @@ Entity *monster1_new(Vector3D position){
     ent->bounds.x = position.x;
     ent->bounds.y = position.y;
     ent->bounds.z = position.z;
-    ent->bounds.w = 10;
-    ent->bounds.h = 5;
-    ent->bounds.d = 10;
+    ent->bounds.w = 5;
+    ent->bounds.h = 7;
+    ent->bounds.d = 5;
 
     ent->health = 100;
 
@@ -68,8 +68,11 @@ void monster1_update(Entity *self, Entity *player){
 
     self->bounds.x = self->position.x;
     self->bounds.y = self->position.y;
-    self->bounds.z = self->position.z;
+    self->bounds.z = self->position.z+2;
 
+    if(self->isBoss == 1){
+        self->bounds.z = self->position.z - 6;
+    }
     Vector2D facingVec;
     vector2d_sub(facingVec, player->position, self->position);
     float rotate = atan2(facingVec.y, facingVec.x);
@@ -78,7 +81,9 @@ void monster1_update(Entity *self, Entity *player){
     Box centerBox = gfc_box(0,0,-25, 10,10,10);
     Plane3D bottomPlane = gfc_plane3d(0,0,-25,25);
     if(collision_box_to_plane_z_down(self->bounds, bottomPlane) && !gfc_box_overlap(self->bounds, centerBox)){ //check for collison on gound and center box
-        self->position.z -=1;
+        if(!(self->position.z <= -25) && (self->isBoss == 0)){
+            self->position.z -=1;
+        }
     }
 
     Vector2D *selfPos = NULL;

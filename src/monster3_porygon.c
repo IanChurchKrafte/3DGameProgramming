@@ -24,7 +24,7 @@ Entity *monster3_porygon_new(Vector3D position)
     ent->model = gf3d_model_load("models/monster3_porygon.model");
     ent->think = monster3_porygon_think;
     ent->update = monster3_porygon_update;
-    ent->scale = vector3d(0.075,0.075,0.075);
+    ent->scale = vector3d(0.05,0.05,0.05);
     ent->damage = entity_damage;
     ent->onDeath = entity_onDeath;
 
@@ -33,9 +33,9 @@ Entity *monster3_porygon_new(Vector3D position)
     ent->bounds.x = position.x;
     ent->bounds.y = position.y;
     ent->bounds.z = position.z;
-    ent->bounds.w = ent->scale.x+10;
-    ent->bounds.h = ent->scale.z+10;
-    ent->bounds.d = ent->scale.y+10;
+    ent->bounds.w = 5;
+    ent->bounds.h = 7;
+    ent->bounds.d = 5;
 
     ent->health = 100;
     
@@ -55,9 +55,15 @@ void monster3_porygon_update(Entity *self, Entity *player)
     }
     vector3d_add(self->position,self->position,self->velocity);
     
+
     self->bounds.x = self->position.x;
     self->bounds.y = self->position.y;
-    self->bounds.z = self->position.z;
+    self->bounds.z = self->position.z+2;
+
+    if(self->isBoss == 1){
+        if(self->position.z >= -20) self->position.z -= 1;
+        self->bounds.z = self->position.z;
+    }
 
     Vector2D facingVec;
     vector2d_sub(facingVec, player->position, self->position);
@@ -67,7 +73,9 @@ void monster3_porygon_update(Entity *self, Entity *player)
     Box centerBox = gfc_box(0,0,-25, 10,10,10);
     Plane3D bottomPlane = gfc_plane3d(0,0,-25,25);
     if(collision_box_to_plane_z_down(self->bounds, bottomPlane) && !gfc_box_overlap(self->bounds, centerBox)){ //check for collison on gound and center box
-        self->position.z -=1;
+        if(!(self->position.z <= -25) && (self->isBoss == 0)){
+            self->position.z -=1;
+        }
     }
 
     Vector2D *selfPos = NULL;
