@@ -994,48 +994,61 @@ void player_think(Entity *self)
             }
         }
     }
-
-
     //spawns for goo
     if(keys[SDL_SCANCODE_V]){
-        slowGoo = slowGoo_new(self->position);
+        int dif = self->points - 100;
+        if(dif >= 0){
+            slowGoo = slowGoo_new(self->position);
+            self->points -= 100;
+        }
         if(slowGoo){
             entityList[i] = slowGoo;
-            //slog("added monster to entity list");
             i++;
         }
     }
     if(keys[SDL_SCANCODE_B]){
-        fastGoo = fastGoo_new(self->position);
+        int dif = self->points - 100;
+        if(dif >= 0){
+            fastGoo = fastGoo_new(self->position);
+            self->points -= 100;
+        }
         if(fastGoo){
             entityList[i] = fastGoo;
-            //slog("added monster to entity list");
             i++;
         }
     }
     if(keys[SDL_SCANCODE_N]){
-        dmgGoo = dmgGoo_new(self->position);
+        int dif = self->points - 200;
+        if(dif >= 0){
+            fastGoo = dmgGoo = dmgGoo_new(self->position);
+            self->points -= 200;
+        }
         if(dmgGoo){
             entityList[i] = dmgGoo;
-            //slog("added monster to entity list");
             if(temp == i){
                 i++;
             }
         }
     }
     if(keys[SDL_SCANCODE_M]){
-        healGoo = healGoo_new(self->position);
+        int dif = self->points - 200;
+        if(dif >= 0){
+            healGoo = healGoo_new(self->position);
+            self->points -= 200;
+        }
         if(healGoo){
             entityList[i] = healGoo;
-            //slog("added monster to entity list");
             i++;
         }
     }
     if(keys[SDL_SCANCODE_COMMA]){
-        incDmgGoo = incDmgGoo_new(self->position);
+        int dif = self->points - 500;
+        if(dif >= 0){
+            incDmgGoo = incDmgGoo_new(self->position);
+            self->points -= 500;
+        }
         if(incDmgGoo){
             entityList[i] = incDmgGoo;
-            //slog("added monster to entity list");
             i++;
         }
     }
@@ -1814,7 +1827,7 @@ void player_spawnWave(Vector3D spawnPos, Entity *player){
     time(&currentTime);
     time_t dif = currentTime - lastTime;//if dif = 1, then thats 10 sec
     spawnPos.z -= 3;
-    if((dif>=1 && player->editMode != 1) || (startGame == 0 && player->editMode != 1)){
+    if((dif>=3 && player->editMode != 1) || (startGame == 0 && player->editMode != 1)){
         if(startGame == 0) startGame = 1;
         if(waveCount % 5 != 0){
             for(int m = 0; m<waveCount; m++){
